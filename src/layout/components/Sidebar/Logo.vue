@@ -24,8 +24,8 @@ export default {
   },
   data() {
     return {
-      title: 'Vue Admin Template',
-      logo: 'https://wpimg.wallstcn.com/69a1c46c-eb1c-4b46-8bd4-e9e686ef5251.png'
+      title: 'Haili Cloud MES',
+      logo: 'https://gss1.bdstatic.com/-vo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=476cb535ca95d143da76e3254bcbe53f/d1a20cf431adcbef73c22730aeaf2edda3cc9f15.jpg'
     }
   }
 }

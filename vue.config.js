@@ -36,16 +36,38 @@ module.exports = {
       warnings: false,
       errors: true
     },
+    disableHostCheck: true,
     proxy: {
+      [process.env.VUE_APP_BASE_API + "/auth"]: {
+        target: `http://ucenter.haili.com`,
+        changeOrigin: true,
+        pathRewrite: {
+          ['^' + process.env.VUE_APP_BASE_API]: ''
+        }
+      },
+      [process.env.VUE_APP_BASE_API + "/ucenter"]: {
+        target: `http://ucenter.haili.com`,
+        changeOrigin: true,
+        pathRewrite: {
+          ['^' + process.env.VUE_APP_BASE_API]: ''
+        }
+      },
+      [process.env.VUE_APP_BASE_API]: {
+        target: `http://www.haili.com`,
+        changeOrigin: true,
+        pathRewrite: {
+          ['^' + process.env.VUE_APP_BASE_API]: ''
+        }
+      },
       // change xxx-api/login => mock/login
       // detail: https://cli.vuejs.org/config/#devserver-proxy
-      [process.env.VUE_APP_BASE_API]: {
+/*      [process.env.VUE_APP_BASE_API]: {
         target: `http://127.0.0.1:${port}/mock`,
         changeOrigin: true,
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API]: ''
         }
-      }
+      }*/
     },
     after: require('./mock/mock-server.js')
   },

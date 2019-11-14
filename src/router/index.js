@@ -36,13 +36,30 @@ export const constantRoutes = [
     component: () => import('@/views/login/index'),
     hidden: true
   },
-
   {
-    path: '/404',
-    component: () => import('@/views/404'),
+    path: '/401',
+    component: () => import('@/views/error-page/401'),
     hidden: true
   },
-
+  {
+    path: '/404',
+    component: () => import('@/views/error-page/404'),
+    hidden: true
+  },
+  {
+    path: '/profile',
+    component: Layout,
+    redirect: '/profile/index',
+    hidden: true,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/profile/index'),
+        name: 'Profile',
+        meta: { title: '个人中心', icon: 'user', noCache: true }
+      }
+    ]
+  },
   {
     path: '/',
     component: Layout,
@@ -51,11 +68,35 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      meta: { title: '主页', icon: 'dashboard' }
     }]
   },
-
   {
+    path: '/basic',
+    component: Layout,
+    redirect: '/basic/operation',
+    name: 'Example',
+    alwaysShow: true, //一直显示根路由
+    meta: {
+      title: '基础配置',
+      icon: 'lock',
+      // roles: ['admin', 'editor'] // you can set roles in root nav
+    },
+    children: [{
+      path: 'operation',
+      name: 'Operation',
+      component: () => import('@/views/basic/operation'),
+      meta: { title: '生产工艺', icon: 'dashboard' }
+    },
+      {
+        path: 'workflow',
+        name: 'Workflow',
+        component: () => import('@/views/basic/workflow/index'),
+        meta: { title: '生产路线', icon: 'dashboard' }
+      }
+    ]
+  },
+/*  {
     path: '/example',
     component: Layout,
     redirect: '/example/table',
@@ -76,7 +117,6 @@ export const constantRoutes = [
       }
     ]
   },
-
   {
     path: '/form',
     component: Layout,
@@ -88,7 +128,7 @@ export const constantRoutes = [
         meta: { title: 'Form', icon: 'form' }
       }
     ]
-  }
+  }*/
 ]
 
 /**
@@ -96,7 +136,7 @@ export const constantRoutes = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
-  {
+/*  {
     path: '/nested',
     component: Layout,
     redirect: '/nested/menu1',
@@ -148,19 +188,61 @@ export const asyncRoutes = [
       },
       {
         path: 'menu2',
+        name: 'Menu2',
         component: () => import('@/views/nested/menu2/index'),
         meta: { title: 'menu2' }
       }
     ]
-  },
-
+  },*/
   {
-    path: 'external-link',
+    path: '/permission',
+    component: Layout,
+    redirect: '/permission/user',
+    alwaysShow: true, // will always show the root menu
+    name: 'Permission',
+    meta: {
+      title: '系统管理',
+      icon: 'lock',
+      // roles: ['admin', 'editor'] // you can set roles in root nav
+    },
+    children: [
+      {
+        path: 'user',
+        component: () => import('@/views/permission/user'),
+        name: 'UserPermission',
+        meta: {
+          title: '用户管理',
+          // roles: ['admin']
+        }
+      },
+      {
+        path: 'role',
+        component: () => import('@/views/permission/role'),
+        name: 'RolePermission',
+        meta: {
+          title: '角色管理',
+          // roles: ['admin']
+        }
+      },
+      {
+        path: 'dictionary',
+        component: () => import('@/views/permission/dictionary/index'),
+        name: 'Dictionary',
+        meta: {
+          title: '数据字典',
+          // roles: ['admin']
+        }
+      }
+
+    ]
+  },
+  {
+    path: 'help',
     component: Layout,
     children: [
       {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link', icon: 'link' }
+        path: 'https://www.baidu.com',
+        meta: { title: '帮助', icon: 'link' }
       }
     ]
   },

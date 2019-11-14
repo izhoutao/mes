@@ -42,3 +42,12 @@
     display: block
   }
 }
+
+.el-table th.gutter{
+  display: table-cell!important;
+  border-bottom: 1px solid #dfe6ec;
+}
+.el-table colgroup.gutter {
+  display: table-cell !important;
+}
+
