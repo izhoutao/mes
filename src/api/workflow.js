@@ -1,14 +1,11 @@
 import request from '@/utils/request'
 import { param } from '@/utils/index'
 
-export function getWorkflows(page = 0, size = 10, searchParam) {
-  let query
-  if (searchParam) {
-    query = param(searchParam)
-  }
+export function getWorkflows(data) {
   return request({
-    url: `/basic/workflow/list/${page}/${size}?${query}`,
-    method: 'get'
+    url: `/basic/workflow/list`,
+    method: 'post',
+    data
   })
 }
 
@@ -20,9 +17,9 @@ export function addWorkflow(data) {
   })
 }
 
-export function updateWorkflow(id, data) {
+export function updateWorkflow(data) {
   return request({
-    url: `/basic/workflow/${id}`,
+    url: `/basic/workflow`,
     method: 'put',
     data
   })
@@ -35,14 +32,11 @@ export function deleteWorkflow(id) {
   })
 }
 
-export function getOperations(page = 0, size = 10, searchParam) {
-  let query
-  if (searchParam) {
-    query = param(searchParam)
-  }
+export function getOperations(data) {
   return request({
-    url: `/basic/operation/list/${page}/${size}?${query}`,
-    method: 'get'
+    url: `/basic/operation/list`,
+    method: 'post',
+    data
   })
 }
 
@@ -54,9 +48,9 @@ export function addOperation(data) {
   })
 }
 
-export function updateOperation(id, data) {
+export function updateOperation(data) {
   return request({
-    url: `/basic/operation/${id}`,
+    url: `/basic/operation`,
     method: 'put',
     data
   })

@@ -146,7 +146,8 @@
     ,
     methods: {
       handleFilter() {
-        getOperations(1, Number.MAX_SAFE_INTEGER, this.listQuery).then(res => {
+        let data = Object.assign({ current: 1, size: Number.MAX_SAFE_INTEGER }, this.listQuery)
+        getOperations(data).then(res => {
           this.labels_data = res.queryResult.list.map(item => item.name)
         })
       }
@@ -161,16 +162,15 @@
         }
 
         this.currentWorkflow.jsonText = JSON.stringify(this.page.save())
-        updateWorkflow(this.currentWorkflow.id, this.currentWorkflow).then(response => {
+        updateWorkflow(this.currentWorkflow).then(response => {
           this.$notify({
             title: '成功',
             message: '保存成功',
             type: 'success',
             duration: 2000
           })
-          resolve()
         }).catch(error => {
-          reject(error)
+          console.log(error);
         })
       }
       /*      loadData(data) {
@@ -242,6 +242,7 @@
 </script>
 <style lang="scss">
   #editor {
+
   #itempannel {
     height: 100%;
     position: absolute;
@@ -363,5 +364,6 @@
     overflow: scroll;
     overflow-x: auto
   }
+
   }
 </style>

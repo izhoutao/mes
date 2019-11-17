@@ -37,7 +37,7 @@
     },
     components: { WorkflowList, BaseFlowEditor },
     created() {
-      getOperations(1, Number.MAX_SAFE_INTEGER).then(res => {
+      getOperations({ current: 1, size: Number.MAX_SAFE_INTEGER }).then(res => {
         this.labels = res.queryResult.list.map(item => item.name)
       })
     }
@@ -45,11 +45,14 @@
 </script>
 <style lang="scss">
   .app-container.workflow {
+
   .el-card__body {
     padding: 0px
   }
+
   .el-row {
     height: 100%;
   }
+
   }
 </style>

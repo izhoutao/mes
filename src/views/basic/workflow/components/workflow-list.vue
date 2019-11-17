@@ -44,7 +44,7 @@
     <el-pagination
       v-show="total>0"
       :total="total"
-      :page-size="listQuery.page_size"
+      :page-size="listQuery.size"
       :pager-count="5"
       @current-change="handleCurrentPageChange"
       :hide-on-single-page="true"
@@ -93,8 +93,8 @@
         total: 0,
         listLoading: true,
         listQuery: {
-          page_no: 1,
-          page_size: 10,
+          current: 1,
+          size: 10,
           name: undefined
         },
         temp: {
@@ -125,8 +125,7 @@
     methods: {
       getList() {
         this.listLoading = true
-        const { page_no, page_size, ...listQuery } = this.listQuery
-        getWorkflows(page_no, page_size, listQuery).then(res => {
+        getWorkflows(this.listQuery).then(res => {
           this.$emit('update:currentWorkflow', {})
           this.list = res.queryResult.list
           this.total = res.queryResult.total
@@ -134,7 +133,7 @@
         })
       },
       handleFilter() {
-        this.listQuery.page_no = 1
+        this.listQuery.current = 1
         this.getList()
       },
 
@@ -158,7 +157,7 @@
           if (valid) {
             let workflow = deepClone(this.temp)
             addWorkflow(workflow).then((res) => {
-              this.list.unshift(res.workflow)
+              this.list.unshift(res.model)
               this.total++
               this.dialogFormVisible = false
               this.$emit('update:currentWorkflow', {})
@@ -193,7 +192,7 @@
         this.$refs['dictForm'].validate((valid) => {
           if (valid) {
             let workflow = deepClone(this.temp)
-            updateWorkflow(workflow.id, workflow).then(() => {
+            updateWorkflow(workflow).then(() => {
               for (const v of this.list) {
                 if (v.id === workflow.id) {
                   const index = this.list.indexOf(v)
@@ -244,7 +243,7 @@
         this.$emit('update:currentWorkflow', val)
       },
       handleCurrentPageChange(val) {
-        this.listQuery.page_no = val
+        this.listQuery.current = val
         this.getList()
       }
     }

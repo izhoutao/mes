@@ -65,8 +65,8 @@
       <pagination
         v-show="total>0"
         :total="total"
-        :page.sync="listQuery.page_no"
-        :limit.sync="listQuery.page_size"
+        :page.sync="listQuery.current"
+        :limit.sync="listQuery.size"
         @pagination="getList"
       />
       <el-dialog :close-on-click-modal="false" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible"
@@ -120,8 +120,8 @@
         total: 0,
         listLoading: true,
         listQuery: {
-          page_no: 1,
-          page_size: 10,
+          current: 1,
+          size: 10,
           name: undefined,
           code: undefined,
           typeId: this.typeId
@@ -167,8 +167,7 @@
     methods: {
       getList() {
         this.listLoading = true
-        const { page_no, page_size, ...listQuery } = this.listQuery
-        getDictInfos(page_no, page_size, listQuery).then(res => {
+        getDictInfos(this.listQuery).then(res => {
           this.list = res.queryResult.list.sort((info1, info2) => {
             return info1.sequenceNumber < info2.sequenceNumber ? -1 : 1
           })
@@ -177,7 +176,7 @@
         })
       },
       handleFilter() {
-        this.listQuery.page_no = 1
+        this.listQuery.current = 1
         this.getList()
       },
 
@@ -203,7 +202,7 @@
             let dictInfo = deepClone(this.temp)
             dictInfo.typeId = this.typeId
             addDictInfo(dictInfo).then((res) => {
-              this.list.unshift(res.dictInfo)
+              this.list.unshift(res.model)
               this.total++
               this.dialogFormVisible = false
               this.$notify({
@@ -231,7 +230,7 @@
           if (valid) {
             let dictInfo = deepClone(this.temp)
             dictInfo.typeId = this.typeId
-            updateDictInfo(dictInfo.id, dictInfo).then(() => {
+            updateDictInfo(dictInfo).then(() => {
               for (const v of this.list) {
                 if (v.id === dictInfo.id) {
                   const index = this.list.indexOf(v)

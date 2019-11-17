@@ -5,12 +5,22 @@
         <el-form-item label="" prop="name">
           <el-input
             v-model="listQuery.name"
-            placeholder="请输入制程名称"
+            placeholder="请输入不良代码名称"
             style="width: 200px;"
             class="filter-item"
             clearable=""
             @keyup.enter.native="handleFilter"
           />
+        </el-form-item>
+        <el-form-item label="" prop="groupId">
+          <el-select v-model="listQuery.groupId" filterable placeholder="不良代码组" @change="handleGroupChange">
+            <el-option
+              v-for="item in defectGroups"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
         <el-button v-waves class="filter-item" @click="resetForm('filterFrom');handleFilter()">重置</el-button>
@@ -27,12 +37,12 @@
           {{ scope.$index }}
         </template>
       </el-table-column>
-      <el-table-column label="工序编码" min-width="100px" align="center">
+      <el-table-column label="不良代码编码" min-width="100px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.code }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="工序名称" min-width="100px" align="center">
+      <el-table-column label="不良代码名称" min-width="100px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
         </template>
@@ -67,22 +77,32 @@
     />
 
     <el-dialog :close-on-click-modal="false" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible"
-               width="550px">
+               width="600px">
       <el-form
-        ref="operationForm"
+        ref="defectForm"
         :rules="rules"
         :model="temp"
         label-position="right"
-        label-width="90px"
+        label-width="150px"
       >
-        <el-form-item label="工序编码：" prop="code">
+        <el-form-item label="不良代码编码：" prop="code">
           <el-input v-model="temp.code"/>
         </el-form-item>
-        <el-form-item label="工序名称：" prop="name">
+        <el-form-item label="不良代码名称：" prop="name">
           <el-input v-model="temp.name"/>
         </el-form-item>
         <el-form-item label="描述：" prop="description">
           <el-input v-model="temp.description"/>
+        </el-form-item>
+        <el-form-item label="所属不良代码组：" prop="groupId">
+          <el-select v-model="temp.groupId" filterable placeholder="请选择" style="width:100%">
+            <el-option
+              v-for="item in defectGroups"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -97,13 +117,13 @@
 <script>
   import { deepClone } from '@/utils/index'
 
-  import { getOperations, addOperation, updateOperation, deleteOperation } from '@/api/workflow'
+  import { getDefectGroups, getDefects, addDefect, updateDefect, deleteDefect } from '@/api/defect'
 
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 
   export default {
-    name: 'Operation',
+    name: 'Defect',
     components: { Pagination },
     directives: { waves },
     data() {
@@ -117,6 +137,7 @@
           size: 10,
           name: undefined
         },
+        defectGroups: [],
         temp: {
           id: undefined,
           name: '',
@@ -132,33 +153,34 @@
         },
         rules: {
           name: [
-            { required: true, trigger: 'blur', message: '请填写工艺名称' }
+            { required: true, trigger: 'blur', message: '请填写不良代码名称' }
           ],
           code: [
-            { required: true, trigger: 'blur', message: '请填写工艺编码' }
-          ],
+            { required: true, trigger: 'blur', message: '请填写不良代码编码' }
+          ]
         }
       }
     },
     created() {
       this.tempCopy = deepClone(this.temp)
       this.getList()
+      this.getDefectGroups()
     },
     methods: {
-      handleModifyState(index, row) {
-        updateOperation(row).then((res) => {
-          this.$message({
-            message: '操作成功',
-            type: 'success'
-          })
-        })
+      handleGroupChange() {
+        this.getList()
       },
       getList() {
         this.listLoading = true
-        getOperations(this.listQuery).then(res => {
+        getDefects(this.listQuery).then(res => {
           this.list = res.queryResult.list
           this.total = res.queryResult.total
           this.listLoading = false
+        })
+      },
+      getDefectGroups() {
+        getDefectGroups({}).then(res => {
+          this.defectGroups = res.queryResult.list
         })
       },
       handleFilter() {
@@ -175,20 +197,21 @@
         this.temp = deepClone(this.tempCopy)
       },
       handleAdd() {
-        this.resetForm('operationForm')
+        this.resetForm('defectForm')
+        this.temp.groupId = this.listQuery.groupId
         this.dialogStatus = 'create'
         this.dialogFormVisible = true
         // this.rules.password[0].required = true
         this.$nextTick(() => {
-          this.$refs['operationForm'].clearValidate()
+          this.$refs['defectForm'].clearValidate()
         })
       },
       submit() {
-        this.$refs['operationForm'].validate((valid) => {
+        this.$refs['defectForm'].validate((valid) => {
           if (valid) {
             // const tempData = deepClone(this.temp)
-            let operation = deepClone(this.temp)
-            addOperation(operation).then((res) => {
+            let defect = deepClone(this.temp)
+            addDefect(defect).then((res) => {
               this.list.unshift(res.model)
               this.total++
               this.dialogFormVisible = false
@@ -210,18 +233,18 @@
         // this.temp.password = ''
         this.dialogFormVisible = true
         this.$nextTick(() => {
-          this.$refs['operationForm'].clearValidate()
+          this.$refs['defectForm'].clearValidate()
         })
       },
       updateData() {
-        this.$refs['operationForm'].validate((valid) => {
+        this.$refs['defectForm'].validate((valid) => {
           if (valid) {
-            let operation = deepClone(this.temp)
-            updateOperation(operation).then(() => {
+            let defect = deepClone(this.temp)
+            updateDefect(defect).then(() => {
               for (const v of this.list) {
-                if (v.id === operation.id) {
+                if (v.id === defect.id) {
                   const index = this.list.indexOf(v)
-                  this.list.splice(index, 1, operation)
+                  this.list.splice(index, 1, defect)
                   break
                 }
               }
@@ -237,12 +260,12 @@
         })
       },
       handleDelete(row) {
-        this.$confirm('此操作将永久删除该工艺, 是否继续?', '提示', {
+        this.$confirm('此操作将永久删除该不良代码, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteOperation(row.id).then(() => {
+          deleteDefect(row.id).then(() => {
             this.$notify({
               title: '成功',
               message: '删除成功',

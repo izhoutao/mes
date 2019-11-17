@@ -1,14 +1,10 @@
 import request from '@/utils/request'
-import { param } from '@/utils/index'
 
-export function getDictTypes(page = 0, size = 10, dictSearchParam) {
-  let query
-  if (dictSearchParam) {
-    query = param(dictSearchParam)
-  }
+export function getDictTypes(data) {
   return request({
-    url: `/ucenter/dicttype/list/${page}/${size}?${query}`,
-    method: 'get'
+    url: `/ucenter/dicttype/list`,
+    method: 'post',
+    data
   })
 }
 
@@ -20,9 +16,9 @@ export function addDictType(data) {
   })
 }
 
-export function updateDictType(id, data) {
+export function updateDictType(data) {
   return request({
-    url: `/ucenter/dicttype/${id}`,
+    url: `/ucenter/dicttype`,
     method: 'put',
     data
   })
@@ -35,14 +31,11 @@ export function deleteDictType(id) {
   })
 }
 
-export function getDictInfos(page = 0, size = 10, dictSearchParam) {
-  let query
-  if (dictSearchParam) {
-    query = param(dictSearchParam)
-  }
+export function getDictInfos(data) {
   return request({
-    url: `/ucenter/dictinfo/list/${page}/${size}?${query}`,
-    method: 'get'
+    url: `/ucenter/dictinfo/list`,
+    method: 'post',
+    data
   })
 }
 
@@ -54,9 +47,9 @@ export function addDictInfo(data) {
   })
 }
 
-export function updateDictInfo(id, data) {
+export function updateDictInfo(data) {
   return request({
-    url: `/ucenter/dictinfo/${id}`,
+    url: `/ucenter/dictinfo`,
     method: 'put',
     data
   })

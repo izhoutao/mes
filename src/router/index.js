@@ -93,7 +93,25 @@ export const constantRoutes = [
         name: 'Workflow',
         component: () => import('@/views/basic/workflow/index'),
         meta: { title: '生产路线', icon: 'dashboard' }
-      }
+      },
+      {
+        path: 'defectgroup',
+        name: 'DefectGroup',
+        component: () => import('@/views/basic/defect-group'),
+        meta: { title: '不良代码组', icon: 'dashboard' }
+      },
+      {
+        path: 'defect',
+        name: 'Defect',
+        component: () => import('@/views/basic/defect'),
+        meta: { title: '不良代码', icon: 'dashboard' }
+      },
+/*      {
+        path: 'defect',
+        name: 'Defect',
+        component: () => import('@/views/basic/defect'),
+        meta: { title: '不良代码', icon: 'dashboard' }
+      },*/
     ]
   },
 /*  {
