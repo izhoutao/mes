@@ -106,6 +106,36 @@ export const constantRoutes = [
         component: () => import('@/views/basic/defect'),
         meta: { title: '不良代码', icon: 'dashboard' }
       },
+      {
+        path: 'line',
+        name: 'Line',
+        component: () => import('@/views/basic/line'),
+        meta: { title: '线别管理', icon: 'dashboard' }
+      },
+      {
+        path: 'shift',
+        name: 'Shift',
+        component: () => import('@/views/basic/shift'),
+        meta: { title: '班别管理', icon: 'dashboard' }
+      },
+      {
+        path: 'warehouse',
+        name: 'Warehouse',
+        component: () => import('@/views/basic/warehouse'),
+        meta: { title: '仓库管理', icon: 'dashboard' }
+      },
+      {
+        path: 'vendor',
+        name: 'Vendor',
+        component: () => import('@/views/basic/vendor'),
+        meta: { title: '供应商管理', icon: 'dashboard' }
+      },
+      {
+        path: 'inboundorder',
+        name: 'inboundorder',
+        component: () => import('@/views/basic/inbound-order'),
+        meta: { title: '入库单管理', icon: 'dashboard' }
+      },
 /*      {
         path: 'defect',
         name: 'Defect',

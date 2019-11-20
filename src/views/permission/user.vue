@@ -65,7 +65,8 @@
       </el-table-column>
       <el-table-column label="在职状态" min-width="100px" align="center">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.state?'': 'info'" style="margin:0 5px;"> {{ scope.row.state | stateFilter}}</el-tag>
+          <el-tag :type="scope.row.state==='1'?'': 'info'" style="margin:0 5px;"> {{ scope.row.state | stateFilter}}
+          </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="线别" min-width="100px" align="center">
@@ -79,7 +80,6 @@
                      @click="handleUpdate(scope.row)">编辑
           </el-button>
           <el-button
-            v-if="scope.row.state"
             icon="el-icon-delete"
             size="mini"
             type="danger"
@@ -125,7 +125,10 @@
           </el-select>
         </el-form-item>
         <el-form-item label="状态：" prop="state">
-          <el-switch v-model="temp.state" active-color="#13ce66"/>
+          <el-switch v-model="temp.state"
+                     active-color="#13ce66"
+                     active-value="1"
+                     inactive-value="0"/>
         </el-form-item>
         <hr class="el-divider">
         <el-form-item label="姓名：" prop="name">
@@ -203,7 +206,7 @@
         return statusMap[state]
       },
       stateFilter(state) {
-        return state ? '在职' : '离职'
+        return state === '1' ? '在职' : '离职'
       }
     },
     data() {
@@ -239,7 +242,7 @@
           password: '111111',
           phone: '',
           email: '',
-          state: true
+          state: '1'
         },
         tempCopy: null,
         dialogFormVisible: false,
@@ -280,33 +283,18 @@
       this.getRole()
     },
     methods: {
-      handleModifyState(index, row) {
-        updateUser(row.id, {
-          'id': row.id,
-          'state': row.state ? '1' : '0',
-          'roleList': row.roleList
-        }).then((res) => {
-          this.$message({
-            message: '操作成功',
-            type: 'success'
-          })
-        })
-      },
       async getRole() {
         const res = await getRoles(1, 100)
         this.rolesList = res.queryResult.list
-/*        this.rolesList.forEach(item => {
-          this.$set(this.rolesMap, item.id, item.roleName)
-        })*/
+        /*        this.rolesList.forEach(item => {
+                  this.$set(this.rolesMap, item.id, item.roleName)
+                })*/
       },
       getList() {
         this.listLoading = true
         const { page_no, page_size, ...listQuery } = this.listQuery
         getUsers(page_no, page_size, listQuery).then(res => {
-          this.list = res.queryResult.list.map(item => {
-            item.state = (item.state === '1')
-            return item
-          })
+          this.list = res.queryResult.list
           this.total = res.queryResult.total
           this.listLoading = false
         })
@@ -344,7 +332,6 @@
             })
             let user = deepClone(this.temp)
             user.roleList = roleList
-            user.state = user.state ? '1' : '0'
             addUser(user).then((res) => {
               this.list.unshift(res.userExt)
               this.total++
@@ -382,12 +369,10 @@
             })
             let user = deepClone(this.temp)
             user.roleList = roleList
-            user.state = user.state ? '1' : '0'
             updateUser(user.id, user).then(() => {
               for (const v of this.list) {
                 if (v.id === user.id) {
                   const index = this.list.indexOf(v)
-                  user.state = (user.state === '1')
                   this.list.splice(index, 1, user)
                   break
                 }

@@ -5,7 +5,7 @@
         <el-form-item label="" prop="name">
           <el-input
             v-model="listQuery.name"
-            placeholder="请输入制程名称"
+            placeholder="请输入班别名称"
             style="width: 200px;"
             class="filter-item"
             clearable=""
@@ -27,19 +27,29 @@
           {{ scope.$index }}
         </template>
       </el-table-column>
-      <el-table-column label="工序编码" min-width="100px" align="center">
+      <el-table-column label="班别编码" min-width="70px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.code }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="工序名称" min-width="100px" align="center">
+      <el-table-column label="班别名称" min-width="70px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="描述" min-width="200px" align="center">
+      <el-table-column label="描述" min-width="80px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.description }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="开始时间" min-width="70px" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.beginTime }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="结束时间" min-width="70px" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.endTime }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" min-width="80">
@@ -69,20 +79,42 @@
     <el-dialog :close-on-click-modal="false" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible"
                width="600px">
       <el-form
-        ref="operationForm"
+        ref="shiftForm"
         :rules="rules"
         :model="temp"
         label-position="right"
         label-width="150px"
       >
-        <el-form-item label="工序编码：" prop="code">
+        <el-form-item label="班别编码：" prop="code">
           <el-input v-model="temp.code"/>
         </el-form-item>
-        <el-form-item label="工序名称：" prop="name">
+        <el-form-item label="班别名称：" prop="name">
           <el-input v-model="temp.name"/>
         </el-form-item>
         <el-form-item label="描述：" prop="description">
           <el-input v-model="temp.description"/>
+        </el-form-item>
+        <el-form-item label="开始时间：" prop="beginTime">
+          <el-time-picker
+            v-model="temp.beginTime"
+            :picker-options="{
+                selectableRange: '00:00:00 - 23:59:59'
+              }"
+            placeholder="任意时间点"
+            format="HH:mm:ss"
+            value-format="HH:mm:ss"/>
+          </el-time-picker>
+        </el-form-item>
+        <el-form-item label="结束时间：" prop="endTime">
+          <el-time-picker
+            v-model="temp.endTime"
+            :picker-options="{
+                selectableRange: '00:00:00 - 23:59:59'
+              }"
+            placeholder="任意时间点"
+            format="HH:mm:ss"
+            value-format="HH:mm:ss"/>
+          </el-time-picker>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -97,13 +129,13 @@
 <script>
   import { deepClone } from '@/utils/index'
 
-  import { getOperations, addOperation, updateOperation, deleteOperation } from '@/api/workflow'
+  import { getShifts, addShift, updateShift, deleteShift } from '@/api/shift'
 
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 
   export default {
-    name: 'Operation',
+    name: 'Shift',
     components: { Pagination },
     directives: { waves },
     data() {
@@ -121,7 +153,9 @@
           id: undefined,
           name: '',
           code: '',
-          description: ''
+          description: '',
+          beginTime: '',
+          endTime: ''
         },
         tempCopy: null,
         dialogFormVisible: false,
@@ -136,7 +170,7 @@
           ],
           code: [
             { required: true, trigger: 'blur', message: '请填写工艺编码' }
-          ],
+          ]
         }
       }
     },
@@ -146,7 +180,7 @@
     },
     methods: {
       handleModifyState(index, row) {
-        updateOperation(row).then((res) => {
+        updateShift(row).then((res) => {
           this.$message({
             message: '操作成功',
             type: 'success'
@@ -155,7 +189,7 @@
       },
       getList() {
         this.listLoading = true
-        getOperations(this.listQuery).then(res => {
+        getShifts(this.listQuery).then(res => {
           this.list = res.queryResult.list
           this.total = res.queryResult.total
           this.listLoading = false
@@ -175,20 +209,20 @@
         this.temp = deepClone(this.tempCopy)
       },
       handleAdd() {
-        this.resetForm('operationForm')
+        this.resetForm('shiftForm')
         this.dialogStatus = 'create'
         this.dialogFormVisible = true
         // this.rules.password[0].required = true
         this.$nextTick(() => {
-          this.$refs['operationForm'].clearValidate()
+          this.$refs['shiftForm'].clearValidate()
         })
       },
       submit() {
-        this.$refs['operationForm'].validate((valid) => {
+        this.$refs['shiftForm'].validate((valid) => {
           if (valid) {
             // const tempData = deepClone(this.temp)
-            let operation = deepClone(this.temp)
-            addOperation(operation).then((res) => {
+            let shift = deepClone(this.temp)
+            addShift(shift).then((res) => {
               this.list.unshift(res.model)
               this.total++
               this.dialogFormVisible = false
@@ -210,18 +244,18 @@
         // this.temp.password = ''
         this.dialogFormVisible = true
         this.$nextTick(() => {
-          this.$refs['operationForm'].clearValidate()
+          this.$refs['shiftForm'].clearValidate()
         })
       },
       updateData() {
-        this.$refs['operationForm'].validate((valid) => {
+        this.$refs['shiftForm'].validate((valid) => {
           if (valid) {
-            let operation = deepClone(this.temp)
-            updateOperation(operation).then(() => {
+            let shift = deepClone(this.temp)
+            updateShift(shift).then(() => {
               for (const v of this.list) {
-                if (v.id === operation.id) {
+                if (v.id === shift.id) {
                   const index = this.list.indexOf(v)
-                  this.list.splice(index, 1, operation)
+                  this.list.splice(index, 1, shift)
                   break
                 }
               }
@@ -242,7 +276,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteOperation(row.id).then(() => {
+          deleteShift(row.id).then(() => {
             this.$notify({
               title: '成功',
               message: '删除成功',
