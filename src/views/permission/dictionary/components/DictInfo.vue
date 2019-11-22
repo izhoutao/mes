@@ -5,7 +5,7 @@
     </div>
     <div v-if="typeId">
       <div class="filter-container">
-        <el-form ref="filterFrom" :model="listQuery" :inline="true">
+        <el-form ref="filterForm" :model="listQuery" :inline="true">
           <el-form-item label="" prop="name">
             <el-input
               v-model="listQuery.name"
@@ -19,7 +19,7 @@
           </el-form-item>
           <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索
           </el-button>
-          <el-button v-waves class="filter-item" @click="resetForm('filterFrom');handleFilter()">重置</el-button>
+          <el-button v-waves class="filter-item" @click="resetForm('filterForm');handleFilter()">重置</el-button>
           <el-button class="filter-item" style="margin-left: 10px;" type="success"
                      icon="el-icon-edit" @click="handleAdd">
             添加
@@ -45,16 +45,16 @@
         </el-table-column>
         <el-table-column label="操作" align="center" min-width="60">
           <template slot-scope="scope">
-<!--            <el-button type="primary" icon="el-icon-edit" size="mini"
-                       @click="handleUpdate(scope.row)">编辑
-            </el-button>
-            <el-button
-              icon="el-icon-delete"
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.row,'true')"
-            >删除
-            </el-button>-->
+            <!--            <el-button type="primary" icon="el-icon-edit" size="mini"
+                                   @click="handleUpdate(scope.row)">编辑
+                        </el-button>
+                        <el-button
+                          icon="el-icon-delete"
+                          size="mini"
+                          type="danger"
+                          @click="handleDelete(scope.row,'true')"
+                        >删除
+                        </el-button>-->
             <i class="el-icon-edit" @click="handleUpdate(scope.row)"/>
 
             <i class="el-icon-delete" @click="handleDelete(scope.row,'true')"/>
@@ -146,9 +146,9 @@
           code: [
             { required: true, trigger: 'blur', message: '请填写字典值' }],
           sequenceNumber: [
-            { required: true, trigger: 'blur', message: '排序不能为空'},
-            { type: 'integer', message: '排序必须为整数值'}
-            ]
+            { required: true, trigger: 'blur', message: '排序不能为空' },
+            { type: 'integer', message: '排序必须为整数值' }
+          ]
 
         }
       }
@@ -159,7 +159,7 @@
     },
     watch: {
       typeId: function(val) {
-        this.resetForm('filterFrom')
+        this.resetForm('filterForm')
         this.listQuery.typeId = val
         this.handleFilter()
       }
@@ -275,12 +275,13 @@
   }
 </script>
 
-<style scoped lang="scss" >
-  .el-icon-edit{
+<style scoped lang="scss">
+  .el-icon-edit {
     margin-right: 5px;
     font-size: 18px;
   }
-  .el-icon-delete{
+
+  .el-icon-delete {
     margin-left: 5px;
     font-size: 18px;
   }

@@ -79,15 +79,16 @@ export const constantRoutes = [
     alwaysShow: true, //一直显示根路由
     meta: {
       title: '基础配置',
-      icon: 'lock',
+      icon: 'lock'
       // roles: ['admin', 'editor'] // you can set roles in root nav
     },
-    children: [{
-      path: 'operation',
-      name: 'Operation',
-      component: () => import('@/views/basic/operation'),
-      meta: { title: '生产工艺', icon: 'dashboard' }
-    },
+    children: [
+      {
+        path: 'operation',
+        name: 'Operation',
+        component: () => import('@/views/basic/operation'),
+        meta: { title: '生产工艺', icon: 'dashboard' }
+      },
       {
         path: 'workflow',
         name: 'Workflow',
@@ -136,47 +137,59 @@ export const constantRoutes = [
         component: () => import('@/views/basic/inbound-order'),
         meta: { title: '入库单管理', icon: 'dashboard' }
       },
-/*      {
-        path: 'defect',
-        name: 'Defect',
-        component: () => import('@/views/basic/defect'),
-        meta: { title: '不良代码', icon: 'dashboard' }
-      },*/
-    ]
-  },
-/*  {
-    path: '/example',
-    component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'example' },
-    children: [
       {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
+        path: 'material',
+        name: 'Material',
+        component: () => import('@/views/basic/material/material'),
+        meta: { title: '物料管理', icon: 'dashboard' }
       },
       {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
+        path: 'materialtype',
+        name: 'MaterialType',
+        component: () => import('@/views/basic/material/material-type'),
+        meta: { title: '物料类型管理', icon: 'dashboard' }
       }
+      /*      {
+              path: 'defect',
+              name: 'Defect',
+              component: () => import('@/views/basic/defect'),
+              meta: { title: '不良代码', icon: 'dashboard' }
+            },*/
     ]
-  },
-  {
-    path: '/form',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
-      }
-    ]
-  }*/
+  }
+  /*  {
+      path: '/example',
+      component: Layout,
+      redirect: '/example/table',
+      name: 'Example',
+      meta: { title: 'Example', icon: 'example' },
+      children: [
+        {
+          path: 'table',
+          name: 'Table',
+          component: () => import('@/views/table/index'),
+          meta: { title: 'Table', icon: 'table' }
+        },
+        {
+          path: 'tree',
+          name: 'Tree',
+          component: () => import('@/views/tree/index'),
+          meta: { title: 'Tree', icon: 'tree' }
+        }
+      ]
+    },
+    {
+      path: '/form',
+      component: Layout,
+      children: [
+        {
+          path: 'index',
+          name: 'Form',
+          component: () => import('@/views/form/index'),
+          meta: { title: 'Form', icon: 'form' }
+        }
+      ]
+    }*/
 ]
 
 /**
@@ -184,64 +197,64 @@ export const constantRoutes = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
-/*  {
-    path: '/nested',
-    component: Layout,
-    redirect: '/nested/menu1',
-    name: 'Nested',
-    meta: {
-      title: 'Nested',
-      icon: 'nested'
-    },
-    children: [
-      {
-        path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
-        meta: { title: 'Menu1' },
-        children: [
-          {
-            path: 'menu1-1',
-            component: () => import('@/views/nested/menu1/menu1-1'),
-            name: 'Menu1-1',
-            meta: { title: 'Menu1-1' }
-          },
-          {
-            path: 'menu1-2',
-            component: () => import('@/views/nested/menu1/menu1-2'),
-            name: 'Menu1-2',
-            meta: { title: 'Menu1-2' },
-            children: [
-              {
-                path: 'menu1-2-1',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
-                name: 'Menu1-2-1',
-                meta: { title: 'Menu1-2-1' }
-              },
-              {
-                path: 'menu1-2-2',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
-                name: 'Menu1-2-2',
-                meta: { title: 'Menu1-2-2' }
-              }
-            ]
-          },
-          {
-            path: 'menu1-3',
-            component: () => import('@/views/nested/menu1/menu1-3'),
-            name: 'Menu1-3',
-            meta: { title: 'Menu1-3' }
-          }
-        ]
+  /*  {
+      path: '/nested',
+      component: Layout,
+      redirect: '/nested/menu1',
+      name: 'Nested',
+      meta: {
+        title: 'Nested',
+        icon: 'nested'
       },
-      {
-        path: 'menu2',
-        name: 'Menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        meta: { title: 'menu2' }
-      }
-    ]
-  },*/
+      children: [
+        {
+          path: 'menu1',
+          component: () => import('@/views/nested/menu1/index'), // Parent router-view
+          name: 'Menu1',
+          meta: { title: 'Menu1' },
+          children: [
+            {
+              path: 'menu1-1',
+              component: () => import('@/views/nested/menu1/menu1-1'),
+              name: 'Menu1-1',
+              meta: { title: 'Menu1-1' }
+            },
+            {
+              path: 'menu1-2',
+              component: () => import('@/views/nested/menu1/menu1-2'),
+              name: 'Menu1-2',
+              meta: { title: 'Menu1-2' },
+              children: [
+                {
+                  path: 'menu1-2-1',
+                  component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
+                  name: 'Menu1-2-1',
+                  meta: { title: 'Menu1-2-1' }
+                },
+                {
+                  path: 'menu1-2-2',
+                  component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
+                  name: 'Menu1-2-2',
+                  meta: { title: 'Menu1-2-2' }
+                }
+              ]
+            },
+            {
+              path: 'menu1-3',
+              component: () => import('@/views/nested/menu1/menu1-3'),
+              name: 'Menu1-3',
+              meta: { title: 'Menu1-3' }
+            }
+          ]
+        },
+        {
+          path: 'menu2',
+          name: 'Menu2',
+          component: () => import('@/views/nested/menu2/index'),
+          meta: { title: 'menu2' }
+        }
+      ]
+    },*/
   {
     path: '/permission',
     component: Layout,
@@ -250,7 +263,7 @@ export const asyncRoutes = [
     name: 'Permission',
     meta: {
       title: '系统管理',
-      icon: 'lock',
+      icon: 'lock'
       // roles: ['admin', 'editor'] // you can set roles in root nav
     },
     children: [
@@ -259,7 +272,7 @@ export const asyncRoutes = [
         component: () => import('@/views/permission/user'),
         name: 'UserPermission',
         meta: {
-          title: '用户管理',
+          title: '用户管理'
           // roles: ['admin']
         }
       },
@@ -268,7 +281,7 @@ export const asyncRoutes = [
         component: () => import('@/views/permission/role'),
         name: 'RolePermission',
         meta: {
-          title: '角色管理',
+          title: '角色管理'
           // roles: ['admin']
         }
       },
@@ -277,9 +290,15 @@ export const asyncRoutes = [
         component: () => import('@/views/permission/dictionary/index'),
         name: 'Dictionary',
         meta: {
-          title: '数据字典',
+          title: '数据字典'
           // roles: ['admin']
         }
+      },
+      {
+        path: 'department',
+        name: 'Department',
+        component: () => import('@/views/permission/department'),
+        meta: { title: '部门管理', icon: 'dashboard' }
       }
 
     ]

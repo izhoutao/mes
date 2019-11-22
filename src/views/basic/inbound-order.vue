@@ -1,7 +1,7 @@
 <template>
   <div class="app-container inbound-order">
     <div class="filter-container">
-      <el-form ref="filterFrom" :model="listQuery" :inline="true">
+      <el-form ref="filterForm" :model="listQuery" :inline="true">
         <el-form-item label="" prop="number">
           <el-input
             v-model="listQuery.number"
@@ -23,7 +23,7 @@
           </el-select>
         </el-form-item>
         <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
-        <el-button v-waves class="filter-item" @click="resetForm('filterFrom');handleFilter()">重置</el-button>
+        <el-button v-waves class="filter-item" @click="resetForm('filterForm');handleFilter()">重置</el-button>
         <el-button class="filter-item" style="margin-left: 10px;" type="success"
                    icon="el-icon-edit" @click="handleAdd">
           添加
@@ -74,16 +74,16 @@
       </el-table-column>
       <el-table-column label="操作" align="center" min-width="80">
         <template slot-scope="scope">
-<!--          <el-button type="primary" icon="el-icon-edit" size="mini"
-                     @click="handleUpdate(scope.row)">编辑
-          </el-button>
-          <el-button
-            icon="el-icon-delete"
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.row,'true')"
-          >删除
-          </el-button>-->
+          <!--          <el-button type="primary" icon="el-icon-edit" size="mini"
+                               @click="handleUpdate(scope.row)">编辑
+                    </el-button>
+                    <el-button
+                      icon="el-icon-delete"
+                      size="mini"
+                      type="danger"
+                      @click="handleDelete(scope.row,'true')"
+                    >删除
+                    </el-button>-->
           <i class="el-icon-edit update" @click="handleUpdate(scope.row)"/>
           <i class="el-icon-delete delete" @click="handleDelete(scope.row,'true')"/>
         </template>
@@ -205,7 +205,7 @@
         types: [],
         warehouses: [],
         levels: [],
-        statuses:[],
+        statuses: [],
         vendors: [],
         temp: {
           id: undefined,
@@ -257,45 +257,27 @@
         })
       },
       getTypes() {
-        getDictInfos({
-          current: 1,
-          size: Number.MAX_SAFE_INTEGER,
-          type_id: '1196628479966187521'
-        }).then(res => {
+        getDictInfos({ type_id: '1196628479966187521' }).then(res => {
           this.types = res.queryResult.list
         })
       },
       getWarehouses() {
-        getWarehouses({
-          current: 1,
-          size: Number.MAX_SAFE_INTEGER,
-        }).then(res => {
+        getWarehouses({}).then(res => {
           this.warehouses = res.queryResult.list
         })
       },
       getStatuses() {
-        getDictInfos({
-          current: 1,
-          size: Number.MAX_SAFE_INTEGER,
-          type_id: '1197052960941649922'
-        }).then(res => {
+        getDictInfos({ type_id: '1197052960941649922' }).then(res => {
           this.statuses = res.queryResult.list
         })
       },
       getLevels() {
-        getDictInfos({
-          current: 1,
-          size: Number.MAX_SAFE_INTEGER,
-          type_id: 'b5a7df5d0f5c4ec7853036a480b4de3f'
-        }).then(res => {
+        getDictInfos({ type_id: 'b5a7df5d0f5c4ec7853036a480b4de3f' }).then(res => {
           this.levels = res.queryResult.list
         })
       },
       getVendors() {
-        getVendors({
-          current: 1,
-          size: Number.MAX_SAFE_INTEGER,
-        }).then(res => {
+        getVendors({ }).then(res => {
           this.vendors = res.queryResult.list
         })
       },
@@ -400,10 +382,12 @@
 </script>
 <style lang="scss">
   .inbound-order {
+
   .el-icon-edit.update, .el-icon-delete.delete {
     margin: 3px;
     font-size: 18px !important;
   }
+
   }
 
 </style>

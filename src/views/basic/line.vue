@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-form ref="filterFrom" :model="listQuery" :inline="true">
+      <el-form ref="filterForm" :model="listQuery" :inline="true">
         <el-form-item label="" prop="name">
           <el-input
             v-model="listQuery.name"
@@ -13,7 +13,7 @@
           />
         </el-form-item>
         <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
-        <el-button v-waves class="filter-item" @click="resetForm('filterFrom');handleFilter()">重置</el-button>
+        <el-button v-waves class="filter-item" @click="resetForm('filterForm');handleFilter()">重置</el-button>
         <el-button class="filter-item" style="margin-left: 10px;" type="success"
                    icon="el-icon-edit" @click="handleAdd">
           添加
@@ -22,34 +22,34 @@
     </div>
 
     <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row>
-      <el-table-column label="序号" min-width="20px" align="center">
+      <el-table-column label="序号" min-width="40px" align="center">
         <template slot-scope="scope">
           {{ scope.$index }}
         </template>
       </el-table-column>
-      <el-table-column label="线别代码" min-width="100px" align="center">
+      <el-table-column label="线别代码" min-width="80px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.code }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="线别名称" min-width="100px" align="center">
+      <el-table-column label="线别名称" min-width="80px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="线别类型" min-width="100px" align="center">
+      <el-table-column label="线别类型" min-width="80px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.type }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="描述" min-width="200px" align="center">
+      <el-table-column label="描述" min-width="100px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.description }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="最后编辑时间" min-width="200px" align="center">
+      <el-table-column label="最后编辑时间" min-width="80px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.updateTime }}</span>
+          <span>{{ scope.row.updateTime | parseTime('{y}-{m}-{d} {h}:{i}:{s}')}}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" min-width="80">

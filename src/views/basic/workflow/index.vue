@@ -37,7 +37,7 @@
     },
     components: { WorkflowList, BaseFlowEditor },
     created() {
-      getOperations({ current: 1, size: Number.MAX_SAFE_INTEGER }).then(res => {
+      getOperations({}).then(res => {
         this.labels = res.queryResult.list.map(item => item.name)
       })
     }

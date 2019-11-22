@@ -4,7 +4,7 @@
       <span>字典配置</span>
     </div>
     <div class="filter-container">
-      <el-form ref="filterFrom" :model="listQuery" :inline="true">
+      <el-form ref="filterForm" :model="listQuery" :inline="true">
         <el-form-item label="" prop="name">
           <el-input
             v-model="listQuery.name"
@@ -17,7 +17,7 @@
           />
         </el-form-item>
         <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
-        <el-button v-waves class="filter-item" @click="resetForm('filterFrom');handleFilter()">重置</el-button>
+        <el-button v-waves class="filter-item" @click="resetForm('filterForm');handleFilter()">重置</el-button>
         <el-button class="filter-item" style="margin-left: 10px;" type="success"
                    icon="el-icon-edit" @click="handleAdd">
           添加

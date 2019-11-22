@@ -17,7 +17,7 @@
                   class="getItem"
                 />-->
         <div class="filter-container">
-          <el-form ref="filterFrom" :inline="true" :model="listQuery" style="margin: 0px;">
+          <el-form :inline="true" :model="listQuery" style="margin: 0px;">
             <el-form-item label="" prop="name" style="margin: 0px;">
               <el-input
                 v-model="listQuery.name"
@@ -146,8 +146,7 @@
     ,
     methods: {
       handleFilter() {
-        let data = Object.assign({ current: 1, size: Number.MAX_SAFE_INTEGER }, this.listQuery)
-        getOperations(data).then(res => {
+        getOperations(this.listQuery).then(res => {
           this.labels_data = res.queryResult.list.map(item => item.name)
         })
       }
