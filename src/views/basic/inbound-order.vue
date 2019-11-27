@@ -297,7 +297,6 @@
       },
       handleAdd() {
         this.resetForm('inboundOrderForm')
-        this.temp.groupId = this.listQuery.groupId
         this.dialogStatus = 'create'
         this.dialogFormVisible = true
         // this.rules.password[0].required = true

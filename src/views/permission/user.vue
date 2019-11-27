@@ -94,8 +94,8 @@
     <pagination
       v-show="total>0"
       :total="total"
-      :page.sync="listQuery.page_no"
-      :limit.sync="listQuery.page_size"
+      :page.sync="listQuery.current"
+      :limit.sync="listQuery.size"
       @pagination="getList"
     />
 
@@ -119,7 +119,7 @@
             <el-option
               v-for="item in rolesList"
               :key="item.id"
-              :label="item.roleName"
+              :label="item.name"
               :value="item.id"
             />
           </el-select>
@@ -230,8 +230,8 @@
         total: 0,
         listLoading: true,
         listQuery: {
-          page_no: 1,
-          page_size: 10,
+          current: 1,
+          size: 10,
           phone: undefined
         },
         temp: {
@@ -284,23 +284,22 @@
     },
     methods: {
       async getRole() {
-        const res = await getRoles(1, 100)
+        const res = await getRoles({})
         this.rolesList = res.queryResult.list
         /*        this.rolesList.forEach(item => {
-                  this.$set(this.rolesMap, item.id, item.roleName)
+                  this.$set(this.rolesMap, item.id, item.name)
                 })*/
       },
       getList() {
         this.listLoading = true
-        const { page_no, page_size, ...listQuery } = this.listQuery
-        getUsers(page_no, page_size, listQuery).then(res => {
+        getUsers(this.listQuery).then(res => {
           this.list = res.queryResult.list
           this.total = res.queryResult.total
           this.listLoading = false
         })
       },
       handleFilter() {
-        this.listQuery.page_no = 1
+        this.listQuery.current = 1
         this.getList()
       },
 
@@ -333,7 +332,7 @@
             let user = deepClone(this.temp)
             user.roleList = roleList
             addUser(user).then((res) => {
-              this.list.unshift(res.userExt)
+              this.list.unshift(res.model)
               this.total++
               this.dialogFormVisible = false
               this.$notify({
@@ -369,7 +368,7 @@
             })
             let user = deepClone(this.temp)
             user.roleList = roleList
-            updateUser(user.id, user).then(() => {
+            updateUser(user).then(() => {
               for (const v of this.list) {
                 if (v.id === user.id) {
                   const index = this.list.indexOf(v)

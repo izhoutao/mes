@@ -1,5 +1,5 @@
 import { login, logout, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken, getUserInfoFromJwt } from '@/utils/auth'
+import { getToken, setToken, removeToken, getUserInfoFromJwt, setUserSession } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 
 const state = {
@@ -49,9 +49,10 @@ const actions = {
     return new Promise((resolve, reject) => {
       getInfo(state.token).then(response => {
         const { jwt } = response
-        let activeUser = getUserInfoFromJwt(jwt)
-
-        if (!activeUser) {
+        const activeUser = getUserInfoFromJwt(jwt)
+        if (activeUser) {
+          setUserSession('activeUser', JSON.stringify(activeUser))
+        } else {
           reject('验证失败，请重新登录。')
         }
         const { roles, name, avatar, department } = activeUser

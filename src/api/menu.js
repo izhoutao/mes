@@ -1,32 +1,33 @@
 import request from '@/utils/request'
 
-export function getUsers(data) {
+export function getMenus(data) {
   return request({
-    url: `/ucenter/user/list`,
+    url: '/basic/menu/list',
     method: 'post',
     data
   })
 }
 
-export function addUser(data) {
+export function addMenu(data) {
   return request({
-    url: '/ucenter/user',
+    url: '/basic/menu',
     method: 'post',
     data
   })
 }
 
-export function updateUser(data) {
+export function updateMenu(data) {
   return request({
-    url: `/ucenter/user`,
+    url: `/basic/menu`,
     method: 'put',
     data
   })
 }
 
-export function deleteUser(id) {
+export function deleteMenu(id) {
   return request({
-    url: `/ucenter/user/${id}`,
+    url: `/basic/menu/${id}`,
     method: 'delete'
   })
 }
+

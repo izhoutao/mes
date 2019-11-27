@@ -5,22 +5,31 @@
         <el-form-item label="" prop="name">
           <el-input
             v-model="listQuery.name"
-            placeholder="请输入不良代码名称"
+            placeholder="请输入部门名称"
             style="width: 200px;"
             class="filter-item"
             clearable=""
             @keyup.enter.native="handleFilter"
           />
         </el-form-item>
-        <el-form-item label="" prop="groupId">
-          <el-select v-model="listQuery.groupId" filterable placeholder="不良代码组" @change="handleGroupChange">
-            <el-option
-              v-for="item in defectGroups"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id">
-            </el-option>
+        <el-form-item label="" prop="enabled">
+          <el-select v-model="listQuery.enabled" clearable placeholder="状态" class="filter-item" style="width: 90px"
+                     @change="handleFilter">
+            <el-option :key="'正常'" :label="'正常'" :value="1"/>
+            <el-option :key="'禁用'" :label="'禁用'" :value="0"/>
           </el-select>
+        </el-form-item>
+<!--        <el-form-item>
+          <el-date-picker
+            v-model="listQuery.createTime"
+            type="daterange"
+            range-separator=":"
+            class="el-range-editor&#45;&#45;small filter-item"
+            style="height: 30.5px;width: 220px"
+            value-format="yyyy-MM-dd HH:mm:ss"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"/>
+        </el-form-item>-->
         </el-form-item>
         <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
         <el-button v-waves class="filter-item" @click="resetForm('filterForm');handleFilter()">重置</el-button>
@@ -30,26 +39,38 @@
         </el-button>
       </el-form>
     </div>
-
-    <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row>
-      <el-table-column label="序号" min-width="20px" align="center">
-        <template slot-scope="scope">
-          {{ scope.$index }}
-        </template>
-      </el-table-column>
-      <el-table-column label="不良代码编码" min-width="100px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.code }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="不良代码名称" min-width="100px" align="center">
+    <el-table
+      :key="tableKey"
+      default-expand-all
+      row-key="id"
+      v-loading="listLoading"
+      :data="tableData"
+      border
+      fit
+      highlight-current-row
+      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+    >
+      <el-table-column label="名称" min-width="100px" align="left">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="描述" min-width="200px" align="center">
+
+      <el-table-column label="状态" width="200px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.description }}</span>
+          <el-switch
+            v-model="scope.row.enabled"
+            active-color="#13ce66"
+            @change="handleModifyState(scope.row)"
+          />
+
+        </template>
+      </el-table-column>
+
+      <el-table-column label="创建日期" min-width="160px" align="center">
+        <template slot-scope="scope">
+          <i class="el-icon-time"/>
+          <span>{{ scope.row.createTime | parseTime('{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" min-width="80">
@@ -65,44 +86,46 @@
           >删除
           </el-button>
         </template>
+
       </el-table-column>
     </el-table>
-
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="listQuery.current"
-      :limit.sync="listQuery.size"
-      @pagination="getList"
-    />
+    <!--
+        <pagination
+          v-show="total>0"
+          :total="total"
+          :page.sync="listQuery.current"
+          :limit.sync="listQuery.size"
+          @pagination="getList"
+        />-->
 
     <el-dialog :close-on-click-modal="false" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible"
                width="600px">
       <el-form
-        ref="defectForm"
+        ref="menuForm"
         :rules="rules"
         :model="temp"
         label-position="right"
         label-width="150px"
       >
-        <el-form-item label="不良代码编码：" prop="code">
-          <el-input v-model="temp.code"/>
-        </el-form-item>
-        <el-form-item label="不良代码名称：" prop="name">
+        <el-form-item label="部门名称：" prop="name">
           <el-input v-model="temp.name"/>
         </el-form-item>
-        <el-form-item label="描述：" prop="description">
-          <el-input v-model="temp.description"/>
+        <el-form-item label="状态：" prop="enabled">
+          <el-switch
+            v-model="temp.enabled"
+            active-color="#13ce66"
+            inactive-color="#ff4949">
+          </el-switch>
         </el-form-item>
-        <el-form-item label="所属不良代码组：" prop="groupId">
-          <el-select v-model="temp.groupId" filterable placeholder="请选择" style="width:100%">
-            <el-option
-              v-for="item in defectGroups"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id">
-            </el-option>
-          </el-select>
+        <el-form-item label="上级部门：" prop="pid">
+          <treeselect
+            v-model="temp.pid"
+            :options="tableData"
+            :normalizer="normalizer"
+            :defaultExpandLevel=Infinity
+            style="width: 370px;"
+            placeholder="选择上级类目"
+          />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -117,34 +140,46 @@
 <script>
   import { deepClone } from '@/utils/index'
 
-  import { getDefectGroups, getDefects, addDefect, updateDefect, deleteDefect } from '@/api/defect'
+  import { getMenus, addMenu, updateMenu, deleteMenu } from '@/api/menu.js'
 
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
+  import Treeselect from '@riophae/vue-treeselect'
+  import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
   export default {
-    name: 'Defect',
-    components: { Pagination },
+    name: 'Menu',
+    components: { Pagination, Treeselect },
     directives: { waves },
+    watch: {
+      list: {
+        handler: function(val) {
+          // this.tableData = this.toTree(deepClone(val), this.rootId)
+          this.tableData = this.treeData(val)
+        },
+        // deep: true
+      }
+    },
     data() {
       return {
         tableKey: 0,
         list: [],
+        tableData: [],
         total: 0,
         listLoading: true,
         listQuery: {
-          current: 1,
-          size: 10,
           name: undefined,
+          enabled: undefined,
         },
-        defectGroups: [],
         temp: {
           id: undefined,
           name: '',
-          code: '',
+          pid: '0',
+          enabled: true,
           description: ''
         },
         tempCopy: null,
+        expand: true,
         dialogFormVisible: false,
         dialogStatus: '',
         textMap: {
@@ -153,10 +188,7 @@
         },
         rules: {
           name: [
-            { required: true, trigger: 'blur', message: '请填写不良代码名称' }
-          ],
-          code: [
-            { required: true, trigger: 'blur', message: '请填写不良代码编码' }
+            { required: true, trigger: 'blur', message: '请填写部门名称' }
           ]
         }
       }
@@ -164,27 +196,55 @@
     created() {
       this.tempCopy = deepClone(this.temp)
       this.getList()
-      this.getDefectGroups()
     },
     methods: {
-      handleGroupChange() {
-        this.getList()
+      handleModifyState(row) {
+        updateMenu({
+          'id': row.id,
+          'enabled': row.enabled
+        }).then((res) => {
+          this.$message({
+            message: '操作成功',
+            type: 'success'
+          })
+        })
+      },
+      //后台返回的数据如果和VueTreeselect要求的数据结构不同，需要进行转换
+      normalizer(node) {
+        //去掉children=[]的children属性
+        if (node.children && !node.children.length) {
+          delete node.children
+        }
+        return {
+          id: node.id,
+          label: node.name,
+          children: node.children
+        }
+      },
+      treeData(list) {
+        let temp = JSON.parse(JSON.stringify(list))
+        // 以id为键，当前对象为值，存入一个新的对象中
+        let tempObj = {}
+        for (let i in temp) {
+          tempObj[temp[i].id] = temp[i]
+        }
+        return temp.filter(father => {
+          // 把当前节点的所有子节点找到
+          let childArr = temp.filter(child => father.id === child.pid)
+          childArr.length > 0 ? father.children = childArr : ''
+          // 只返回第一级数据；如果当前节点的pid不为空，但是在父节点不存在，也为一级数据
+          return !tempObj[father.pid]
+        })
       },
       getList() {
         this.listLoading = true
-        getDefects(this.listQuery).then(res => {
+        getMenus(this.listQuery).then(res => {
           this.list = res.queryResult.list
           this.total = res.queryResult.total
           this.listLoading = false
         })
       },
-      getDefectGroups() {
-        getDefectGroups({}).then(res => {
-          this.defectGroups = res.queryResult.list
-        })
-      },
       handleFilter() {
-        this.listQuery.current = 1
         this.getList()
       },
 
@@ -197,21 +257,20 @@
         this.temp = deepClone(this.tempCopy)
       },
       handleAdd() {
-        this.resetForm('defectForm')
-        this.temp.groupId = this.listQuery.groupId
+        this.resetForm('menuForm')
         this.dialogStatus = 'create'
         this.dialogFormVisible = true
         // this.rules.password[0].required = true
         this.$nextTick(() => {
-          this.$refs['defectForm'].clearValidate()
+          this.$refs['menuForm'].clearValidate()
         })
       },
       submit() {
-        this.$refs['defectForm'].validate((valid) => {
+        this.$refs['menuForm'].validate((valid) => {
           if (valid) {
             // const tempData = deepClone(this.temp)
-            let defect = deepClone(this.temp)
-            addDefect(defect).then((res) => {
+            let menu = deepClone(this.temp)
+            addMenu(menu).then((res) => {
               this.list.unshift(res.model)
               this.total++
               this.dialogFormVisible = false
@@ -233,18 +292,18 @@
         // this.temp.password = ''
         this.dialogFormVisible = true
         this.$nextTick(() => {
-          this.$refs['defectForm'].clearValidate()
+          this.$refs['menuForm'].clearValidate()
         })
       },
       updateData() {
-        this.$refs['defectForm'].validate((valid) => {
+        this.$refs['menuForm'].validate((valid) => {
           if (valid) {
-            let defect = deepClone(this.temp)
-            updateDefect(defect).then(() => {
+            let menu = deepClone(this.temp)
+            updateMenu(menu).then(() => {
               for (const v of this.list) {
-                if (v.id === defect.id) {
+                if (v.id === menu.id) {
                   const index = this.list.indexOf(v)
-                  this.list.splice(index, 1, defect)
+                  this.list.splice(index, 1, menu)
                   break
                 }
               }
@@ -265,7 +324,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteDefect(row.id).then(() => {
+          deleteMenu(row.id).then(() => {
             this.$notify({
               title: '成功',
               message: '删除成功',

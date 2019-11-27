@@ -5,26 +5,17 @@
         <el-form-item label="" prop="name">
           <el-input
             v-model="listQuery.name"
-            placeholder="请输入不良代码名称"
+            placeholder="角色名"
             style="width: 200px;"
             class="filter-item"
             clearable=""
             @keyup.enter.native="handleFilter"
           />
         </el-form-item>
-        <el-form-item label="" prop="groupId">
-          <el-select v-model="listQuery.groupId" filterable placeholder="不良代码组" @change="handleGroupChange">
-            <el-option
-              v-for="item in defectGroups"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
+        <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索
+        </el-button>
         <el-button v-waves class="filter-item" @click="resetForm('filterForm');handleFilter()">重置</el-button>
-        <el-button class="filter-item" style="margin-left: 10px;" type="success"
+        <el-button class="filter-item" type="success"
                    icon="el-icon-edit" @click="handleAdd">
           添加
         </el-button>
@@ -37,12 +28,12 @@
           {{ scope.$index }}
         </template>
       </el-table-column>
-      <el-table-column label="不良代码编码" min-width="100px" align="center">
+      <el-table-column label="角色编码" min-width="100px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.code }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="不良代码名称" min-width="100px" align="center">
+      <el-table-column label="角色名" min-width="100px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
         </template>
@@ -79,30 +70,37 @@
     <el-dialog :close-on-click-modal="false" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible"
                width="600px">
       <el-form
-        ref="defectForm"
+        ref="roleForm"
         :rules="rules"
         :model="temp"
         label-position="right"
         label-width="150px"
       >
-        <el-form-item label="不良代码编码：" prop="code">
-          <el-input v-model="temp.code"/>
+        <el-form-item label="角色编码：" prop="code">
+          <el-input v-model="temp.code" placeholder="角色编码"/>
         </el-form-item>
         <el-form-item label="不良代码名称：" prop="name">
-          <el-input v-model="temp.name"/>
+          <el-input v-model="temp.name" placeholder="角色名"/>
         </el-form-item>
         <el-form-item label="描述：" prop="description">
-          <el-input v-model="temp.description"/>
+          <el-input
+            v-model="temp.description"
+            :autosize="{ minRows: 2, maxRows: 4}"
+            type="textarea"
+            placeholder="描述"
+          />
         </el-form-item>
-        <el-form-item label="所属不良代码组：" prop="groupId">
-          <el-select v-model="temp.groupId" filterable placeholder="请选择" style="width:100%">
-            <el-option
-              v-for="item in defectGroups"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id">
-            </el-option>
-          </el-select>
+        <el-form-item label="菜单">
+          <el-tree
+            ref="tree"
+            :check-strictly="checkStrictly"
+            :data="treeData"
+            :props="defaultProps"
+            show-checkbox
+            node-key="name"
+            class="permission-tree"
+            @check-change="handleCheckChange"
+          />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -115,15 +113,17 @@
 </template>
 
 <script>
+  import path from 'path'
   import { deepClone } from '@/utils/index'
 
-  import { getDefectGroups, getDefects, addDefect, updateDefect, deleteDefect } from '@/api/defect'
+  import { getRoutes, getRoles, addRole, updateRole, deleteRole } from '@/api/role'
+  import { asyncRoutes, constantRoutes } from '@/router'
 
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 
   export default {
-    name: 'Defect',
+    name: 'Role',
     components: { Pagination },
     directives: { waves },
     data() {
@@ -135,9 +135,9 @@
         listQuery: {
           current: 1,
           size: 10,
-          name: undefined,
+          name: undefined
         },
-        defectGroups: [],
+        routes: [],
         temp: {
           id: undefined,
           name: '',
@@ -151,6 +151,11 @@
           update: '编辑',
           create: '添加'
         },
+        checkStrictly: false,
+        defaultProps: {
+          children: 'children',
+          label: 'title'
+        },
         rules: {
           name: [
             { required: true, trigger: 'blur', message: '请填写不良代码名称' }
@@ -161,33 +166,101 @@
         }
       }
     },
+    computed: {
+      treeData() {
+        this.serviceRoutes = deepClone(this.generateTreeFromList(this.routes))
+        return this.generateRoutes(this.serviceRoutes)
+      }
+    },
     created() {
       this.tempCopy = deepClone(this.temp)
       this.getList()
-      this.getDefectGroups()
+      this.getRoutes()
     },
     methods: {
-      handleGroupChange() {
-        this.getList()
-      },
       getList() {
         this.listLoading = true
-        getDefects(this.listQuery).then(res => {
+        getRoles(this.listQuery).then(res => {
           this.list = res.queryResult.list
           this.total = res.queryResult.total
           this.listLoading = false
-        })
-      },
-      getDefectGroups() {
-        getDefectGroups({}).then(res => {
-          this.defectGroups = res.queryResult.list
         })
       },
       handleFilter() {
         this.listQuery.current = 1
         this.getList()
       },
+      generateTreeFromList(list) {
+        let temp = JSON.parse(JSON.stringify(list))
+        // 以id为键，当前对象为值，存入一个新的对象中
+        let tempObj = {}
+        for (let i in temp) {
+          tempObj[temp[i].id] = temp[i]
+        }
+        /*        let tempMap = Object.fromEntries(temp.map(item => {
+                  return { [item.id]: item }
+                }))*/
+        return temp.filter(father => {
+          // 把当前节点的所有子节点找到
+          let childArr = temp.filter(child => father.id === child.pid)
+          childArr.length > 0 ? father.children = childArr : ''
+          // 只返回第一级数据；如果当前节点的pid不为空，但是在父节点不存在，也为一级数据
+          return !tempObj[father.pid]
+        })
+      },
+      // Reshape the routes structure so that it looks the same as the sidebar
+      generateRoutes(routes) {
+        const res = []
 
+        for (let route of routes) {
+          // skip some route
+          if (route.hidden) {
+            continue
+          }
+
+          const onlyOneShowingChild = this.onlyOneShowingChild(route.children, route)
+
+          if (route.children && onlyOneShowingChild && !route.alwaysShow) {
+            route = onlyOneShowingChild
+          }
+
+          const data = {
+            name: route.code,
+            title: (route.name)
+          }
+          // recursive child routes
+          if (route.children) {
+            data.children = this.generateRoutes(route.children)
+          }
+          res.push(data)
+        }
+        return res
+      },
+      onlyOneShowingChild(children = [], parent) {
+        let onlyOneChild = null
+        const showingChildren = children.filter(item => !item.hidden)
+
+        // When there is only one child route, the child route is displayed by default
+        if (showingChildren.length === 1) {
+          onlyOneChild = showingChildren[0]
+          // onlyOneChild.path = path.resolve(parent.path, onlyOneChild.path)
+          return onlyOneChild
+        }
+
+        // Show parent if there are no child route to display
+        if (showingChildren.length === 0) {
+          // onlyOneChild = { ...parent, path: '', noShowingChildren: true }
+          onlyOneChild = parent
+          return onlyOneChild
+        }
+
+        return false
+      },
+      getRoutes() {
+        getRoutes({}).then(res => {
+          this.routes = res.queryResult.list
+        })
+      },
       resetForm(formName) {
         if (this.$refs[formName] === undefined) {
           return false
@@ -196,22 +269,35 @@
 
         this.temp = deepClone(this.tempCopy)
       },
+      handleCheckChange(data, checked, indeterminate) {
+        this.checkStrictly = true
+        this.$nextTick(() => {
+          this.$refs.tree.setCheckedKeys([...this.$refs.tree.getCheckedKeys(), ...this.$refs.tree.getHalfCheckedKeys()])
+          // set checked state of a node not affects its father and child nodes
+          this.checkStrictly = false
+        })
+      },
       handleAdd() {
-        this.resetForm('defectForm')
-        this.temp.groupId = this.listQuery.groupId
+        this.resetForm('roleForm')
         this.dialogStatus = 'create'
         this.dialogFormVisible = true
+        if (this.$refs.tree) {
+          this.$refs.tree.setCheckedKeys([])
+        }
         // this.rules.password[0].required = true
         this.$nextTick(() => {
-          this.$refs['defectForm'].clearValidate()
+          this.$refs['roleForm'].clearValidate()
         })
       },
       submit() {
-        this.$refs['defectForm'].validate((valid) => {
+        this.$refs['roleForm'].validate((valid) => {
           if (valid) {
             // const tempData = deepClone(this.temp)
-            let defect = deepClone(this.temp)
-            addDefect(defect).then((res) => {
+            let role = deepClone(this.temp)
+            const checkedKeys = this.$refs.tree.getCheckedKeys()
+            const checkedRoutes = this.routes.filter(route => checkedKeys.includes(route.code))
+            role.menuList = checkedRoutes
+            addRole(role).then((res) => {
               this.list.unshift(res.model)
               this.total++
               this.dialogFormVisible = false
@@ -232,25 +318,37 @@
         this.temp = deepClone(row) // copy obj
         // this.temp.password = ''
         this.dialogFormVisible = true
+        this.checkStrictly = true
         this.$nextTick(() => {
-          this.$refs['defectForm'].clearValidate()
+          // const routes = this.generateRoutes(this.role.routes)
+          // alert(JSON.stringify(this.generateArr(routes)) )
+          // this.$refs.tree.setCheckedNodes(this.generateArr(routes))
+          // alert(JSON.stringify(this.role.routes))
+          this.$refs.tree.setCheckedKeys(this.temp.menuList.map(menu => menu.code))
+          // set checked state of a node not affects its father and child nodes
+          this.checkStrictly = false
+          this.$refs['roleForm'].clearValidate()
         })
       },
       updateData() {
-        this.$refs['defectForm'].validate((valid) => {
+        this.$refs['roleForm'].validate((valid) => {
           if (valid) {
-            let defect = deepClone(this.temp)
-            updateDefect(defect).then(() => {
+            let role = deepClone(this.temp)
+            const checkedKeys = this.$refs.tree.getCheckedKeys()
+            const checkedRoutes = this.routes.filter(route => checkedKeys.includes(route.code))
+            role.menuList = checkedRoutes
+            updateRole(role).then(() => {
               for (const v of this.list) {
-                if (v.id === defect.id) {
+                if (v.id === role.id) {
                   const index = this.list.indexOf(v)
-                  this.list.splice(index, 1, defect)
+                  this.list.splice(index, 1, role)
                   break
                 }
               }
               this.dialogFormVisible = false
               this.$notify({
                 title: '成功',
+                dangerouslyUseHTMLString: true,
                 message: '更新成功',
                 type: 'success',
                 duration: 2000
@@ -260,12 +358,12 @@
         })
       },
       handleDelete(row) {
-        this.$confirm('此操作将永久删除该不良代码, 是否继续?', '提示', {
+        this.$confirm('此操作将永久删除该角色, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteDefect(row.id).then(() => {
+          deleteRole(row.id).then(() => {
             this.$notify({
               title: '成功',
               message: '删除成功',

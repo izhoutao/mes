@@ -140,7 +140,7 @@
 <script>
   import { deepClone } from '@/utils/index'
 
-  import { getDepartments, addDepartment, updateDepartment, deleteDepartment } from '@/api/deptartment'
+  import { getDepartments, addDepartment, updateDepartment, deleteDepartment } from '@/api/department.js'
 
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
@@ -157,7 +157,7 @@
           // this.tableData = this.toTree(deepClone(val), this.rootId)
           this.tableData = this.treeData(val)
         },
-        deep: true
+        // deep: true
       }
     },
     data() {
@@ -169,13 +169,13 @@
         listLoading: true,
         listQuery: {
           name: undefined,
-          enabled: undefined
+          enabled: undefined,
         },
         temp: {
           id: undefined,
           name: '',
           pid: '0',
-          enabled: undefined,
+          enabled: true,
           description: ''
         },
         tempCopy: null,
@@ -258,7 +258,6 @@
       },
       handleAdd() {
         this.resetForm('departmentForm')
-        this.temp.groupId = this.listQuery.groupId
         this.dialogStatus = 'create'
         this.dialogFormVisible = true
         // this.rules.password[0].required = true

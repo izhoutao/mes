@@ -88,7 +88,7 @@
 <script>
 import checkPermission from '@/utils/permission'
 import initData from '@/mixins/initData'
-import { getDepartments, addDepartment, updateDepartment,deleteDepartment} from '@/api/deptartment.js'
+import { getDepartments, addDepartment, updateDepartment,deleteDepartment} from '@/api/department.js'
 import { parseTime/*, downloadFile*/ } from '@/utils/index'
 import eForm from './form'
 export default {

@@ -118,13 +118,13 @@
         this.rolesList = res.queryResult.list.map((item) => {
           return {
             key: item.id,
-            code: item.roleCode,
-            name: item.roleName,
+            code: item.code,
+            name: item.name,
             description: item.description,
             status: item.status,
             routes: item.menuList.map((item) => {
-                item.name = item.menuCode
-                item.title = item.menuName
+                item.name = item.code
+                item.title = item.name
                 return item
               }
             )
@@ -320,18 +320,18 @@
         // this.role.routes =  this.role.routes.filter((route,index,arr)=>checkedKeys.includes(route.name))
         let role = {
           id: this.role.key,
-          roleCode: this.role.code,
-          roleName: this.role.name,
+          code: this.role.code,
+          name: this.role.name,
           description: this.role.description,
           status: 1
         }
         role.menuList = checkedKeys.map((checkedKey) => {
           return {
-            menuCode: checkedKey
+            code: checkedKey
           }
         })
         if (isEdit) {
-          await updateRole(role.id, role)
+          await updateRole(role)
           for (let index = 0; index < this.rolesList.length; index++) {
             if (this.rolesList[index].key === this.role.key) {
               this.rolesList.splice(index, 1, Object.assign({}, this.role))
@@ -339,14 +339,14 @@
             }
           }
         } else {
-          const { roleExt: data } = await addRole(role)
+          const { role: data } = await addRole(role)
           this.role.key = data.id
           let checkedRoutes = this.generateTree(deepClone(this.serviceRoutes), '/', checkedKeys)
           this.role.routes = this.generateArr(checkedRoutes)
 
           // this.role.routes=role.menuList.map((item) => {
-          //     item.name = item.menuCode
-          //     item.title = item.menuName
+          //     item.name = item.code
+          //     item.title = item.name
           //     return item
           //   }
           // )

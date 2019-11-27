@@ -70,92 +70,6 @@ export const constantRoutes = [
       component: () => import('@/views/dashboard/index'),
       meta: { title: '主页', icon: 'dashboard' }
     }]
-  },
-  {
-    path: '/basic',
-    component: Layout,
-    redirect: '/basic/operation',
-    name: 'Example',
-    alwaysShow: true, //一直显示根路由
-    meta: {
-      title: '基础配置',
-      icon: 'lock'
-      // roles: ['admin', 'editor'] // you can set roles in root nav
-    },
-    children: [
-      {
-        path: 'operation',
-        name: 'Operation',
-        component: () => import('@/views/basic/operation'),
-        meta: { title: '生产工艺', icon: 'dashboard' }
-      },
-      {
-        path: 'workflow',
-        name: 'Workflow',
-        component: () => import('@/views/basic/workflow/index'),
-        meta: { title: '生产路线', icon: 'dashboard' }
-      },
-      {
-        path: 'defectgroup',
-        name: 'DefectGroup',
-        component: () => import('@/views/basic/defect-group'),
-        meta: { title: '不良代码组', icon: 'dashboard' }
-      },
-      {
-        path: 'defect',
-        name: 'Defect',
-        component: () => import('@/views/basic/defect'),
-        meta: { title: '不良代码', icon: 'dashboard' }
-      },
-      {
-        path: 'line',
-        name: 'Line',
-        component: () => import('@/views/basic/line'),
-        meta: { title: '线别管理', icon: 'dashboard' }
-      },
-      {
-        path: 'shift',
-        name: 'Shift',
-        component: () => import('@/views/basic/shift'),
-        meta: { title: '班别管理', icon: 'dashboard' }
-      },
-      {
-        path: 'warehouse',
-        name: 'Warehouse',
-        component: () => import('@/views/basic/warehouse'),
-        meta: { title: '仓库管理', icon: 'dashboard' }
-      },
-      {
-        path: 'vendor',
-        name: 'Vendor',
-        component: () => import('@/views/basic/vendor'),
-        meta: { title: '供应商管理', icon: 'dashboard' }
-      },
-      {
-        path: 'inboundorder',
-        name: 'inboundorder',
-        component: () => import('@/views/basic/inbound-order'),
-        meta: { title: '入库单管理', icon: 'dashboard' }
-      },
-      {
-        path: 'material',
-        name: 'Material',
-        component: () => import('@/views/basic/material/material'),
-        meta: { title: '物料管理', icon: 'dashboard' }
-      },
-      {
-        path: 'materialtype',
-        name: 'MaterialType',
-        component: () => import('@/views/basic/material/material-type'),
-        meta: { title: '物料类型管理', icon: 'dashboard' }
-      }
-      /*      {
-              path: 'defect',
-              name: 'Defect',
-              component: () => import('@/views/basic/defect'),
-              meta: { title: '不良代码', icon: 'dashboard' }
-            },*/
-    ]
   }
   /*  {
       path: '/example',
@@ -256,6 +170,92 @@ export const asyncRoutes = [
       ]
     },*/
   {
+    path: '/basic',
+    component: Layout,
+    redirect: '/basic/operation',
+    name: 'Example',
+    alwaysShow: true, // 一直显示根路由
+    meta: {
+      title: '基础配置',
+      icon: 'lock'
+      // roles: ['admin', 'editor'] // you can set roles in root nav
+    },
+    children: [
+      {
+        path: 'operation',
+        name: 'Operation',
+        component: () => import('@/views/basic/operation'),
+        meta: { title: '生产工艺', icon: 'dashboard' }
+      },
+      {
+        path: 'workflow',
+        name: 'Workflow',
+        component: () => import('@/views/basic/workflow/index'),
+        meta: { title: '生产路线', icon: 'dashboard' }
+      },
+      {
+        path: 'defectgroup',
+        name: 'DefectGroup',
+        component: () => import('@/views/basic/defect-group'),
+        meta: { title: '不良代码组', icon: 'dashboard' }
+      },
+      {
+        path: 'defect',
+        name: 'Defect',
+        component: () => import('@/views/basic/defect'),
+        meta: { title: '不良代码', icon: 'dashboard' }
+      },
+      {
+        path: 'line',
+        name: 'Line',
+        component: () => import('@/views/basic/line'),
+        meta: { title: '线别管理', icon: 'dashboard' }
+      },
+      {
+        path: 'shift',
+        name: 'Shift',
+        component: () => import('@/views/basic/shift'),
+        meta: { title: '班别管理', icon: 'dashboard' }
+      },
+      {
+        path: 'warehouse',
+        name: 'Warehouse',
+        component: () => import('@/views/basic/warehouse'),
+        meta: { title: '仓库管理', icon: 'dashboard' }
+      },
+      {
+        path: 'vendor',
+        name: 'Vendor',
+        component: () => import('@/views/basic/vendor'),
+        meta: { title: '供应商管理', icon: 'dashboard' }
+      },
+      {
+        path: 'inboundorder',
+        name: 'inboundorder',
+        component: () => import('@/views/basic/inbound-order'),
+        meta: { title: '入库单管理', icon: 'dashboard' }
+      },
+      {
+        path: 'material',
+        name: 'Material',
+        component: () => import('@/views/basic/material/material'),
+        meta: { title: '物料管理', icon: 'dashboard' }
+      },
+      {
+        path: 'materialtype',
+        name: 'MaterialType',
+        component: () => import('@/views/basic/material/material-type'),
+        meta: { title: '物料类型管理', icon: 'dashboard' }
+      }
+      /*      {
+              path: 'defect',
+              name: 'Defect',
+              component: () => import('@/views/basic/defect'),
+              meta: { title: '不良代码', icon: 'dashboard' }
+            },*/
+    ]
+  },
+  {
     path: '/permission',
     component: Layout,
     redirect: '/permission/user',
@@ -278,7 +278,7 @@ export const asyncRoutes = [
       },
       {
         path: 'role',
-        component: () => import('@/views/permission/role'),
+        component: () => import('@/views/permission/role1'),
         name: 'RolePermission',
         meta: {
           title: '角色管理'

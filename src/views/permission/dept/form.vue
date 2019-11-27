@@ -19,8 +19,8 @@
 </template>
 
 <script>
-import { add, edit, getDepts } from '@/api/deptartment.js'
-import { getDepartments, addDepartment, updateDepartment,deleteDepartment} from '@/api/deptartment.js'
+import { add, edit, getDepts } from '@/api/department.js'
+import { getDepartments, addDepartment, updateDepartment,deleteDepartment} from '@/api/department.js'
 
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'

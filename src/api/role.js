@@ -1,23 +1,21 @@
 import request from '@/utils/request'
 
+/**
+ * 角色管理
+ * **/
+
 export function getRoutes() {
   return request({
-    url: '/ucenter/routes',
+    url: '/auth/routes',
     method: 'get'
   })
 }
 
-export function getAsyncRoutes() {
+export function getRoles(data) {
   return request({
-    url: '/auth/asyncroutes',
-    method: 'get'
-  })
-}
-
-export function getRoles(page = 0, size = 10) {
-  return request({
-    url: `/ucenter/role/list/${page}/${size}`,
-    method: 'get'
+    url: `/ucenter/role/list`,
+    method: 'post',
+    data
   })
 }
 
@@ -29,9 +27,9 @@ export function addRole(data) {
   })
 }
 
-export function updateRole(id, data) {
+export function updateRole(data) {
   return request({
-    url: `/ucenter/role/${id}`,
+    url: `/ucenter/role`,
     method: 'put',
     data
   })

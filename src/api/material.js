@@ -33,7 +33,7 @@ export function deleteMaterialType(id) {
 
 export function getMaterials(data) {
   return request({
-    url: `/basic/material/list1`,
+    url: `/basic/material/list`,
     method: 'post',
     data
   })
