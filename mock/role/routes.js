@@ -135,7 +135,7 @@ export const asyncRoutes = [
   },
 
   {
-    path: '/permission',
+    path: '/system',
     name: 'Permission',
     meta: {
       title: 'Permission',

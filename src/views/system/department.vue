@@ -101,7 +101,7 @@
     <el-dialog :close-on-click-modal="false" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible"
                width="600px">
       <el-form
-        ref="menuForm"
+        ref="departmentForm"
         :rules="rules"
         :model="temp"
         label-position="right"
@@ -120,7 +120,7 @@
         <el-form-item label="上级部门：" prop="pid">
           <treeselect
             v-model="temp.pid"
-            :options="tableData"
+            :options="treeData"
             :normalizer="normalizer"
             :defaultExpandLevel=Infinity
             style="width: 370px;"
@@ -140,7 +140,7 @@
 <script>
   import { deepClone } from '@/utils/index'
 
-  import { getMenus, addMenu, updateMenu, deleteMenu } from '@/api/menu.js'
+  import { getDepartments, addDepartment, updateDepartment, deleteDepartment } from '@/api/department.js'
 
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
@@ -148,14 +148,19 @@
   import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
   export default {
-    name: 'Menu',
+    name: 'Department',
     components: { Pagination, Treeselect },
     directives: { waves },
     watch: {
       list: {
         handler: function(val) {
           // this.tableData = this.toTree(deepClone(val), this.rootId)
-          this.tableData = this.treeData(val)
+          this.tableData = this.buildTree(val)
+          this.treeData = [{
+            id: '0',
+            name: '顶级类目',
+            children: this.tableData
+          }]
         },
         // deep: true
       }
@@ -165,6 +170,7 @@
         tableKey: 0,
         list: [],
         tableData: [],
+        treeData: [],
         total: 0,
         listLoading: true,
         listQuery: {
@@ -199,7 +205,7 @@
     },
     methods: {
       handleModifyState(row) {
-        updateMenu({
+        updateDepartment({
           'id': row.id,
           'enabled': row.enabled
         }).then((res) => {
@@ -221,7 +227,7 @@
           children: node.children
         }
       },
-      treeData(list) {
+      buildTree(list) {
         let temp = JSON.parse(JSON.stringify(list))
         // 以id为键，当前对象为值，存入一个新的对象中
         let tempObj = {}
@@ -238,7 +244,7 @@
       },
       getList() {
         this.listLoading = true
-        getMenus(this.listQuery).then(res => {
+        getDepartments(this.listQuery).then(res => {
           this.list = res.queryResult.list
           this.total = res.queryResult.total
           this.listLoading = false
@@ -257,20 +263,20 @@
         this.temp = deepClone(this.tempCopy)
       },
       handleAdd() {
-        this.resetForm('menuForm')
+        this.resetForm('departmentForm')
         this.dialogStatus = 'create'
         this.dialogFormVisible = true
         // this.rules.password[0].required = true
         this.$nextTick(() => {
-          this.$refs['menuForm'].clearValidate()
+          this.$refs['departmentForm'].clearValidate()
         })
       },
       submit() {
-        this.$refs['menuForm'].validate((valid) => {
+        this.$refs['departmentForm'].validate((valid) => {
           if (valid) {
             // const tempData = deepClone(this.temp)
-            let menu = deepClone(this.temp)
-            addMenu(menu).then((res) => {
+            let department = deepClone(this.temp)
+            addDepartment(department).then((res) => {
               this.list.unshift(res.model)
               this.total++
               this.dialogFormVisible = false
@@ -292,18 +298,19 @@
         // this.temp.password = ''
         this.dialogFormVisible = true
         this.$nextTick(() => {
-          this.$refs['menuForm'].clearValidate()
+          this.$refs['departmentForm'].clearValidate()
         })
       },
       updateData() {
-        this.$refs['menuForm'].validate((valid) => {
+        this.$refs['departmentForm'].validate((valid) => {
           if (valid) {
-            let menu = deepClone(this.temp)
-            updateMenu(menu).then(() => {
+            let department = deepClone(this.temp)
+            delete department.children
+            updateDepartment(department).then(() => {
               for (const v of this.list) {
-                if (v.id === menu.id) {
+                if (v.id === department.id) {
                   const index = this.list.indexOf(v)
-                  this.list.splice(index, 1, menu)
+                  this.list.splice(index, 1, department)
                   break
                 }
               }
@@ -324,15 +331,14 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteMenu(row.id).then(() => {
+          deleteDepartment(row.id).then(() => {
             this.$notify({
               title: '成功',
               message: '删除成功',
               type: 'success',
               duration: 2000
             })
-            const index = this.list.indexOf(row)
-            this.list.splice(index, 1)
+            this.getList()
           })
         })
       }

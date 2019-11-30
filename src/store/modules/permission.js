@@ -1,8 +1,9 @@
 import { asyncRoutes, constantRoutes } from '@/router'
 import { getRoutes } from '../../api/role'
+import { deepClone } from '@/utils'
 
 /**
- * Use meta.role to determine if the current user has permission
+ * Use meta.role to determine if the current user has system
  * @param roles
  * @param route
  */
@@ -20,6 +21,7 @@ function hasPermission(roles, route) {
  * @param {arr} serverRouter 后端保存动态路由
  */
 function makePermissionRouters(routeMap, clientAsyncRoutes) {
+
   clientAsyncRoutes.forEach(ele => {
     // console.log(JSON.stringify(ele))
     if (!ele.name) return
@@ -68,8 +70,11 @@ const actions = {
   async generateRoutes({ commit }, roles) {
     const res = await getRoutes()
     const routes = res.queryResult.list
-    const routesMap = Object.fromEntries(routes.map(route => {
-      return { [route.code]: route }
+    // const routesMap = Object.fromEntries(routes.map(route => {
+    //   return [route.code, route]
+    // }))
+    const routesMap = _.fromPairs(routes.map(route => {
+      return [route.code, route]
     }))
     const permissionRouters = makePermissionRouters(routesMap, asyncRoutes)
     return new Promise(resolve => {
