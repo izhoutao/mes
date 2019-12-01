@@ -291,7 +291,6 @@
         })
       },
       handleUpdate(row) {
-
         this.dialogStatus = 'update'
         // this.rules.password[0].required = false
         this.temp = deepClone(row) // copy obj

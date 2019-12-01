@@ -1,103 +1,121 @@
 <template>
   <div class="app-container">
-    <div class="filter-container">
-      <el-form ref="filterForm" :model="listQuery" :inline="true">
-        <el-form-item label="" prop="phone">
-          <el-input
-            v-model="listQuery.phone"
-            placeholder="手机号"
-            style="width: 200px;"
-            class="filter-item"
-            clearable=""
-            @keyup.enter.native="handleFilter"
-          />
-        </el-form-item>
-        <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
-        <el-button v-waves class="filter-item" @click="resetForm('filterForm');handleFilter()">重置</el-button>
-        <el-button class="filter-item" style="margin-left: 10px;" type="success"
-                   icon="el-icon-edit" @click="handleAdd">
-          添加
-        </el-button>
-      </el-form>
-    </div>
 
-    <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row>
-      <el-table-column label="序号" min-width="50px" align="center">
-        <template slot-scope="scope">
-          {{ scope.$index }}
-        </template>
-      </el-table-column>
-      <el-table-column label="部门" min-width="80px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.department }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="员工工号" min-width="100px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.staffId }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="姓名" min-width="80px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="性别" min-width="70px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.sex }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="岗位" min-width="100px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.position }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="邮箱" min-width="200px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.email }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="入职日期" min-width="160px" align="center">
-        <template slot-scope="scope">
-          <i class="el-icon-time"/>
-          <span>{{ scope.row.hiredate | parseTime('{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="在职状态" min-width="100px" align="center">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.state==='1'?'': 'info'" style="margin:0 5px;"> {{ scope.row.state | stateFilter}}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="线别" min-width="100px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.line }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" min-width="200">
-        <template slot-scope="scope">
-          <el-button type="primary" icon="el-icon-edit" size="mini"
-                     @click="handleUpdate(scope.row)">编辑
-          </el-button>
-          <el-button
-            icon="el-icon-delete"
-            size="mini"
-            type="danger"
-            :disabled="scope.row.username === 'admin'"
-            @click="handleDelete(scope.row,'true')"
-          >删除
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
 
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="listQuery.current"
-      :limit.sync="listQuery.size"
-      @pagination="getList"
-    />
+    <el-row :gutter="20">
+      <!--部门数据-->
+      <el-col :xs="9" :sm="6" :md="4" :lg="4" :xl="4">
+        <div class="head-container">
+          <el-input v-model="deptName" clearable placeholder="输入部门名称搜索" prefix-icon="el-icon-search"
+                    style="width: 100%;" class="filter-item" @input="getDepartments"/>
+        </div>
+        <el-tree :data="treeData" :props="defaultProps" :expand-on-click-node="false" default-expand-all
+                 @node-click="handleNodeClick"/>
+      </el-col>
+      <!--用户数据-->
+      <el-col :xs="15" :sm="18" :md="20" :lg="20" :xl="20">
+        <!--工具栏-->
+        <div class="filter-container">
+          <el-form ref="filterForm" :model="listQuery" :inline="true">
+            <el-form-item label="" prop="phone">
+              <el-input
+                v-model="listQuery.phone"
+                placeholder="手机号"
+                style="width: 200px;"
+                class="filter-item"
+                clearable=""
+                @keyup.enter.native="handleFilter"
+              />
+            </el-form-item>
+            <el-form-item label="" prop="depts">
+              <el-select v-model="listQuery.depts" multiple v-show="false">
+                <el-option
+                  v-for="item in depts"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索
+            </el-button>
+            <el-button v-waves class="filter-item" @click="resetForm('filterForm');handleFilter()">重置</el-button>
+            <el-button class="filter-item" style="margin-left: 10px;" type="success"
+                       icon="el-icon-edit" @click="handleAdd">
+              添加
+            </el-button>
+          </el-form>
+        </div>
+        <!--表格渲染-->
+        <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row>
+          <el-table-column label="序号" min-width="50px" align="center">
+            <template slot-scope="scope">
+              {{ scope.$index }}
+            </template>
+          </el-table-column>
+          <el-table-column label="员工工号" min-width="100px" align="center">
+            <template slot-scope="scope">
+              <span>{{ scope.row.staffId }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="姓名" min-width="80px" align="center">
+            <template slot-scope="scope">
+              <span>{{ scope.row.name }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="性别" min-width="70px" align="center">
+            <template slot-scope="scope">
+              <span>{{ scope.row.sex }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="部门/岗位" min-width="80px" align="center">
+            <template slot-scope="scope">
+              <span>{{ scope.row.department }}/{{ scope.row.position }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="入职日期" min-width="100px" align="center">
+            <template slot-scope="scope">
+              <i class="el-icon-time"/>
+              <span>{{ scope.row.hiredate | parseTime('{y}-{m}-{d}') }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="在职状态" min-width="80px" align="center">
+            <template slot-scope="scope">
+              <el-tag :type="scope.row.state==='1'?'': 'info'" style="margin:0 5px;"> {{ scope.row.state | stateFilter}}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="线别" min-width="100px" align="center">
+            <template slot-scope="scope">
+              <span>{{ scope.row.line }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" align="center" min-width="200">
+            <template slot-scope="scope">
+              <el-button type="primary" icon="el-icon-edit" size="mini"
+                         @click="handleUpdate(scope.row)">编辑
+              </el-button>
+              <el-button
+                icon="el-icon-delete"
+                size="mini"
+                type="danger"
+                :disabled="scope.row.username === 'admin'"
+                @click="handleDelete(scope.row,'true')"
+              >删除
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <!--分页组件-->
+        <pagination
+          v-show="total>0"
+          :total="total"
+          :page.sync="listQuery.current"
+          :limit.sync="listQuery.size"
+          @pagination="getList"
+        />
+      </el-col>
+    </el-row>
 
     <el-dialog :close-on-click-modal="false" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible"
                width="550px">
@@ -164,9 +182,17 @@
         <el-form-item label="备注：" prop="description">
           <el-input v-model="temp.description"/>
         </el-form-item>
-        <el-form-item label="部门：" prop="department">
-          <el-input v-model="temp.department"/>
+        <el-form-item label="部门：" prop="deptId">
+          <treeselect
+            v-model="temp.deptId"
+            :options="treeData"
+            :normalizer="normalizer"
+            :defaultExpandLevel=Infinity
+            style="width: 370px;"
+            placeholder="选择所属部门"
+          />
         </el-form-item>
+
         <el-form-item label="岗位：" prop="pisition">
           <el-input v-model="temp.position"/>
         </el-form-item>
@@ -188,14 +214,26 @@
 
   import { getUsers, addUser, updateUser, deleteUser } from '@/api/system'
   import { getRoutes, getRoles, addRole, deleteRole, updateRole } from '@/api/role'
+  import { getDepartments, addDepartment, updateDepartment, deleteDepartment } from '@/api/department.js'
 
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
+  import Treeselect from '@riophae/vue-treeselect'
+  import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
   export default {
     name: 'User',
-    components: { Pagination },
+    components: { Pagination, Treeselect },
     directives: { waves },
+    watch: {
+      depts: {
+        handler: function(val) {
+          // this.tableData = this.toTree(deepClone(val), this.rootId)
+          this.treeData = this.buildTree(val)
+        }
+        // deep: true
+      }
+    },
     filters: {
       statusFilter(state) {
         const statusMap = {
@@ -232,7 +270,16 @@
         listQuery: {
           current: 1,
           size: 10,
-          phone: undefined
+          phone: undefined,
+          depts: undefined
+        },
+        deptName: undefined,
+        depts: [],
+        deptMap: {},
+        treeData: [],
+        defaultProps: {
+          children: 'children',
+          label: 'name'
         },
         temp: {
           id: undefined,
@@ -242,7 +289,9 @@
           password: '111111',
           phone: '',
           email: '',
-          state: '1'
+          state: '1',
+          staffId: '',
+          deptId: undefined
         },
         tempCopy: null,
         dialogFormVisible: false,
@@ -279,24 +328,72 @@
     },
     created() {
       this.tempCopy = deepClone(this.temp)
+      this.getDepartments()
+      this.getRoles()
       this.getList()
-      this.getRole()
     },
     methods: {
-      async getRole() {
+      async getRoles() {
         const res = await getRoles({})
         this.rolesList = res.queryResult.list
-        /*        this.rolesList.forEach(item => {
-                  this.$set(this.rolesMap, item.id, item.name)
-                })*/
+      },
+      async getDepartments() {
+        const res = await getDepartments({ name: this.deptName })
+        this.depts = res.queryResult.list
+        this.deptMap = _.fromPairs(this.depts.map(dept => {
+          return [dept.id, dept]
+        }))
       },
       getList() {
         this.listLoading = true
         getUsers(this.listQuery).then(res => {
-          this.list = res.queryResult.list
+          this.list = res.queryResult.list.map(user =>
+            Object.assign(user, { department: this.deptMap[user.deptId].name })
+          )
           this.total = res.queryResult.total
           this.listLoading = false
         })
+      },
+      //后台返回的数据如果和VueTreeselect要求的数据结构不同，需要进行转换
+      normalizer(node) {
+        //去掉children=[]的children属性
+        if (node.children && !node.children.length) {
+          delete node.children
+        }
+        return {
+          id: node.id,
+          label: node.name,
+          children: node.children
+        }
+      },
+      buildTree(list) {
+        let temp = JSON.parse(JSON.stringify(list))
+        // 以id为键，当前对象为值，存入一个新的对象中
+        let tempObj = {}
+        for (let i in temp) {
+          tempObj[temp[i].id] = temp[i]
+        }
+        return temp.filter(father => {
+          // 把当前节点的所有子节点找到
+          let childArr = temp.filter(child => father.id === child.pid)
+          childArr.length > 0 ? father.children = childArr : ''
+          // 只返回第一级数据；如果当前节点的pid不为空，但是在父节点不存在，也为一级数据
+          return !tempObj[father.pid]
+        })
+      },
+      getDeptIdList(data) {
+        let deptIdList = [data.id]
+        if (data.children) {
+          data.children.forEach(item=>{
+            deptIdList = deptIdList.concat(this.getDeptIdList(item))
+          })
+        }
+        return deptIdList
+      },
+      handleNodeClick(data) {
+        this.listQuery.depts = this.getDeptIdList(data)
+        this.listQuery.current = 1
+        this.getList()
       },
       handleFilter() {
         this.listQuery.current = 1

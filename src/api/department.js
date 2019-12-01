@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function getDepartments(data) {
   return request({
-    url: '/basic/department/list',
+    url: '/ucenter/department/list',
     method: 'post',
     data
   })
@@ -10,7 +10,7 @@ export function getDepartments(data) {
 
 export function addDepartment(data) {
   return request({
-    url: '/basic/department',
+    url: '/ucenter/department',
     method: 'post',
     data
   })
@@ -18,7 +18,7 @@ export function addDepartment(data) {
 
 export function updateDepartment(data) {
   return request({
-    url: `/basic/department`,
+    url: `/ucenter/department`,
     method: 'put',
     data
   })
@@ -26,16 +26,8 @@ export function updateDepartment(data) {
 
 export function deleteDepartment(id) {
   return request({
-    url: `/basic/department/${id}`,
+    url: `/ucenter/department/${id}`,
     method: 'delete'
   })
 }
 
-export function downloadDept(params) {
-  return request({
-    url: 'api/dept/download',
-    method: 'get',
-    params,
-    responseType: 'blob'
-  })
-}

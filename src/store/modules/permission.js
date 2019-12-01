@@ -1,6 +1,5 @@
 import { asyncRoutes, constantRoutes } from '@/router'
 import { getRoutes } from '../../api/role'
-import { deepClone } from '@/utils'
 
 /**
  * Use meta.role to determine if the current user has system
@@ -23,9 +22,13 @@ function hasPermission(roles, route) {
 function makePermissionRouters(routeMap, clientAsyncRoutes) {
 
   clientAsyncRoutes.forEach(ele => {
-    // console.log(JSON.stringify(ele))
     if (!ele.name) return
-    if (routeMap[ele.name]) (ele.meta.roles = routeMap[ele.name].roleList.map(role => role.code))
+    // alert('1')
+    if (routeMap[ele.name]) {
+      // alert(JSON.stringify(routeMap[ele.name]))
+      ele.meta.roles = routeMap[ele.name].roleList.map(role => role.code)
+    }
+
     if (ele.children) {
       makePermissionRouters(routeMap, ele.children)
     }
