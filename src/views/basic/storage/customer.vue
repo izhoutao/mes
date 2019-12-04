@@ -1,11 +1,11 @@
 <template>
-  <div class="app-container vendor">
+  <div class="app-container customer">
     <div class="filter-container">
       <el-form ref="filterForm" :model="listQuery" :inline="true">
         <el-form-item label="" prop="name">
           <el-input
             v-model="listQuery.name"
-            placeholder="请输入供应商名称"
+            placeholder="请输入客户名称"
             style="width: 200px;"
             class="filter-item"
             clearable=""
@@ -19,6 +19,13 @@
           添加
         </el-button>
       </el-form>
+      <pagination
+        v-show="total>0"
+        :total="total"
+        :page.sync="listQuery.current"
+        :limit.sync="listQuery.size"
+        @pagination="getList"
+      />
     </div>
 
     <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row>
@@ -27,17 +34,17 @@
           {{ scope.$index }}
         </template>
       </el-table-column>
-      <el-table-column label="供应商代码" min-width="90px" align="center">
+      <el-table-column label="客户代码" min-width="90px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.code }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="供应商名称" min-width="90px" align="center">
+      <el-table-column label="客户名称" min-width="90px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="供应商联系人" min-width="90px" align="center">
+      <el-table-column label="客户联系人" min-width="90px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.linkMan }}</span>
         </template>
@@ -47,7 +54,7 @@
           <span>{{ scope.row.phoneNumber }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="供应商地址" min-width="90px" align="center">
+      <el-table-column label="客户地址" min-width="90px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.address }}</span>
         </template>
@@ -64,7 +71,8 @@
       </el-table-column>
       <el-table-column label="状态" min-width="90px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.state | stateFilter }}</span>
+          <el-tag :type="scope.row.state===1?'': 'info'" style="margin:0 5px;"> {{ scope.row.state | stateFilter}}
+          </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="城市" min-width="90px" align="center">
@@ -105,36 +113,28 @@
       </el-table-column>
     </el-table>
 
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="listQuery.current"
-      :limit.sync="listQuery.size"
-      @pagination="getList"
-    />
-
     <el-dialog :close-on-click-modal="false" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible"
                width="600px">
       <el-form
-        ref="vendorForm"
+        ref="customerForm"
         :rules="rules"
         :model="temp"
         label-position="right"
         label-width="150px"
       >
-        <el-form-item label="供应商代码：" prop="code">
+        <el-form-item label="客户代码：" prop="code">
           <el-input v-model="temp.code"/>
         </el-form-item>
-        <el-form-item label="供应商名称：" prop="name">
+        <el-form-item label="客户名称：" prop="name">
           <el-input v-model="temp.name"/>
         </el-form-item>
-        <el-form-item label="供应商联系人：" prop="linkMan">
+        <el-form-item label="客户联系人：" prop="linkMan">
           <el-input v-model="temp.linkMan"/>
         </el-form-item>
         <el-form-item label="联系电话：" prop="phoneNumber">
           <el-input v-model="temp.phoneNumber"/>
         </el-form-item>
-        <el-form-item label="供应商地址：" prop="address">
+        <el-form-item label="客户地址：" prop="address">
           <el-input v-model="temp.address"/>
         </el-form-item>
         <el-form-item label="邮箱：" prop="email">
@@ -146,8 +146,8 @@
         <el-form-item label="状态：" prop="status">
           <el-switch v-model="temp.state"
                      active-color="#13ce66"
-                     active-value="1"
-                     inactive-value="0"/>
+                     :active-value= "1"
+                     :inactive-value= "0"/>
         </el-form-item>
         </el-form-item>
         <el-form-item label="城市：" prop="city">
@@ -170,15 +170,15 @@
 </template>
 
 <script>
-  import { deepClone } from '@/utils/index'
+  import { deepClone } from '@/utils'
 
-  import { getVendors, addVendor, updateVendor, deleteVendor } from '@/api/vendor'
+  import { getCustomers, addCustomer, updateCustomer, deleteCustomer } from '@/api/customer.js'
 
   import waves from '@/directive/waves' // Waves directive
-  import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
+  import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
 
   export default {
-    name: 'Vendor',
+    name: 'Customer',
     components: { Pagination },
     directives: { waves },
     filters: {
@@ -191,7 +191,7 @@
         return statusMap[state]
       },
       stateFilter(state) {
-        return state === '1' ? '启用' : '未启用'
+        return state === 1 ? '启用' : '未启用'
       }
     },
     data() {
@@ -214,7 +214,7 @@
           address: '',
           email: '',
           fax: '',
-          state: '1',
+          state: 1,
           city: '',
           province: '',
           country: '',
@@ -229,10 +229,10 @@
         },
         rules: {
           name: [
-            { required: true, trigger: 'blur', message: '请填写供应商名称' }
+            { required: true, trigger: 'blur', message: '请填写客户名称' }
           ],
           code: [
-            { required: true, trigger: 'blur', message: '请填写供应商代码' }
+            { required: true, trigger: 'blur', message: '请填写客户代码' }
           ]
         }
       }
@@ -243,7 +243,7 @@
     },
     methods: {
       handleModifyState(index, row) {
-        updateVendor(row).then((res) => {
+        updateCustomer(row).then((res) => {
           this.$message({
             message: '操作成功',
             type: 'success'
@@ -252,7 +252,7 @@
       },
       getList() {
         this.listLoading = true
-        getVendors(this.listQuery).then(res => {
+        getCustomers(this.listQuery).then(res => {
           this.list = res.queryResult.list
           this.total = res.queryResult.total
           this.listLoading = false
@@ -272,20 +272,20 @@
         this.temp = deepClone(this.tempCopy)
       },
       handleAdd() {
-        this.resetForm('vendorForm')
+        this.resetForm('customerForm')
         this.dialogStatus = 'create'
         this.dialogFormVisible = true
         // this.rules.password[0].required = true
         this.$nextTick(() => {
-          this.$refs['vendorForm'].clearValidate()
+          this.$refs['customerForm'].clearValidate()
         })
       },
       submit() {
-        this.$refs['vendorForm'].validate((valid) => {
+        this.$refs['customerForm'].validate((valid) => {
           if (valid) {
             // const tempData = deepClone(this.temp)
-            let vendor = deepClone(this.temp)
-            addVendor(vendor).then((res) => {
+            let customer = deepClone(this.temp)
+            addCustomer(customer).then((res) => {
               this.list.unshift(res.model)
               this.total++
               this.dialogFormVisible = false
@@ -307,18 +307,18 @@
         // this.temp.password = ''
         this.dialogFormVisible = true
         this.$nextTick(() => {
-          this.$refs['vendorForm'].clearValidate()
+          this.$refs['customerForm'].clearValidate()
         })
       },
       updateData() {
-        this.$refs['vendorForm'].validate((valid) => {
+        this.$refs['customerForm'].validate((valid) => {
           if (valid) {
-            let vendor = deepClone(this.temp)
-            updateVendor(vendor).then(() => {
+            let customer = deepClone(this.temp)
+            updateCustomer(customer).then(() => {
               for (const v of this.list) {
-                if (v.id === vendor.id) {
+                if (v.id === customer.id) {
                   const index = this.list.indexOf(v)
-                  this.list.splice(index, 1, vendor)
+                  this.list.splice(index, 1, customer)
                   break
                 }
               }
@@ -334,12 +334,12 @@
         })
       },
       handleDelete(row) {
-        this.$confirm('此操作将永久删除该供应商, 是否继续?', '提示', {
+        this.$confirm('此操作将永久删除该客户, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteVendor(row.id).then(() => {
+          deleteCustomer(row.id).then(() => {
             this.$notify({
               title: '成功',
               message: '删除成功',
@@ -358,11 +358,20 @@
 
 
 <style lang="scss">
-  .vendor {
+  .customer {
     .el-icon-edit.update, .el-icon-delete.delete {
       margin: 3px;
       font-size: 18px !important;
     }
+  .filter-container{
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+  .el-form-item{
+    margin-bottom:16px;
+  }
+  }
   }
 
 </style>

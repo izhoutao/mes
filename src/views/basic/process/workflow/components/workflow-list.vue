@@ -76,10 +76,10 @@
 <script>
   import { deepClone } from '@/utils'
 
-  import { getWorkflows, addWorkflow, updateWorkflow, deleteWorkflow } from '@/api/workflow'
+  import { getWorkflows, addWorkflow, updateWorkflow, deleteWorkflow } from '@/api/workflow.js'
 
   import waves from '@/directive/waves' // Waves directive
-  import Pagination from '@/components/Pagination/index' // Secondary package based on el-pagination
+  import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
 
   export default {
     name: 'WorkflowList',

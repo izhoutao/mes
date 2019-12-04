@@ -1,52 +1,100 @@
 <template>
   <div class="app-container">
-    <el-button type="primary" @click="handleAddRole">添加角色</el-button>
+    <div class="filter-container">
+      <el-form ref="filterForm" :model="listQuery" :inline="true">
+        <el-form-item label="" prop="name">
+          <el-input
+            v-model="listQuery.name"
+            placeholder="角色名"
+            style="width: 200px;"
+            class="filter-item"
+            clearable=""
+            @keyup.enter.native="handleFilter"
+          />
+        </el-form-item>
+        <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索
+        </el-button>
+        <el-button v-waves class="filter-item" @click="resetForm('filterForm');handleFilter()">重置</el-button>
+        <el-button class="filter-item" type="success"
+                   icon="el-icon-edit" @click="handleAdd">
+          添加
+        </el-button>
+      </el-form>
+    </div>
 
-    <el-table :data="rolesList" style="width: 100%;margin-top:30px;" border>
-      <el-table-column align="center" label="角色编码" width="220">
+    <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row>
+      <el-table-column label="序号" min-width="20px" align="center">
         <template slot-scope="scope">
-          {{ scope.row.code }}
+          {{ scope.$index }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="角色名" width="220">
+      <el-table-column label="角色编码" min-width="100px" align="center">
         <template slot-scope="scope">
-          {{ scope.row.name }}
+          <span>{{ scope.row.code }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="header-center" label="描述">
+      <el-table-column label="角色名" min-width="100px" align="center">
         <template slot-scope="scope">
-          {{ scope.row.description }}
+          <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作" width="200">
+      <el-table-column label="描述" min-width="200px" align="center">
         <template slot-scope="scope">
-          <el-button type="primary" icon="el-icon-edit"  size="mini" @click="handleEdit(scope)">编辑</el-button>
-          <el-button type="danger" icon="el-icon-delete" size="mini" @click="handleDelete(scope)">删除</el-button>
+          <span>{{ scope.row.description }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" min-width="80">
+        <template slot-scope="scope">
+          <el-button type="primary" icon="el-icon-edit" size="mini"
+                     @click="handleUpdate(scope.row)">编辑
+          </el-button>
+          <el-button
+            icon="el-icon-delete"
+            size="mini"
+            type="danger"
+            @click="handleDelete(scope.row,'true')"
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <el-dialog :visible.sync="dialogVisible" :title="dialogType==='edit'?'Edit Role':'New Role'">
-      <el-form :model="role" label-width="80px" label-position="left">
-        <el-form-item label="Code">
-          <el-input v-model="role.code" placeholder="角色编码"/>
+    <pagination
+      v-show="total>0"
+      :total="total"
+      :page.sync="listQuery.current"
+      :limit.sync="listQuery.size"
+      @pagination="getList"
+    />
+
+    <el-dialog :close-on-click-modal="false" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible"
+               width="600px">
+      <el-form
+        ref="roleForm"
+        :rules="rules"
+        :model="temp"
+        label-position="right"
+        label-width="150px"
+      >
+        <el-form-item label="角色编码：" prop="code">
+          <el-input v-model="temp.code" placeholder="角色编码"/>
         </el-form-item>
-        <el-form-item label="Name">
-          <el-input v-model="role.name" placeholder="角色名"/>
+        <el-form-item label="不良代码名称：" prop="name">
+          <el-input v-model="temp.name" placeholder="角色名"/>
         </el-form-item>
-        <el-form-item label="Desc">
+        <el-form-item label="描述：" prop="description">
           <el-input
-            v-model="role.description"
+            v-model="temp.description"
             :autosize="{ minRows: 2, maxRows: 4}"
             type="textarea"
             placeholder="描述"
           />
         </el-form-item>
-        <el-form-item label="Menus">
+        <el-form-item label="菜单">
           <el-tree
             ref="tree"
             :check-strictly="checkStrictly"
-            :data="routesData"
+            :data="treeData"
             :props="defaultProps"
             show-checkbox
             node-key="name"
@@ -55,85 +103,113 @@
           />
         </el-form-item>
       </el-form>
-      <div style="text-align:right;">
-        <el-button type="danger" @click="dialogVisible=false">取消</el-button>
-        <el-button type="primary" @click="confirmRole">确认</el-button>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="danger" size="small" @click="dialogFormVisible = false">取消</el-button>
+        <el-button type="primary" size="small" @click="dialogStatus==='create'?submit():updateData()">确认</el-button>
       </div>
     </el-dialog>
+
   </div>
 </template>
 
 <script>
   import path from 'path'
-  import { deepClone } from '@/utils'
-  import { getRoutes, getRoles, addRole, deleteRole, updateRole } from '@/api/role'
+  import { deepClone } from '@/utils/index'
+
+  import { getRoutes, getRoles, addRole, updateRole, deleteRole } from '@/api/role'
   import { asyncRoutes, constantRoutes } from '@/router'
 
-  const defaultRole = {
-    key: '',
-    code: '',
-    name: '',
-    description: '',
-    routes: []
-  }
+  import waves from '@/directive/waves' // Waves directive
+  import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 
   export default {
+    name: 'Role',
+    components: { Pagination },
+    directives: { waves },
     data() {
       return {
-        role: Object.assign({}, defaultRole),
+        tableKey: 0,
+        list: [],
+        total: 0,
+        listLoading: true,
+        listQuery: {
+          current: 1,
+          size: 10,
+          name: undefined
+        },
         routes: [],
-        rolesList: [],
-        dialogVisible: false,
-        dialogType: 'new',
+        temp: {
+          id: undefined,
+          name: '',
+          code: '',
+          description: ''
+        },
+        tempCopy: null,
+        dialogFormVisible: false,
+        dialogStatus: '',
+        textMap: {
+          update: '编辑',
+          create: '添加'
+        },
         checkStrictly: false,
         defaultProps: {
           children: 'children',
           label: 'title'
         },
-        flag: true
+        rules: {
+          name: [
+            { required: true, trigger: 'blur', message: '请填写不良代码名称' }
+          ],
+          code: [
+            { required: true, trigger: 'blur', message: '请填写不良代码编码' }
+          ]
+        }
       }
     },
     computed: {
-      routesData() {
-        return this.routes
+      treeData() {
+        this.serviceRoutes = deepClone(this.generateTreeFromList(this.routes))
+        return this.generateRoutes(this.serviceRoutes)
       }
     },
     created() {
-      // Mock: get all routes and roles list from server
+      this.tempCopy = deepClone(this.temp)
+      this.getList()
       this.getRoutes()
-      this.getRoles()
     },
     methods: {
-      async getRoutes() {
-        // const res = await getRoutes()
-        // this.serviceRoutes = res.data
-        // console.log(JSON.stringify(res.data))
-        //this.routes = this.generateRoutes(res.data)
-        // console.log(JSON.stringify(this.routes))
-        this.serviceRoutes = deepClone([...constantRoutes, ...asyncRoutes])
-        this.routes = this.generateRoutes(this.serviceRoutes)
-      },
-      async getRoles() {
-        const res = await getRoles()
-        this.rolesList = res.queryResult.list.map((item) => {
-          return {
-            key: item.id,
-            code: item.code,
-            name: item.name,
-            description: item.description,
-            status: item.status,
-            routes: item.menuList.map((item) => {
-                item.name = item.code
-                item.title = item.name
-                return item
-              }
-            )
-          }
+      getList() {
+        this.listLoading = true
+        getRoles(this.listQuery).then(res => {
+          this.list = res.queryResult.list
+          this.total = res.queryResult.total
+          this.listLoading = false
         })
       },
-
+      handleFilter() {
+        this.listQuery.current = 1
+        this.getList()
+      },
+      generateTreeFromList(list) {
+        let temp = JSON.parse(JSON.stringify(list))
+        // 以id为键，当前对象为值，存入一个新的对象中
+        let tempObj = {}
+        for (let i in temp) {
+          tempObj[temp[i].id] = temp[i]
+        }
+        /*        let tempMap = Object.fromEntries(temp.map(item => {
+                  return { [item.id]: item }
+                }))*/
+        return temp.filter(father => {
+          // 把当前节点的所有子节点找到
+          let childArr = temp.filter(child => father.id === child.pid)
+          childArr.length > 0 ? father.children = childArr : ''
+          // 只返回第一级数据；如果当前节点的pid不为空，但是在父节点不存在，也为一级数据
+          return !tempObj[father.pid]
+        })
+      },
       // Reshape the routes structure so that it looks the same as the sidebar
-      generateRoutes(routes, basePath = '/') {
+      generateRoutes(routes) {
         const res = []
 
         for (let route of routes) {
@@ -149,78 +225,50 @@
           }
 
           const data = {
-            // path: path.resolve(basePath, route.path),
-            name: route.name,
-            title: route.meta && route.meta.title
-
+            name: route.code,
+            title: (route.name)
           }
-
           // recursive child routes
           if (route.children) {
-            data.children = this.generateRoutes(route.children, data.path)
+            data.children = this.generateRoutes(route.children)
           }
           res.push(data)
         }
         return res
       },
-      generateArr(routes) {
-        let data = []
-        routes.forEach(route => {
-          data.push({
-            name: route.name,
-            title: route.meta && route.meta.title
-          })
-          if (route.children) {
-            const temp = this.generateArr(route.children)
-            if (temp.length > 0) {
-              data = [...data, ...temp]
-            }
-          }
-        })
-        return data
-      },
-      handleAddRole() {
-        this.role = Object.assign({}, defaultRole)
-        if (this.$refs.tree) {
-          this.$refs.tree.setCheckedNodes([])
-        }
-        this.dialogType = 'new'
-        this.dialogVisible = true
-      },
-      handleEdit(scope) {
-        this.dialogType = 'edit'
-        this.dialogVisible = true
-        this.checkStrictly = true
-        this.role = deepClone(scope.row)
-        this.$nextTick(() => {
-          // const routes = this.generateRoutes(this.role.routes)
-          // alert(JSON.stringify(this.generateArr(routes)) )
-          // this.$refs.tree.setCheckedNodes(this.generateArr(routes))
-          // alert(JSON.stringify(this.role.routes))
-          this.$refs.tree.setCheckedNodes(this.role.routes)
-          // set checked state of a node not affects its father and child nodes
-          this.checkStrictly = false
-        })
-      },
-      handleDelete({ $index, row }) {
-        this.$confirm('Confirm to remove the role?', 'Warning', {
-          confirmButtonText: 'Confirm',
-          cancelButtonText: 'Cancel',
-          type: 'warning'
-        })
-          .then(async() => {
-            await deleteRole(row.key)
-            this.rolesList.splice($index, 1)
-            this.$message({
-              type: 'success',
-              message: 'Delete succed!'
-            })
-          })
-          .catch(err => {
-            console.error(err)
-          })
-      },
+      onlyOneShowingChild(children = [], parent) {
+        let onlyOneChild = null
+        const showingChildren = children.filter(item => !item.hidden)
 
+        // When there is only one child route, the child route is displayed by default
+        if (showingChildren.length === 1) {
+          onlyOneChild = showingChildren[0]
+          // onlyOneChild.path = path.resolve(parent.path, onlyOneChild.path)
+          return onlyOneChild
+        }
+
+        // Show parent if there are no child route to display
+        if (showingChildren.length === 0) {
+          // onlyOneChild = { ...parent, path: '', noShowingChildren: true }
+          onlyOneChild = parent
+          return onlyOneChild
+        }
+
+        return false
+      },
+      getRoutes() {
+        getRoutes({}).then(res => {
+          this.routes = res.queryResult.list
+        })
+      },
+      resetForm(formName) {
+        if (this.$refs[formName] === undefined) {
+          return false
+        }
+        this.$refs[formName].resetFields()
+
+        this.temp = deepClone(this.tempCopy)
+      },
       handleCheckChange(data, checked, indeterminate) {
         this.checkStrictly = true
         this.$nextTick(() => {
@@ -229,177 +277,107 @@
           this.checkStrictly = false
         })
       },
-
-      // handleCheckChange(data, checked, indeterminate) {
-      //   // let childrenKeys = []
-      //   // childrenKeys = this.getChildrenKeys(data)
-      //   // childrenKeys.forEach(key => {
-      //   //     this.$refs.tree.setChecked(key, checked)
-      //   //   }
-      //   // )
-      //   // if (checked) {
-      //   //   let ancestorKeys = []
-      //   //   this.getAncestorKeys(data, this.routesData, ancestorKeys)
-      //   //   ancestorKeys.forEach(key => {
-      //   //       this.$refs.tree.setChecked(key, checked)
-      //   //     }
-      //   //   )
-      //   // }
-      //
-      //   if (checked && this.flag) {
-      //     let ancestorKeys = []
-      //     this.getAncestorKeys(data, this.routesData, ancestorKeys)
-      //
-      //     this.checkStrictly = true
-      //     this.flag = false
-      //     this.$nextTick(() => {
-      //       this.$refs.tree.setCheckedKeys([...this.$refs.tree.getCheckedKeys(), ...ancestorKeys])
-      //       // ancestorKeys.forEach(key => {
-      //       //     this.$refs.tree.setChecked(key, checked)
-      //       //   }
-      //       // )
-      //       // set checked state of a node not affects its father and child nodes
-      //       this.checkStrictly = false
-      //       this.flag = true
-      //     })
-      //
-      //   }else if(!checked && this.flag && !data.children){
-      //     this.checkStrictly = true
-      //     // this.flag = false
-      //     this.$nextTick(() => {
-      //       this.checkStrictly = false
-      //       // this.flag = true
-      //     })
-      //   }
-      //
-      // },
-      // getAncestorKeys(data, routesData, ancestorKeys) {
-      //   for (let i = 0; i < routesData.length; i++) {
-      //     if (routesData[i].name === data.name) {
-      //       return true
-      //     } else if (routesData[i].children) {
-      //       ancestorKeys.push(routesData[i].name)
-      //       if (!this.getAncestorKeys(data, routesData[i].children, ancestorKeys)) {
-      //         ancestorKeys.pop()
-      //       } else {
-      //         return true
-      //       }
-      //     }
-      //   }
-      //   return false
-      // },
-      // getChildrenKeys(data) {
-      //   if (data.children) {
-      //     return data.children.map(item => item.name)
-      //   } else {
-      //     return []
-      //   }
-      // },
-      generateTree(routes, basePath = '/', checkedKeys) {
-        const res = []
-
-        for (const route of routes) {
-          // const routePath = path.resolve(basePath, route.path)
-
-          // recursive child routes
-          if (route.children) {
-            route.children = this.generateTree(route.children, 'routePath', checkedKeys)
-          }
-
-          if (checkedKeys.includes(route.name) || (route.children && route.children.length >= 1)) {
-            res.push(route)
-          }
+      handleAdd() {
+        this.resetForm('roleForm')
+        this.dialogStatus = 'create'
+        this.dialogFormVisible = true
+        if (this.$refs.tree) {
+          this.$refs.tree.setCheckedKeys([])
         }
-        return res
-      },
-      async confirmRole() {
-        const isEdit = this.dialogType === 'edit'
-
-        const checkedKeys = this.$refs.tree.getCheckedKeys()
-        // console.log(JSON.stringify(this.serviceRoutes) )
-        // this.role.routes =  this.role.routes.filter((route,index,arr)=>checkedKeys.includes(route.name))
-        let role = {
-          id: this.role.key,
-          code: this.role.code,
-          name: this.role.name,
-          description: this.role.description,
-          status: 1
-        }
-        role.menuList = checkedKeys.map((checkedKey) => {
-          return {
-            code: checkedKey
-          }
-        })
-        if (isEdit) {
-          await updateRole(role)
-          for (let index = 0; index < this.rolesList.length; index++) {
-            if (this.rolesList[index].key === this.role.key) {
-              this.rolesList.splice(index, 1, Object.assign({}, this.role))
-              break
-            }
-          }
-        } else {
-          const { role: data } = await addRole(role)
-          this.role.key = data.id
-          let checkedRoutes = this.generateTree(deepClone(this.serviceRoutes), '/', checkedKeys)
-          this.role.routes = this.generateArr(checkedRoutes)
-
-          // this.role.routes=role.menuList.map((item) => {
-          //     item.name = item.code
-          //     item.title = item.name
-          //     return item
-          //   }
-          // )
-          this.rolesList.push(this.role)
-        }
-
-        const { description, code, name } = this.role
-        this.dialogVisible = false
-        this.$notify({
-          title: 'Success',
-          dangerouslyUseHTMLString: true,
-          message: `
-            <div>Role Code: ${code}</div>
-            <div>Role Name: ${name}</div>
-            <div>Description: ${description}</div>
-          `,
-          type: 'success'
+        // this.rules.password[0].required = true
+        this.$nextTick(() => {
+          this.$refs['roleForm'].clearValidate()
         })
       },
-      // reference: src/view/layout/components/Sidebar/SidebarItem.vue
-      onlyOneShowingChild(children = [], parent) {
-        let onlyOneChild = null
-        const showingChildren = children.filter(item => !item.hidden)
+      submit() {
+        this.$refs['roleForm'].validate((valid) => {
+          if (valid) {
+            // const tempData = deepClone(this.temp)
+            let role = deepClone(this.temp)
+            const checkedKeys = this.$refs.tree.getCheckedKeys()
+            const checkedRoutes = this.routes.filter(route => checkedKeys.includes(route.code))
+            role.menuList = checkedRoutes
+            addRole(role).then((res) => {
+              this.list.unshift(res.model)
+              this.total++
+              this.dialogFormVisible = false
+              this.$notify({
+                title: '成功',
+                message: '创建成功',
+                type: 'success',
+                duration: 2000
+              })
+            })
+          }
+        })
+      },
+      handleUpdate(row) {
 
-        // When there is only one child route, the child route is displayed by default
-        if (showingChildren.length === 1) {
-          onlyOneChild = showingChildren[0]
-          onlyOneChild.path = path.resolve(parent.path, onlyOneChild.path)
-          return onlyOneChild
-        }
-
-        // Show parent if there are no child route to display
-        if (showingChildren.length === 0) {
-          onlyOneChild = { ...parent, path: '', noShowingChildren: true }
-          return onlyOneChild
-        }
-
-        return false
+        this.dialogStatus = 'update'
+        // this.rules.password[0].required = false
+        this.temp = deepClone(row) // copy obj
+        // this.temp.password = ''
+        this.dialogFormVisible = true
+        this.checkStrictly = true
+        this.$nextTick(() => {
+          // const routes = this.generateRoutes(this.role.routes)
+          // alert(JSON.stringify(this.generateArr(routes)) )
+          // this.$refs.tree.setCheckedNodes(this.generateArr(routes))
+          // alert(JSON.stringify(this.role.routes))
+          this.$refs.tree.setCheckedKeys(this.temp.menuList.map(menu => menu.code))
+          // set checked state of a node not affects its father and child nodes
+          this.checkStrictly = false
+          this.$refs['roleForm'].clearValidate()
+        })
+      },
+      updateData() {
+        this.$refs['roleForm'].validate((valid) => {
+          if (valid) {
+            let role = deepClone(this.temp)
+            const checkedKeys = this.$refs.tree.getCheckedKeys()
+            const checkedRoutes = this.routes.filter(route => checkedKeys.includes(route.code))
+            role.menuList = checkedRoutes
+            updateRole(role).then(() => {
+              for (const v of this.list) {
+                if (v.id === role.id) {
+                  const index = this.list.indexOf(v)
+                  this.list.splice(index, 1, role)
+                  break
+                }
+              }
+              this.dialogFormVisible = false
+              this.$notify({
+                title: '成功',
+                dangerouslyUseHTMLString: true,
+                message: '更新成功',
+                type: 'success',
+                duration: 2000
+              })
+            })
+          }
+        })
+      },
+      handleDelete(row) {
+        this.$confirm('此操作将永久删除该角色, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          deleteRole(row.id).then(() => {
+            this.$notify({
+              title: '成功',
+              message: '删除成功',
+              type: 'success',
+              duration: 2000
+            })
+            const index = this.list.indexOf(row)
+            this.list.splice(index, 1)
+          })
+        })
       }
+
     }
   }
 </script>
 
-<style lang="scss" scoped>
-  .app-container {
 
-  .roles-table {
-    margin-top: 30px;
-  }
-
-  .permission-tree {
-    margin-bottom: 30px;
-  }
-
-  }
-</style>

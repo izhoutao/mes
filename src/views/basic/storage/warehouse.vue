@@ -5,7 +5,7 @@
         <el-form-item label="" prop="name">
           <el-input
             v-model="listQuery.name"
-            placeholder="请输入班别名称"
+            placeholder="请输入仓库名称"
             style="width: 200px;"
             class="filter-item"
             clearable=""
@@ -22,34 +22,34 @@
     </div>
 
     <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row>
-      <el-table-column label="序号" min-width="20px" align="center">
+      <el-table-column label="序号" min-width="30px" align="center">
         <template slot-scope="scope">
           {{ scope.$index }}
         </template>
       </el-table-column>
-      <el-table-column label="班别编码" min-width="70px" align="center">
+      <el-table-column label="仓库代码" min-width="80px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.code }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="班别名称" min-width="70px" align="center">
+      <el-table-column label="仓库名称" min-width="80px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="描述" min-width="80px" align="center">
+      <el-table-column label="仓库类型" min-width="80px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.description }}</span>
+          <span>{{ scope.row.type }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="开始时间" min-width="70px" align="center">
+      <el-table-column label="管理员" min-width="50px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.beginTime }}</span>
+          <span>{{ scope.row.admin }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="结束时间" min-width="70px" align="center">
+      <el-table-column label="是否启用" min-width="30px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.endTime }}</span>
+          <span>{{ scope.row.state | stateFilter}}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" min-width="80">
@@ -79,42 +79,29 @@
     <el-dialog :close-on-click-modal="false" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible"
                width="600px">
       <el-form
-        ref="shiftForm"
+        ref="warehouseForm"
         :rules="rules"
         :model="temp"
         label-position="right"
         label-width="150px"
       >
-        <el-form-item label="班别编码：" prop="code">
+        <el-form-item label="仓库代码：" prop="code">
           <el-input v-model="temp.code"/>
         </el-form-item>
-        <el-form-item label="班别名称：" prop="name">
+        <el-form-item label="仓库名称：" prop="name">
           <el-input v-model="temp.name"/>
         </el-form-item>
-        <el-form-item label="描述：" prop="description">
-          <el-input v-model="temp.description"/>
+        <el-form-item label="仓库类型：" prop="type">
+          <el-input v-model="temp.type"/>
         </el-form-item>
-        <el-form-item label="开始时间：" prop="beginTime">
-          <el-time-picker
-            v-model="temp.beginTime"
-            :picker-options="{
-                selectableRange: '00:00:00 - 23:59:59'
-              }"
-            placeholder="任意时间点"
-            format="HH:mm:ss"
-            value-format="HH:mm:ss"/>
-          </el-time-picker>
+        <el-form-item label="管理员：" prop="description">
+          <el-input v-model="temp.admin"/>
         </el-form-item>
-        <el-form-item label="结束时间：" prop="endTime">
-          <el-time-picker
-            v-model="temp.endTime"
-            :picker-options="{
-                selectableRange: '00:00:00 - 23:59:59'
-              }"
-            placeholder="任意时间点"
-            format="HH:mm:ss"
-            value-format="HH:mm:ss"/>
-          </el-time-picker>
+        <el-form-item label="是否启用：" prop="description">
+          <el-switch v-model="temp.state"
+                     active-color="#13ce66"
+                     active-value="1"
+                     inactive-value="0"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -127,17 +114,30 @@
 </template>
 
 <script>
-  import { deepClone } from '@/utils/index'
+  import { deepClone } from '@/utils'
 
-  import { getShifts, addShift, updateShift, deleteShift } from '@/api/shift'
+  import { getWarehouses, addWarehouse, updateWarehouse, deleteWarehouse } from '@/api/warehouse.js'
 
   import waves from '@/directive/waves' // Waves directive
-  import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
+  import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
 
   export default {
-    name: 'Shift',
+    name: 'Warehouse',
     components: { Pagination },
     directives: { waves },
+    filters: {
+      statusFilter(state) {
+        const statusMap = {
+          published: 'success',
+          draft: 'info',
+          deleted: 'danger'
+        }
+        return statusMap[state]
+      },
+      stateFilter(state) {
+        return state === '1' ? '启用' : '未启用'
+      }
+    },
     data() {
       return {
         tableKey: 0,
@@ -153,9 +153,9 @@
           id: undefined,
           name: '',
           code: '',
-          description: '',
-          beginTime: '',
-          endTime: ''
+          type: '',
+          admin: '',
+          state: '1'
         },
         tempCopy: null,
         dialogFormVisible: false,
@@ -166,10 +166,10 @@
         },
         rules: {
           name: [
-            { required: true, trigger: 'blur', message: '请填写工艺名称' }
+            { required: true, trigger: 'blur', message: '请填写仓库名称' }
           ],
           code: [
-            { required: true, trigger: 'blur', message: '请填写工艺编码' }
+            { required: true, trigger: 'blur', message: '请填写仓库代码' }
           ]
         }
       }
@@ -180,7 +180,7 @@
     },
     methods: {
       handleModifyState(index, row) {
-        updateShift(row).then((res) => {
+        updateWarehouse(row).then((res) => {
           this.$message({
             message: '操作成功',
             type: 'success'
@@ -189,7 +189,7 @@
       },
       getList() {
         this.listLoading = true
-        getShifts(this.listQuery).then(res => {
+        getWarehouses(this.listQuery).then(res => {
           this.list = res.queryResult.list
           this.total = res.queryResult.total
           this.listLoading = false
@@ -209,20 +209,20 @@
         this.temp = deepClone(this.tempCopy)
       },
       handleAdd() {
-        this.resetForm('shiftForm')
+        this.resetForm('warehouseForm')
         this.dialogStatus = 'create'
         this.dialogFormVisible = true
         // this.rules.password[0].required = true
         this.$nextTick(() => {
-          this.$refs['shiftForm'].clearValidate()
+          this.$refs['warehouseForm'].clearValidate()
         })
       },
       submit() {
-        this.$refs['shiftForm'].validate((valid) => {
+        this.$refs['warehouseForm'].validate((valid) => {
           if (valid) {
             // const tempData = deepClone(this.temp)
-            let shift = deepClone(this.temp)
-            addShift(shift).then((res) => {
+            let warehouse = deepClone(this.temp)
+            addWarehouse(warehouse).then((res) => {
               this.list.unshift(res.model)
               this.total++
               this.dialogFormVisible = false
@@ -244,18 +244,18 @@
         // this.temp.password = ''
         this.dialogFormVisible = true
         this.$nextTick(() => {
-          this.$refs['shiftForm'].clearValidate()
+          this.$refs['warehouseForm'].clearValidate()
         })
       },
       updateData() {
-        this.$refs['shiftForm'].validate((valid) => {
+        this.$refs['warehouseForm'].validate((valid) => {
           if (valid) {
-            let shift = deepClone(this.temp)
-            updateShift(shift).then(() => {
+            let warehouse = deepClone(this.temp)
+            updateWarehouse(warehouse).then(() => {
               for (const v of this.list) {
-                if (v.id === shift.id) {
+                if (v.id === warehouse.id) {
                   const index = this.list.indexOf(v)
-                  this.list.splice(index, 1, shift)
+                  this.list.splice(index, 1, warehouse)
                   break
                 }
               }
@@ -276,7 +276,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteShift(row.id).then(() => {
+          deleteWarehouse(row.id).then(() => {
             this.$notify({
               title: '成功',
               message: '删除成功',

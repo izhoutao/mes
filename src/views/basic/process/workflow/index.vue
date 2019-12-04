@@ -24,9 +24,9 @@
 </template>
 
 <script>
-  import WorkflowList from './components/workflow-list'
-  import BaseFlowEditor from './components/base-flow-editor'
-  import { getOperations } from '@/api/workflow'
+  import WorkflowList from './components/workflow-list.vue'
+  import BaseFlowEditor from './components/base-flow-editor.vue'
+  import { getOperations } from '@/api/workflow.js'
 
   export default {
     data() {

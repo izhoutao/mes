@@ -5,7 +5,7 @@
         <el-form-item label="" prop="name">
           <el-input
             v-model="listQuery.name"
-            placeholder="请输入班别名称"
+            placeholder="请输入打印机名称"
             style="width: 200px;"
             class="filter-item"
             clearable=""
@@ -27,29 +27,34 @@
           {{ scope.$index }}
         </template>
       </el-table-column>
-      <el-table-column label="班别编码" min-width="70px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.code }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="班别名称" min-width="70px" align="center">
+      <el-table-column label="打印机名称" min-width="70px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="描述" min-width="80px" align="center">
+      <el-table-column label="打印机路径" min-width="70px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.description }}</span>
+          <span>{{ scope.row.path }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="开始时间" min-width="70px" align="center">
+      <el-table-column label="字符编码" min-width="80px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.beginTime }}</span>
+          <span>{{ scope.row.characterCode }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="结束时间" min-width="70px" align="center">
+      <el-table-column label="访问用户名" min-width="70px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.endTime }}</span>
+          <span>{{ scope.row.username }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="访问密码" min-width="70px" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.password }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="打印文件路径" min-width="70px" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.filePath }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" min-width="80">
@@ -79,42 +84,29 @@
     <el-dialog :close-on-click-modal="false" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible"
                width="600px">
       <el-form
-        ref="shiftForm"
+        ref="printerForm"
         :rules="rules"
         :model="temp"
         label-position="right"
         label-width="150px"
       >
-        <el-form-item label="班别编码：" prop="code">
-          <el-input v-model="temp.code"/>
-        </el-form-item>
-        <el-form-item label="班别名称：" prop="name">
+        <el-form-item label="打印机名称：" prop="name">
           <el-input v-model="temp.name"/>
         </el-form-item>
-        <el-form-item label="描述：" prop="description">
-          <el-input v-model="temp.description"/>
+        <el-form-item label="打印机路径：" prop="path">
+          <el-input v-model="temp.path"/>
         </el-form-item>
-        <el-form-item label="开始时间：" prop="beginTime">
-          <el-time-picker
-            v-model="temp.beginTime"
-            :picker-options="{
-                selectableRange: '00:00:00 - 23:59:59'
-              }"
-            placeholder="任意时间点"
-            format="HH:mm:ss"
-            value-format="HH:mm:ss"/>
-          </el-time-picker>
+        <el-form-item label="字符编码：" prop="characterCode">
+          <el-input v-model="temp.characterCode"/>
         </el-form-item>
-        <el-form-item label="结束时间：" prop="endTime">
-          <el-time-picker
-            v-model="temp.endTime"
-            :picker-options="{
-                selectableRange: '00:00:00 - 23:59:59'
-              }"
-            placeholder="任意时间点"
-            format="HH:mm:ss"
-            value-format="HH:mm:ss"/>
-          </el-time-picker>
+        <el-form-item label="访问用户名：" prop="username">
+          <el-input v-model="temp.username"/>
+        </el-form-item>
+        <el-form-item label="访问密码：" prop="password">
+          <el-input v-model="temp.password"/>
+        </el-form-item>
+        <el-form-item label="打印文件路径：" prop="filePath">
+          <el-input v-model="temp.filePath"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -127,15 +119,15 @@
 </template>
 
 <script>
-  import { deepClone } from '@/utils/index'
+  import { deepClone } from '@/utils'
 
-  import { getShifts, addShift, updateShift, deleteShift } from '@/api/shift'
+  import { getPrinters, addPrinter, updatePrinter, deletePrinter } from '@/api/printer.js'
 
   import waves from '@/directive/waves' // Waves directive
-  import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
+  import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
 
   export default {
-    name: 'Shift',
+    name: 'Printer',
     components: { Pagination },
     directives: { waves },
     data() {
@@ -152,10 +144,11 @@
         temp: {
           id: undefined,
           name: '',
-          code: '',
-          description: '',
-          beginTime: '',
-          endTime: ''
+          path: '',
+          characterCode: '',
+          username: '',
+          password: '',
+          filePath: ''
         },
         tempCopy: null,
         dialogFormVisible: false,
@@ -166,11 +159,23 @@
         },
         rules: {
           name: [
-            { required: true, trigger: 'blur', message: '请填写工艺名称' }
+            { required: true, trigger: 'blur', message: '打印机名称不能为空' }
           ],
-          code: [
-            { required: true, trigger: 'blur', message: '请填写工艺编码' }
-          ]
+          path: [
+            { required: true, trigger: 'blur', message: '打印机路径不能为空' }
+          ],
+          characterCode: [
+            { required: true, trigger: 'blur', message: '字符编码不能为空' }
+          ],
+          username: [
+            { required: true, trigger: 'blur', message: '访问用户名不能为空' }
+          ],
+          password: [
+            { required: true, trigger: 'blur', message: '访问密码不能为空' }
+          ],
+          filePath: [
+            { required: true, trigger: 'blur', message: '打印文件路径不能为空' }
+          ],
         }
       }
     },
@@ -180,7 +185,7 @@
     },
     methods: {
       handleModifyState(index, row) {
-        updateShift(row).then((res) => {
+        updatePrinter(row).then((res) => {
           this.$message({
             message: '操作成功',
             type: 'success'
@@ -189,7 +194,7 @@
       },
       getList() {
         this.listLoading = true
-        getShifts(this.listQuery).then(res => {
+        getPrinters(this.listQuery).then(res => {
           this.list = res.queryResult.list
           this.total = res.queryResult.total
           this.listLoading = false
@@ -209,20 +214,20 @@
         this.temp = deepClone(this.tempCopy)
       },
       handleAdd() {
-        this.resetForm('shiftForm')
+        this.resetForm('printerForm')
         this.dialogStatus = 'create'
         this.dialogFormVisible = true
         // this.rules.password[0].required = true
         this.$nextTick(() => {
-          this.$refs['shiftForm'].clearValidate()
+          this.$refs['printerForm'].clearValidate()
         })
       },
       submit() {
-        this.$refs['shiftForm'].validate((valid) => {
+        this.$refs['printerForm'].validate((valid) => {
           if (valid) {
             // const tempData = deepClone(this.temp)
-            let shift = deepClone(this.temp)
-            addShift(shift).then((res) => {
+            let printer = deepClone(this.temp)
+            addPrinter(printer).then((res) => {
               this.list.unshift(res.model)
               this.total++
               this.dialogFormVisible = false
@@ -244,18 +249,18 @@
         // this.temp.password = ''
         this.dialogFormVisible = true
         this.$nextTick(() => {
-          this.$refs['shiftForm'].clearValidate()
+          this.$refs['printerForm'].clearValidate()
         })
       },
       updateData() {
-        this.$refs['shiftForm'].validate((valid) => {
+        this.$refs['printerForm'].validate((valid) => {
           if (valid) {
-            let shift = deepClone(this.temp)
-            updateShift(shift).then(() => {
+            let printer = deepClone(this.temp)
+            updatePrinter(printer).then(() => {
               for (const v of this.list) {
-                if (v.id === shift.id) {
+                if (v.id === printer.id) {
                   const index = this.list.indexOf(v)
-                  this.list.splice(index, 1, shift)
+                  this.list.splice(index, 1, printer)
                   break
                 }
               }
@@ -276,7 +281,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteShift(row.id).then(() => {
+          deletePrinter(row.id).then(() => {
             this.$notify({
               title: '成功',
               message: '删除成功',

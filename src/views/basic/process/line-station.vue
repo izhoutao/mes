@@ -1,16 +1,26 @@
 <template>
-  <div class="app-container">
+  <div class="app-container line-station">
     <div class="filter-container">
       <el-form ref="filterForm" :model="listQuery" :inline="true">
         <el-form-item label="" prop="name">
           <el-input
             v-model="listQuery.name"
-            placeholder="请输入线别名称"
+            placeholder="请输入线别工站名称"
             style="width: 200px;"
             class="filter-item"
             clearable=""
             @keyup.enter.native="handleFilter"
           />
+        </el-form-item>
+        <el-form-item label="" prop="groupId">
+          <el-select v-model="listQuery.lineId" filterable placeholder="线别工站组" @change="handleGroupChange">
+            <el-option
+              v-for="item in lines"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
         <el-button v-waves class="filter-item" @click="resetForm('filterForm');handleFilter()">重置</el-button>
@@ -27,43 +37,31 @@
           {{ scope.$index }}
         </template>
       </el-table-column>
-      <el-table-column label="线别代码" min-width="80px" align="center">
+      <el-table-column label="工站编码" min-width="100px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.code }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="线别名称" min-width="80px" align="center">
+      <el-table-column label="工站名称" min-width="100px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="线别类型" min-width="80px" align="center">
+      <el-table-column label="线别" min-width="150px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.type }}</span>
+          <span>{{ scope.row.lineName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="描述" min-width="100px" align="center">
+      <el-table-column label="制程" min-width="150px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.description }}</span>
+          <span>{{ scope.row.operationName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="最后编辑时间" min-width="80px" align="center">
+      <el-table-column label="操作" align="center" min-width="100">
         <template slot-scope="scope">
-          <span>{{ scope.row.updateTime | parseTime('{y}-{m}-{d} {h}:{i}:{s}')}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" min-width="80">
-        <template slot-scope="scope">
-          <el-button type="primary" icon="el-icon-edit" size="mini"
-                     @click="handleUpdate(scope.row)">编辑
-          </el-button>
-          <el-button
-            icon="el-icon-delete"
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.row,'true')"
-          >删除
-          </el-button>
+          <i class="el-icon-printer printer" @click="handlePrinters(scope.row)"/>
+          <i class="el-icon-edit edit" @click="handleUpdate(scope.row)"/>
+          <i class="el-icon-delete delete" @click="handleDelete(scope.row,'true')"/>
         </template>
       </el-table-column>
     </el-table>
@@ -76,26 +74,43 @@
       @pagination="getList"
     />
 
-    <el-dialog :close-on-click-modal="false" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible"
-               width="600px">
+    <el-dialog
+      :close-on-click-modal="false"
+      :title="textMap[dialogStatus]"
+      :visible.sync="dialogFormVisible"
+      width="600px">
       <el-form
-        ref="lineForm"
+        ref="lineStationForm"
         :rules="rules"
         :model="temp"
         label-position="right"
         label-width="150px"
       >
-        <el-form-item label="线别代码：" prop="code">
+        <el-form-item label="工站编码：" prop="code">
           <el-input v-model="temp.code"/>
         </el-form-item>
-        <el-form-item label="线别名称：" prop="name">
+        <el-form-item label="工站名称：" prop="name">
           <el-input v-model="temp.name"/>
         </el-form-item>
-        <el-form-item label="线别类型：" prop="type">
-          <el-input v-model="temp.type"/>
+        <el-form-item label="线别：" prop="groupId">
+          <el-select v-model="temp.lineId" filterable placeholder="请选择" style="width:100%">
+            <el-option
+              v-for="item in lines"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item label="描述：" prop="description">
-          <el-input v-model="temp.description"/>
+        <el-form-item label="工艺：" prop="groupId">
+          <el-select v-model="temp.operationId" filterable placeholder="请选择" style="width:100%">
+            <el-option
+              v-for="item in operations"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -104,20 +119,38 @@
       </div>
     </el-dialog>
 
+    <el-dialog
+      :close-on-click-modal="false"
+      title="关联打印机"
+      :visible.sync="printerDialogFormVisible"
+      width="800px"
+    >
+      <line-station-printer :lineStationId="temp.id" :key="temp.id+new Date()"/>
+    </el-dialog>
+
+
   </div>
 </template>
 
 <script>
-  import { deepClone } from '@/utils/index'
+  import { deepClone } from '@/utils'
 
-  import { getLines, addLine, updateLine, deleteLine } from '@/api/line'
+  import {
+    getLineStations,
+    addLineStation,
+    updateLineStation,
+    deleteLineStation,
+  } from '@/api/linestation.js'
+  import { getLines } from '@/api/line.js'
+  import { getOperations } from '@/api/operation.js'
 
   import waves from '@/directive/waves' // Waves directive
-  import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
+  import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
+  import LineStationPrinter from './LineStationPrinter' // Secondary package based on el-pagination
 
   export default {
-    // name: 'v-Line',
-    components: { Pagination },
+    name: 'LineStation',
+    components: { Pagination, LineStationPrinter },
     directives: { waves },
     data() {
       return {
@@ -130,26 +163,29 @@
           size: 10,
           name: undefined
         },
+        lines: [],
+        operations: [],
         temp: {
           id: undefined,
           name: '',
           code: '',
-          type: '',
-          description: ''
+          lineId: undefined,
+          operationId: undefined
         },
         tempCopy: null,
         dialogFormVisible: false,
         dialogStatus: '',
+        printerDialogFormVisible: false,
         textMap: {
           update: '编辑',
           create: '添加'
         },
         rules: {
           name: [
-            { required: true, trigger: 'blur', message: '请填写线别名称' }
+            { required: true, trigger: 'blur', message: '请填写线别工站名称' }
           ],
           code: [
-            { required: true, trigger: 'blur', message: '请填写线别代码' }
+            { required: true, trigger: 'blur', message: '请填写线别工站编码' }
           ]
         }
       }
@@ -157,22 +193,29 @@
     created() {
       this.tempCopy = deepClone(this.temp)
       this.getList()
+      this.getLines()
+      this.getOperations()
     },
     methods: {
-      handleModifyState(index, row) {
-        updateLine(row).then((res) => {
-          this.$message({
-            message: '操作成功',
-            type: 'success'
-          })
-        })
+      handleGroupChange() {
+        this.getList()
       },
       getList() {
         this.listLoading = true
-        getLines(this.listQuery).then(res => {
+        getLineStations(this.listQuery).then(res => {
           this.list = res.queryResult.list
           this.total = res.queryResult.total
           this.listLoading = false
+        })
+      },
+      getLines() {
+        getLines({}).then(res => {
+          this.lines = res.queryResult.list
+        })
+      },
+      getOperations() {
+        getOperations({}).then(res => {
+          this.operations = res.queryResult.list
         })
       },
       handleFilter() {
@@ -189,20 +232,26 @@
         this.temp = deepClone(this.tempCopy)
       },
       handleAdd() {
-        this.resetForm('lineForm')
+        this.resetForm('lineStationForm')
+        this.temp.lineId = this.listQuery.lineId
+        this.temp.operationId = this.listQuery.operationId
         this.dialogStatus = 'create'
         this.dialogFormVisible = true
         // this.rules.password[0].required = true
         this.$nextTick(() => {
-          this.$refs['lineForm'].clearValidate()
+          this.$refs['lineStationForm'].clearValidate()
         })
       },
       submit() {
-        this.$refs['lineForm'].validate((valid) => {
+        this.$refs['lineStationForm'].validate((valid) => {
           if (valid) {
             // const tempData = deepClone(this.temp)
-            let line = deepClone(this.temp)
-            addLine(line).then((res) => {
+            let lineStation = deepClone(this.temp)
+            addLineStation(lineStation).then((res) => {
+              let line = this.lines.find(item => item.id === res.model.lineId)
+              if (line) res.model.lineName = line.name
+              let operation = this.operations.find(item => item.id === res.model.operationId)
+              if (operation) res.model.operationName = operation.name
               this.list.unshift(res.model)
               this.total++
               this.dialogFormVisible = false
@@ -224,18 +273,24 @@
         // this.temp.password = ''
         this.dialogFormVisible = true
         this.$nextTick(() => {
-          this.$refs['lineForm'].clearValidate()
+          this.$refs['lineStationForm'].clearValidate()
         })
       },
       updateData() {
-        this.$refs['lineForm'].validate((valid) => {
+        this.$refs['lineStationForm'].validate((valid) => {
           if (valid) {
-            let line = deepClone(this.temp)
-            updateLine(line).then(() => {
+            let lineStation = deepClone(this.temp)
+            delete lineStation.lineName
+            delete lineStation.operationName
+            updateLineStation(lineStation).then(() => {
+              let line = this.lines.find(item => item.id === lineStation.lineId)
+              if (line) lineStation.lineName = line.name
+              let operation = this.operations.find(item => item.id === lineStation.operationId)
+              if (operation) lineStation.operationName = operation.name
               for (const v of this.list) {
-                if (v.id === line.id) {
+                if (v.id === lineStation.id) {
                   const index = this.list.indexOf(v)
-                  this.list.splice(index, 1, line)
+                  this.list.splice(index, 1, lineStation)
                   break
                 }
               }
@@ -251,12 +306,12 @@
         })
       },
       handleDelete(row) {
-        this.$confirm('此操作将永久删除该工艺, 是否继续?', '提示', {
+        this.$confirm('此操作将永久删除该线别工站, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteLine(row.id).then(() => {
+          deleteLineStation(row.id).then(() => {
             this.$notify({
               title: '成功',
               message: '删除成功',
@@ -267,10 +322,25 @@
             this.list.splice(index, 1)
           })
         })
+      },
+      handlePrinters(row) {
+        this.temp = deepClone(row) // copy obj
+        this.printerDialogFormVisible = true
       }
-
     }
   }
 </script>
 
+<style lang="scss">
+
+  .line-station {
+
+  .el-icon-printer.printer, .el-icon-edit.edit, .el-icon-delete.delete {
+    margin: 3px;
+    font-size: 18px !important;
+  }
+
+  }
+
+</style>
 

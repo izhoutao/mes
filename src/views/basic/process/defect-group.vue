@@ -5,7 +5,7 @@
         <el-form-item label="" prop="name">
           <el-input
             v-model="listQuery.name"
-            placeholder="请输入仓库名称"
+            placeholder="请输入不良代码组名称"
             style="width: 200px;"
             class="filter-item"
             clearable=""
@@ -22,34 +22,24 @@
     </div>
 
     <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row>
-      <el-table-column label="序号" min-width="30px" align="center">
+      <el-table-column label="序号" min-width="20px" align="center">
         <template slot-scope="scope">
           {{ scope.$index }}
         </template>
       </el-table-column>
-      <el-table-column label="仓库代码" min-width="80px" align="center">
+      <el-table-column label="不良代码组编码" min-width="100px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.code }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="仓库名称" min-width="80px" align="center">
+      <el-table-column label="不良代码组名称" min-width="100px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="仓库类型" min-width="80px" align="center">
+      <el-table-column label="描述" min-width="200px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.type }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="管理员" min-width="50px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.admin }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="是否启用" min-width="30px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.state | stateFilter}}</span>
+          <span>{{ scope.row.description }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" min-width="80">
@@ -79,29 +69,20 @@
     <el-dialog :close-on-click-modal="false" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible"
                width="600px">
       <el-form
-        ref="warehouseForm"
+        ref="defectGroupForm"
         :rules="rules"
         :model="temp"
         label-position="right"
         label-width="150px"
       >
-        <el-form-item label="仓库代码：" prop="code">
+        <el-form-item label="不良代码组编码：" prop="code">
           <el-input v-model="temp.code"/>
         </el-form-item>
-        <el-form-item label="仓库名称：" prop="name">
+        <el-form-item label="不良代码组名称：" prop="name">
           <el-input v-model="temp.name"/>
         </el-form-item>
-        <el-form-item label="仓库类型：" prop="type">
-          <el-input v-model="temp.type"/>
-        </el-form-item>
-        <el-form-item label="管理员：" prop="description">
-          <el-input v-model="temp.admin"/>
-        </el-form-item>
-        <el-form-item label="是否启用：" prop="description">
-          <el-switch v-model="temp.state"
-                     active-color="#13ce66"
-                     active-value="1"
-                     inactive-value="0"/>
+        <el-form-item label="描述：" prop="description">
+          <el-input v-model="temp.description"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -114,30 +95,17 @@
 </template>
 
 <script>
-  import { deepClone } from '@/utils/index'
+  import { deepClone } from '@/utils'
 
-  import { getWarehouses, addWarehouse, updateWarehouse, deleteWarehouse } from '@/api/warehouse'
+  import { getDefectGroups, addDefectGroup, updateDefectGroup, deleteDefectGroup } from '@/api/defect.js'
 
   import waves from '@/directive/waves' // Waves directive
-  import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
+  import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
 
   export default {
-    name: 'Warehouse',
+    name: 'DefectGroup',
     components: { Pagination },
     directives: { waves },
-    filters: {
-      statusFilter(state) {
-        const statusMap = {
-          published: 'success',
-          draft: 'info',
-          deleted: 'danger'
-        }
-        return statusMap[state]
-      },
-      stateFilter(state) {
-        return state === '1' ? '启用' : '未启用'
-      }
-    },
     data() {
       return {
         tableKey: 0,
@@ -153,9 +121,7 @@
           id: undefined,
           name: '',
           code: '',
-          type: '',
-          admin: '',
-          state: '1'
+          description: ''
         },
         tempCopy: null,
         dialogFormVisible: false,
@@ -166,10 +132,10 @@
         },
         rules: {
           name: [
-            { required: true, trigger: 'blur', message: '请填写仓库名称' }
+            { required: true, trigger: 'blur', message: '请填写不良代码组名称' }
           ],
           code: [
-            { required: true, trigger: 'blur', message: '请填写仓库代码' }
+            { required: true, trigger: 'blur', message: '请填写不良代码组编码' }
           ]
         }
       }
@@ -180,7 +146,7 @@
     },
     methods: {
       handleModifyState(index, row) {
-        updateWarehouse(row).then((res) => {
+        updateDefectGroup(row).then((res) => {
           this.$message({
             message: '操作成功',
             type: 'success'
@@ -189,7 +155,7 @@
       },
       getList() {
         this.listLoading = true
-        getWarehouses(this.listQuery).then(res => {
+        getDefectGroups(this.listQuery).then(res => {
           this.list = res.queryResult.list
           this.total = res.queryResult.total
           this.listLoading = false
@@ -209,20 +175,20 @@
         this.temp = deepClone(this.tempCopy)
       },
       handleAdd() {
-        this.resetForm('warehouseForm')
+        this.resetForm('defectGroupForm')
         this.dialogStatus = 'create'
         this.dialogFormVisible = true
         // this.rules.password[0].required = true
         this.$nextTick(() => {
-          this.$refs['warehouseForm'].clearValidate()
+          this.$refs['defectGroupForm'].clearValidate()
         })
       },
       submit() {
-        this.$refs['warehouseForm'].validate((valid) => {
+        this.$refs['defectGroupForm'].validate((valid) => {
           if (valid) {
             // const tempData = deepClone(this.temp)
-            let warehouse = deepClone(this.temp)
-            addWarehouse(warehouse).then((res) => {
+            let defectGroup = deepClone(this.temp)
+            addDefectGroup(defectGroup).then((res) => {
               this.list.unshift(res.model)
               this.total++
               this.dialogFormVisible = false
@@ -244,18 +210,18 @@
         // this.temp.password = ''
         this.dialogFormVisible = true
         this.$nextTick(() => {
-          this.$refs['warehouseForm'].clearValidate()
+          this.$refs['defectGroupForm'].clearValidate()
         })
       },
       updateData() {
-        this.$refs['warehouseForm'].validate((valid) => {
+        this.$refs['defectGroupForm'].validate((valid) => {
           if (valid) {
-            let warehouse = deepClone(this.temp)
-            updateWarehouse(warehouse).then(() => {
+            let defectGroup = deepClone(this.temp)
+            updateDefectGroup(defectGroup).then(() => {
               for (const v of this.list) {
-                if (v.id === warehouse.id) {
+                if (v.id === defectGroup.id) {
                   const index = this.list.indexOf(v)
-                  this.list.splice(index, 1, warehouse)
+                  this.list.splice(index, 1, defectGroup)
                   break
                 }
               }
@@ -271,12 +237,12 @@
         })
       },
       handleDelete(row) {
-        this.$confirm('此操作将永久删除该工艺, 是否继续?', '提示', {
+        this.$confirm('此操作将永久删除该不良代码组, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteWarehouse(row.id).then(() => {
+          deleteDefectGroup(row.id).then(() => {
             this.$notify({
               title: '成功',
               message: '删除成功',

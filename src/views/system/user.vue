@@ -9,7 +9,7 @@
           <el-input v-model="deptName" clearable placeholder="输入部门名称搜索" prefix-icon="el-icon-search"
                     style="width: 100%;" class="filter-item" @input="getDepartments"/>
         </div>
-        <el-tree :data="treeData" :props="defaultProps" :expand-on-click-node="false" default-expand-all
+        <el-tree :data="treeData" :props="defaultProps" :expand-on-click-node="false" default-expand-all highlight-current
                  @node-click="handleNodeClick"/>
       </el-col>
       <!--用户数据-->

@@ -1,11 +1,11 @@
 <template>
-  <div class="app-container inbound-order">
+  <div class="app-container outbound-order">
     <div class="filter-container">
       <el-form ref="filterForm" :model="listQuery" :inline="true">
         <el-form-item label="" prop="number">
           <el-input
             v-model="listQuery.number"
-            placeholder="请输入入库单号"
+            placeholder="请输入出库单号"
             style="width: 200px;"
             class="filter-item"
             clearable=""
@@ -29,25 +29,40 @@
           添加
         </el-button>
       </el-form>
+      <pagination
+        v-show="total>0"
+        :total="total"
+        :page.sync="listQuery.current"
+        :limit.sync="listQuery.size"
+        @pagination="getList"
+      />
     </div>
 
-    <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row>
+    <el-table
+      :key="tableKey"
+      v-loading="listLoading"
+      :data="list"
+      border
+      fit
+      highlight-current-row
+      @current-change="handleCurrentChange"
+    >
       <el-table-column label="序号" min-width="40px" align="center">
         <template slot-scope="scope">
           {{ scope.$index }}
         </template>
       </el-table-column>
-      <el-table-column label="入库单号" min-width="80px" align="center">
+      <el-table-column label="出库单号" min-width="80px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.number }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="入库库房" min-width="80px" align="center">
+      <el-table-column label="出库库房" min-width="80px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.warehouseId | showName(warehouses) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="入库方式" min-width="80px" align="center">
+      <el-table-column label="出库方式" min-width="80px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.typeId | showName(types) }}</span>
         </template>
@@ -62,9 +77,9 @@
           <span>{{ scope.row.levelId | showName(levels) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="供应商" min-width="80px" align="center">
+      <el-table-column label="客户" min-width="80px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.vendorId | showName(vendors) }}</span>
+          <span>{{ scope.row.customerId | showName(customers) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="创建时间" min-width="80px" align="center">
@@ -90,27 +105,22 @@
       </el-table-column>
     </el-table>
 
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="listQuery.current"
-      :limit.sync="listQuery.size"
-      @pagination="getList"
-    />
-
-    <el-dialog :close-on-click-modal="false" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible"
-               width="600px">
+    <el-dialog
+      :close-on-click-modal="false"
+      :title="textMap[dialogStatus]"
+      :visible.sync="dialogFormVisible"
+      width="600px">
       <el-form
-        ref="inboundOrderForm"
+        ref="outboundOrderForm"
         :rules="rules"
         :model="temp"
         label-position="right"
         label-width="150px"
       >
-        <el-form-item label="入库单号：" prop="number">
+        <el-form-item label="出库单号：" prop="number">
           <el-input v-model="temp.number"/>
         </el-form-item>
-        <el-form-item label="入库方式：" prop="typeId">
+        <el-form-item label="出库方式：" prop="typeId">
           <el-select v-model="temp.typeId" filterable placeholder="请选择" style="width:100%">
             <el-option
               v-for="item in types"
@@ -120,7 +130,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="入库库房：" prop="warehouseId">
+        <el-form-item label="出库库房：" prop="warehouseId">
           <el-select v-model="temp.warehouseId" filterable placeholder="请选择" style="width:100%">
             <el-option
               v-for="item in warehouses"
@@ -150,10 +160,10 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="供应商：" prop="vendorId">
-          <el-select v-model="temp.vendorId" filterable placeholder="请选择" style="width:100%">
+        <el-form-item label="客户：" prop="customerId">
+          <el-select v-model="temp.customerId" filterable placeholder="请选择" style="width:100%">
             <el-option
-              v-for="item in vendors"
+              v-for="item in customers"
               :key="item.id"
               :label="item.name"
               :value="item.id">
@@ -171,25 +181,26 @@
 </template>
 
 <script>
-  import { deepClone } from '@/utils/index'
+  import { deepClone } from '@/utils'
 
   import {
-    getInboundOrders,
-    addInboundOrder,
-    updateInboundOrder,
-    deleteInboundOrder
-  } from '@/api/inboundorder'
-  import { getDictInfos } from '@/api/dictionary'
-  import { getWarehouses } from '@/api/warehouse'
-  import { getVendors } from '@/api/vendor'
+    getOutboundOrders,
+    addOutboundOrder,
+    updateOutboundOrder,
+    deleteOutboundOrder
+  } from '@/api/outboundorder.js'
+  import { getDictInfos } from '@/api/dictionary.js'
+  import { getWarehouses } from '@/api/warehouse.js'
+  import { getCustomers } from '@/api/customer.js'
 
   import waves from '@/directive/waves' // Waves directive
-  import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
+  import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
 
   export default {
-    name: 'InboundOrder',
+    name: 'OutboundOrder',
     components: { Pagination },
     directives: { waves },
+    props: ['orderId'],
     data() {
       return {
         tableKey: 0,
@@ -206,7 +217,7 @@
         warehouses: [],
         levels: [],
         statuses: [],
-        vendors: [],
+        customers: [],
         temp: {
           id: undefined,
           number: ''
@@ -220,10 +231,10 @@
         },
         rules: {
           name: [
-            { required: true, trigger: 'blur', message: '请填写不良代码名称' }
+            { required: true, trigger: 'blur', message: '请填写入库单名称' }
           ],
           code: [
-            { required: true, trigger: 'blur', message: '请填写不良代码编码' }
+            { required: true, trigger: 'blur', message: '请填写入库单编码' }
           ]
         }
       }
@@ -242,7 +253,7 @@
       this.getWarehouses()
       this.getStatuses()
       this.getLevels()
-      this.getVendors()
+      this.getCustomers()
     },
     methods: {
       handleStatusChange() {
@@ -250,14 +261,15 @@
       },
       getList() {
         this.listLoading = true
-        getInboundOrders(this.listQuery).then(res => {
+        getOutboundOrders(this.listQuery).then(res => {
+          this.$emit('update:orderId', '')
           this.list = res.queryResult.list
           this.total = res.queryResult.total
           this.listLoading = false
         })
       },
       getTypes() {
-        getDictInfos({ type_id: '1196628479966187521' }).then(res => {
+        getDictInfos({ type_id: '1abe73eff849494d9409960055feaee1' }).then(res => {
           this.types = res.queryResult.list
         })
       },
@@ -276,9 +288,9 @@
           this.levels = res.queryResult.list
         })
       },
-      getVendors() {
-        getVendors({ }).then(res => {
-          this.vendors = res.queryResult.list
+      getCustomers() {
+        getCustomers({ }).then(res => {
+          this.customers = res.queryResult.list
         })
       },
 
@@ -296,23 +308,24 @@
         this.temp = deepClone(this.tempCopy)
       },
       handleAdd() {
-        this.resetForm('inboundOrderForm')
+        this.resetForm('outboundOrderForm')
         this.dialogStatus = 'create'
         this.dialogFormVisible = true
         // this.rules.password[0].required = true
         this.$nextTick(() => {
-          this.$refs['inboundOrderForm'].clearValidate()
+          this.$refs['outboundOrderForm'].clearValidate()
         })
       },
       submit() {
-        this.$refs['inboundOrderForm'].validate((valid) => {
+        this.$refs['outboundOrderForm'].validate((valid) => {
           if (valid) {
             // const tempData = deepClone(this.temp)
-            let inboundOrder = deepClone(this.temp)
-            addInboundOrder(inboundOrder).then((res) => {
+            let outboundOrder = deepClone(this.temp)
+            addOutboundOrder(outboundOrder).then((res) => {
               this.list.unshift(res.model)
               this.total++
               this.dialogFormVisible = false
+              this.$emit('update:orderId', '')
               this.$notify({
                 title: '成功',
                 message: '创建成功',
@@ -331,18 +344,18 @@
         // this.temp.password = ''
         this.dialogFormVisible = true
         this.$nextTick(() => {
-          this.$refs['inboundOrderForm'].clearValidate()
+          this.$refs['outboundOrderForm'].clearValidate()
         })
       },
       updateData() {
-        this.$refs['inboundOrderForm'].validate((valid) => {
+        this.$refs['outboundOrderForm'].validate((valid) => {
           if (valid) {
-            let inboundOrder = deepClone(this.temp)
-            updateInboundOrder(inboundOrder).then(() => {
+            let outboundOrder = deepClone(this.temp)
+            updateOutboundOrder(outboundOrder).then(() => {
               for (const v of this.list) {
-                if (v.id === inboundOrder.id) {
+                if (v.id === outboundOrder.id) {
                   const index = this.list.indexOf(v)
-                  this.list.splice(index, 1, inboundOrder)
+                  this.list.splice(index, 1, outboundOrder)
                   break
                 }
               }
@@ -363,7 +376,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteInboundOrder(row.id).then(() => {
+          deleteOutboundOrder(row.id).then(() => {
             this.$notify({
               title: '成功',
               message: '删除成功',
@@ -372,19 +385,34 @@
             })
             const index = this.list.indexOf(row)
             this.list.splice(index, 1)
+            this.$emit('update:orderId', '')
           })
         })
+      },
+      handleCurrentChange(val) {
+        val && this.$emit('update:orderId', val.id)
       }
 
     }
   }
 </script>
 <style lang="scss">
-  .inbound-order {
+  .outbound-order {
 
   .el-icon-edit.update, .el-icon-delete.delete {
     margin: 3px;
     font-size: 18px !important;
+  }
+
+  .filter-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+  .el-form-item {
+    margin-bottom: 16px;
+  }
+
   }
 
   }

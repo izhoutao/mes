@@ -139,12 +139,12 @@
 </template>
 
 <script>
-  import { deepClone } from '@/utils/index'
+  import { deepClone } from '@/utils'
 
-  import { getMaterials, addMaterial, updateMaterial, deleteMaterial, getMaterialTypes } from '@/api/material'
+  import { getMaterials, addMaterial, updateMaterial, deleteMaterial, getMaterialTypes } from '@/api/material.js'
 
   import waves from '@/directive/waves' // Waves directive
-  import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
+  import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
 
   export default {
     name: 'Material',
@@ -272,7 +272,10 @@
         this.$refs['materialForm'].validate((valid) => {
           if (valid) {
             let material = deepClone(this.temp)
+            delete material.typeName
             updateMaterial(material).then(() => {
+              let materialType = this.materialTypes.find(item => item.id === material.typeId)
+              if(materialType) material.typeName = materialType.name
               for (const v of this.list) {
                 if (v.id === material.id) {
                   const index = this.list.indexOf(v)

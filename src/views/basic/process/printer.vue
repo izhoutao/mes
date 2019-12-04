@@ -2,23 +2,18 @@
   <div class="app-container">
     <div class="filter-container">
       <el-form ref="filterForm" :model="listQuery" :inline="true">
-        <el-form-item label="" prop="name">
-          <el-input
-            v-model="listQuery.name"
-            placeholder="请输入制程名称"
-            style="width: 200px;"
-            class="filter-item"
-            clearable=""
-            @keyup.enter.native="handleFilter"
-          />
-        </el-form-item>
-        <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
-        <el-button v-waves class="filter-item" @click="resetForm('filterForm');handleFilter()">重置</el-button>
         <el-button class="filter-item" style="margin-left: 10px;" type="success"
                    icon="el-icon-edit" @click="handleAdd">
           添加
         </el-button>
       </el-form>
+      <pagination
+        v-show="total>0"
+        :total="total"
+        :page.sync="listQuery.current"
+        :limit.sync="listQuery.size"
+        @pagination="getList"
+      />
     </div>
 
     <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row>
@@ -27,25 +22,25 @@
           {{ scope.$index }}
         </template>
       </el-table-column>
-      <el-table-column label="工序编码" min-width="100px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.code }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="工序名称" min-width="100px" align="center">
+      <el-table-column label="打印机" min-width="70px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="描述" min-width="200px" align="center">
+      <el-table-column label="打印机路径" min-width="70px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.description }}</span>
+          <span>{{ scope.row.path }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="默认打印机" min-width="70px" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.isDefault }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" min-width="80">
         <template slot-scope="scope">
           <el-button type="primary" icon="el-icon-edit" size="mini"
-                     @click="handleUpdate(scope.row)">编辑
+                     @click="setDefaultPrinter(scope.row.id)">编辑
           </el-button>
           <el-button
             icon="el-icon-delete"
@@ -58,31 +53,18 @@
       </el-table-column>
     </el-table>
 
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="listQuery.current"
-      :limit.sync="listQuery.size"
-      @pagination="getList"
-    />
 
     <el-dialog :close-on-click-modal="false" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible"
                width="600px">
       <el-form
-        ref="operationForm"
+        ref="lineStationPrinterForm"
         :rules="rules"
         :model="temp"
         label-position="right"
         label-width="150px"
       >
-        <el-form-item label="工序编码：" prop="code">
-          <el-input v-model="temp.code"/>
-        </el-form-item>
-        <el-form-item label="工序名称：" prop="name">
-          <el-input v-model="temp.name"/>
-        </el-form-item>
-        <el-form-item label="描述：" prop="description">
-          <el-input v-model="temp.description"/>
+        <el-form-item label="" prop="printerId">
+          <el-input v-model="temp.printerId"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -95,17 +77,34 @@
 </template>
 
 <script>
-  import { deepClone } from '@/utils/index'
+  import { deepClone } from '@/utils'
 
-  import { getOperations, addOperation, updateOperation, deleteOperation } from '@/api/workflow'
+  import {
+    getLineStationPrinters,
+    addLineStationPrinter,
+    updateLineStationPrinter,
+    deleteLineStationPrinter,
+    getPrintersByLineStationId,
+    setDefaultPrinter
+  } from '@/api/linestationprinter.js'
+  import { getPrinters, addPrinter, updatePrinter, deletePrinter } from '@/api/printer.js'
 
   import waves from '@/directive/waves' // Waves directive
-  import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
+  import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
 
   export default {
-    name: 'Operation',
+    name: 'LineStationPrinter',
     components: { Pagination },
     directives: { waves },
+    props: ['lineStationId'],
+    watch: {
+      lineStationId: {
+        handler: function(val) {
+          this.listQuery.lineStationId = val
+        },
+        immediate: true
+      }
+    },
     data() {
       return {
         tableKey: 0,
@@ -114,58 +113,48 @@
         listLoading: true,
         listQuery: {
           current: 1,
-          size: 10,
-          name: undefined
+          size: 10
         },
         temp: {
           id: undefined,
-          name: '',
-          code: '',
-          description: ''
+          lineStationId: this.lineStationId,
+          printerId: undefined,
+          isDefaut: 0
         },
         tempCopy: null,
         dialogFormVisible: false,
         dialogStatus: '',
+        printers: '',
         textMap: {
           update: '编辑',
           create: '添加'
         },
         rules: {
-          name: [
-            { required: true, trigger: 'blur', message: '请填写工艺名称' }
-          ],
-          code: [
-            { required: true, trigger: 'blur', message: '请填写工艺编码' }
-          ],
+          printerId: [
+            { required: true, trigger: 'blur', message: '打印机不能为空' }
+          ]
         }
       }
     },
     created() {
       this.tempCopy = deepClone(this.temp)
       this.getList()
+      this.getPrinters()
     },
     methods: {
-      handleModifyState(index, row) {
-        updateOperation(row).then((res) => {
-          this.$message({
-            message: '操作成功',
-            type: 'success'
-          })
-        })
-      },
       getList() {
         this.listLoading = true
-        getOperations(this.listQuery).then(res => {
+        getPrintersByLineStationId(this.lineStationId).then(res => {
           this.list = res.queryResult.list
           this.total = res.queryResult.total
           this.listLoading = false
         })
       },
-      handleFilter() {
-        this.listQuery.current = 1
-        this.getList()
+      getPrinters() {
+        getPrinters(this.lineStationId).then(res => {
+          this.printers = res.queryResult.list
+        })
       },
-
       resetForm(formName) {
         if (this.$refs[formName] === undefined) {
           return false
@@ -175,60 +164,31 @@
         this.temp = deepClone(this.tempCopy)
       },
       handleAdd() {
-        this.resetForm('operationForm')
+        this.resetForm('lineStationPrinterForm')
         this.dialogStatus = 'create'
         this.dialogFormVisible = true
         // this.rules.password[0].required = true
         this.$nextTick(() => {
-          this.$refs['operationForm'].clearValidate()
+          this.$refs['lineStationPrinterForm'].clearValidate()
         })
       },
       submit() {
-        this.$refs['operationForm'].validate((valid) => {
+        this.$refs['lineStationPrinterForm'].validate((valid) => {
           if (valid) {
             // const tempData = deepClone(this.temp)
-            let operation = deepClone(this.temp)
-            addOperation(operation).then((res) => {
+            let lineStationPrinter = deepClone(this.temp)
+            addLineStationPrinter(lineStationPrinter).then((res) => {
+              let printer = this.printers.find(item => item.id === res.model.printerId)
+              if (printer) {
+                res.model.name = printer.name
+                res.model.path = printer.path
+              }
               this.list.unshift(res.model)
               this.total++
               this.dialogFormVisible = false
               this.$notify({
                 title: '成功',
-                message: '创建成功',
-                type: 'success',
-                duration: 2000
-              })
-            })
-          }
-        })
-      },
-      handleUpdate(row) {
-
-        this.dialogStatus = 'update'
-        // this.rules.password[0].required = false
-        this.temp = deepClone(row) // copy obj
-        // this.temp.password = ''
-        this.dialogFormVisible = true
-        this.$nextTick(() => {
-          this.$refs['operationForm'].clearValidate()
-        })
-      },
-      updateData() {
-        this.$refs['operationForm'].validate((valid) => {
-          if (valid) {
-            let operation = deepClone(this.temp)
-            updateOperation(operation).then(() => {
-              for (const v of this.list) {
-                if (v.id === operation.id) {
-                  const index = this.list.indexOf(v)
-                  this.list.splice(index, 1, operation)
-                  break
-                }
-              }
-              this.dialogFormVisible = false
-              this.$notify({
-                title: '成功',
-                message: '更新成功',
+                message: '添加成功',
                 type: 'success',
                 duration: 2000
               })
@@ -237,12 +197,12 @@
         })
       },
       handleDelete(row) {
-        this.$confirm('此操作将永久删除该工艺, 是否继续?', '提示', {
+        this.$confirm('此操作将永久删除该打印机, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteOperation(row.id).then(() => {
+          deleteLineStationPrinter(row.id).then(() => {
             this.$notify({
               title: '成功',
               message: '删除成功',
@@ -253,8 +213,18 @@
             this.list.splice(index, 1)
           })
         })
+      },
+      setDefaultPrinter(printerId) {
+        setDefaultPrinter(this.setDefaultPrinterId, printerId).then(() => {
+          this.list.forEach(lineStationPrinter => {
+            if (lineStationPrinter.printerId != printerId) {
+              lineStationPrinter.isDefalut = 0
+            } else {
+              lineStationPrinter.isDefalut = 1
+            }
+          })
+        })
       }
-
     }
   }
 </script>

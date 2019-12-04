@@ -81,12 +81,12 @@
 </template>
 
 <script>
-  import Navigator from './navigator'
-  import Toolbar from './toolbar'
-  import ContextMenu from './context-menu'
-  import Page from './page'
-  import Editor from './editor'
-  import { getOperations, updateWorkflow } from '@/api/workflow'
+  import Navigator from './navigator.vue'
+  import Toolbar from './toolbar.vue'
+  import ContextMenu from './context-menu.vue'
+  import Page from './page.vue'
+  import Editor from './editor.vue'
+  import { getOperations, updateWorkflow } from '@/api/workflow.js'
 
   export default {
     components: {
