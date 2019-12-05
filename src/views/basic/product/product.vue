@@ -7,22 +7,12 @@
           <el-form-item label="" prop="name">
             <el-input
               v-model="listQuery.name"
-              placeholder="请输入物料名称"
+              placeholder="请输入产品名称"
               style="width: 200px;"
               class="filter-item"
               clearable=""
               @keyup.enter.native="handleFilter"
             />
-          </el-form-item>
-          <el-form-item label="" prop="typeId">
-            <el-select v-model="listQuery.typeId" filterable placeholder="物料类型" @change="handleFilter">
-              <el-option
-                v-for="item in materialTypes"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id">
-              </el-option>
-            </el-select>
           </el-form-item>
           <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索
           </el-button>
@@ -40,22 +30,72 @@
             {{ scope.$index }}
           </template>
         </el-table-column>
-        <el-table-column label="料号" min-width="80px" align="center">
+        <el-table-column label="钢种" min-width="80px" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.code }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="物料名称" min-width="80px" align="center">
+        <el-table-column label="表面品级" min-width="80px" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.name }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="物料类型" min-width="80px" align="center">
+        <el-table-column label="规格mm*mm" min-width="80px" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.typeName }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="描述" min-width="100px" align="center">
+        <el-table-column label="净重(kg)" min-width="100px" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.description }}</span>
+          </template>
+        </el-table-column>
+         <el-table-column label="毛重(kg)" min-width="100px" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.description }}</span>
+          </template>
+        </el-table-column>
+         <el-table-column label="参考厚度(mm)" min-width="100px" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.description }}</span>
+          </template>
+        </el-table-column>
+         <el-table-column label="参考宽度(mm)" min-width="100px" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.description }}</span>
+          </template>
+        </el-table-column>
+         <el-table-column label="参考长度(mm)" min-width="100px" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.description }}</span>
+          </template>
+        </el-table-column>
+         <el-table-column label="边部" min-width="100px" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.description }}</span>
+          </template>
+        </el-table-column>
+         <el-table-column label="等级" min-width="100px" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.description }}</span>
+          </template>
+        </el-table-column>
+         <el-table-column label="检验员" min-width="100px" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.description }}</span>
+          </template>
+        </el-table-column>
+         <el-table-column label="日期" min-width="100px" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.description }}</span>
+          </template>
+        </el-table-column>
+         <el-table-column label="条码" min-width="100px" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.description }}</span>
+          </template>
+        </el-table-column>
+         <el-table-column label="净重(kg)" min-width="100px" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.description }}</span>
           </template>
@@ -95,10 +135,10 @@
         <el-form-item label="料号：" prop="code">
           <el-input v-model="temp.code"/>
         </el-form-item>
-        <el-form-item label="物料名称：" prop="name">
+        <el-form-item label="产品名称：" prop="name">
           <el-input v-model="temp.name"/>
         </el-form-item>
-        <el-form-item label="物料类型：" prop="typeId">
+        <el-form-item label="产品类型：" prop="typeId">
           <el-select v-model="temp.typeId" filterable placeholder="请选择" style="width:100%">
             <el-option
               v-for="item in materialTypes"
@@ -171,7 +211,6 @@
           current: 1,
           size: 10,
           name: undefined,
-          typeId:undefined
           /*orders: ['code desc']*/
         },
         temp: {

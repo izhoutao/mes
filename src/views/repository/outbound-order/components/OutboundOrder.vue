@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container outbound-order">
+  <div class="outbound-order">
     <div class="filter-container">
       <el-form ref="filterForm" :model="listQuery" :inline="true">
         <el-form-item label="" prop="number">

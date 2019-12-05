@@ -7,6 +7,13 @@ export function getDictTypes(data) {
     data
   })
 }
+export function getDictMaps(data) {
+  return request({
+    url: `/ucenter/dicttype/map`,
+    method: 'post',
+    data
+  })
+}
 
 export function addDictType(data) {
   return request({
@@ -61,3 +68,4 @@ export function deleteDictInfo(id) {
     method: 'delete'
   })
 }
+

@@ -81,7 +81,7 @@ const basicRouter = {
         title: '工艺建模',
         icon: 'lock'
       },
-      redirect: '/basic/process/operation',
+      redirect: '/basic/process/defectgroup',
       children: [
         {
           path: 'defectgroup',
@@ -113,6 +113,7 @@ const basicRouter = {
       path: 'storage',
       component: () => import('@/views/basic'), // Parent router-view
       name: 'storage',
+      alwaysShow: true, // 一直显示根路由
       meta: {
         title: '仓储建模',
         icon: 'lock'
@@ -137,6 +138,25 @@ const basicRouter = {
           component: () => import('@/views/basic/storage/warehouse.vue'),
           meta: { title: '仓库管理', icon: 'dashboard' }
         }
+      ]
+    },
+    {
+      path: 'quality',
+      component: () => import('@/views/basic'), // Parent router-view
+      name: 'quality',
+      meta: {
+        title: '品质建模',
+        icon: 'lock'
+      },
+      redirect: '/basic/quality/inspectionrule',
+      children: [
+        {
+          path: 'inspectionrule',
+          name: 'inspectionrule:list',
+          component: () => import('@/views/basic/quality/inspection-rule'),
+          meta: { title: '检规维护', icon: 'dashboard' }
+        }
+
       ]
     }
   ]

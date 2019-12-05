@@ -185,8 +185,8 @@
             addLineStationPrinter(lineStationPrinter).then((res) => {
               let printer = this.printers.find(item => item.id === res.model.printerId)
               if (printer) {
-                res.model.name = printer.name
-                res.model.path = printer.path
+                res.model.printerName = printer.name
+                res.model.printerPath = printer.path
               }
               this.list.unshift(res.model)
               this.total++
@@ -202,7 +202,7 @@
         })
       },
       handleDelete(row) {
-        this.$confirm('此操作将永久删除该打印机, 是否继续?', '提示', {
+        this.$confirm('此操作将删除该关联打印机, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'

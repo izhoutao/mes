@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container outbound-order-detail">
+  <div class="outbound-order-detail">
     <div class="filter-container">
       <el-form ref="filterForm" :model="listQuery" :inline="true">
         <el-button class="filter-item" style="margin: 16px 0px;" type="success"

@@ -1,8 +1,20 @@
 <template>
-  <div class="inbound-order-detail">
+  <div class="inspection-rule">
     <div class="filter-container">
       <el-form ref="filterForm" :model="listQuery" :inline="true">
-        <el-button class="filter-item" style="margin: 16px 0px;" type="success"
+        <el-form-item label="" prop="statusId">
+          <el-select v-model="listQuery.materialId" filterable placeholder="请选择维护的料号" @change="handleMaterialIdChange">
+            <el-option
+              v-for="item in materials"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
+        <el-button v-waves class="filter-item" @click="resetForm('filterForm');handleFilter()">重置</el-button>
+        <el-button class="filter-item" style="margin-left: 10px;" type="success"
                    icon="el-icon-edit" @click="handleAdd">
           添加
         </el-button>
@@ -16,35 +28,38 @@
       />
     </div>
 
-    <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row>
+    <el-table
+      :key="tableKey"
+      v-loading="listLoading"
+      :data="list"
+      border
+      fit
+      highlight-current-row
+      @current-change="handleCurrentChange"
+    >
       <el-table-column label="序号" min-width="40px" align="center">
         <template slot-scope="scope">
           {{ scope.$index }}
         </template>
       </el-table-column>
-      <el-table-column label="料号" min-width="80px" align="center">
+      <el-table-column label="检规编号" min-width="80px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.materialCode }}</span>
+          <span>{{ scope.row.code }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="物料名称" min-width="80px" align="center">
+      <el-table-column label="检规版次" min-width="80px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.materialName }}</span>
+          <span>{{ scope.row.version }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="入库数量" min-width="80px" align="center">
+      <el-table-column label="最后维护人" min-width="80px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.quantity}}</span>
+          <span>{{ scope.row.updatePerson}}</span>
         </template>
       </el-table-column>
-      <el-table-column label="已收数量" min-width="40px" align="center">
+      <el-table-column label="最后维护时间" min-width="80px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.receivedQuantity}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="检验结果" min-width="80px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.checkResult }}</span>
+          <span>{{scope.row.updateTime | parseTime('{y}-{m}-{d} {h}:{i}:{s}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" min-width="80">
@@ -55,24 +70,20 @@
       </el-table-column>
     </el-table>
 
-    <el-dialog
-      :close-on-click-modal="false"
-      :title="textMap[dialogStatus]"
-      :visible.sync="dialogFormVisible"
-      width="600px"
-    >
+    <el-dialog :close-on-click-modal="false" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible"
+               width="600px">
       <el-form
-        ref="inboundOrderDetailForm"
+        ref="inspectionRuleForm"
         :rules="rules"
         :model="temp"
         label-position="right"
         label-width="150px"
       >
-        <el-form-item label="料号：" prop="materialCode">
-          <el-input v-model="temp.materialCode" @click.native="handleSelectMaterial"/>
+        <el-form-item label="检规编号：" prop="number">
+          <el-input v-model="temp.code"/>
         </el-form-item>
-        <el-form-item label="入库数量：" prop="quantity">
-          <el-input v-model.number="temp.quantity"/>
+        <el-form-item label="检规版次：" prop="typeId">
+          <el-input v-model="temp.version"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -81,21 +92,6 @@
       </div>
     </el-dialog>
 
-
-    <el-dialog
-      :close-on-click-modal="false"
-      title="请选择"
-      :visible.sync="materialDialogFormVisible"
-      width="800px"
-    >
-      <material :selectedMaterial.sync="selectedMaterial"/>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="danger" size="small" @click="materialDialogFormVisible = false">取消</el-button>
-        <el-button type="primary" size="small" @click="confirmMaterial()">确认</el-button>
-      </div>
-    </el-dialog>
-
-
   </div>
 </template>
 
@@ -103,30 +99,21 @@
   import { deepClone } from '@/utils'
 
   import {
-    getInboundOrders,
-    addInboundOrder,
-    updateInboundOrder,
-    deleteInboundOrder
-  } from '@/api/inboundorder.js'
-  import {
-    getInboundOrderDetails,
-    addInboundOrderDetail,
-    updateInboundOrderDetail,
-    deleteInboundOrderDetail
-  } from '@/api/inboundorderdetail.js'
-  import { getDictInfos } from '@/api/dictionary.js'
-  import { getWarehouses } from '@/api/warehouse.js'
-  import { getVendors } from '@/api/vendor.js'
+    getInspectionRules,
+    addInspectionRule,
+    updateInspectionRule,
+    deleteInspectionRule
+  } from '@/api/inspectionrule'
+  import { getMaterials } from '@/api/material.js'
 
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
-  import Material from './material.vue'
 
   export default {
-    name: 'InboundOrderDetail',
-    components: { Pagination, Material },
+    name: 'InspectionRule',
+    components: { Pagination },
     directives: { waves },
-    props: ['orderId'],
+    props: ['ruleId'],
     data() {
       return {
         tableKey: 0,
@@ -136,36 +123,28 @@
         listQuery: {
           current: 1,
           size: 10,
-          inboundOrderId: this.orderId
+          materialId: undefined
         },
-        selectedMaterial: undefined,
-        warehouses: [],
+        materials: [],
         temp: {
           id: undefined,
-          materialId: '',
-          materialCode: '',
-          materialName: '',
-          inboundOrderId: '',
-          checkResult: '',
-          quantity: '',
-          receivedQuantity: ''
+          code: '',
+          version: '',
         },
         tempCopy: null,
         dialogFormVisible: false,
         dialogStatus: '',
-        materialDialogFormVisible: false,
         textMap: {
           update: '编辑',
           create: '添加'
         },
         rules: {
-          materialCode: [
-            { required: true, message: '请选择料号' }
+          code: [
+            { required: true, trigger: 'blur', message: '请填写检规编码' }
           ],
-          quantity: [
-            { required: true, message: '入库数量不能为空'},
-            { type: 'number', message: '入库数量必须为数字值'}
-          ],
+          version: [
+            { required: true, trigger: 'blur', message: '请填写检规版次' }
+          ]
         }
       }
     },
@@ -179,28 +158,24 @@
     created() {
       this.tempCopy = deepClone(this.temp)
       this.getList()
-      this.getWarehouses()
-
-    },
-    watch: {
-      orderId: function(val) {
-        // this.resetForm('filterForm')
-        this.listQuery.inboundOrderId = val
-        this.handleFilter()
-      }
+      this.getMaterials()
     },
     methods: {
+      handleMaterialIdChange() {
+        this.getList()
+      },
       getList() {
         this.listLoading = true
-        getInboundOrderDetails(this.listQuery).then(res => {
+        getInspectionRules(this.listQuery).then(res => {
+          this.$emit('update:ruleId', '')
           this.list = res.queryResult.list
           this.total = res.queryResult.total
           this.listLoading = false
         })
       },
-      getWarehouses() {
-        getWarehouses({}).then(res => {
-          this.warehouses = res.queryResult.list
+      getMaterials() {
+        getMaterials({}).then(res => {
+          this.materials = res.queryResult.list
         })
       },
 
@@ -217,38 +192,25 @@
 
         this.temp = deepClone(this.tempCopy)
       },
-      handleSelectMaterial() {
-        this.materialDialogFormVisible = true
-      },
-      confirmMaterial() {
-        this.materialDialogFormVisible = false
-        this.temp.materialId = this.selectedMaterial && this.selectedMaterial.id
-        this.temp.materialCode = this.selectedMaterial && this.selectedMaterial.code
-        this.temp.materialName = this.selectedMaterial && this.selectedMaterial.name
-      },
       handleAdd() {
-        this.resetForm('inboundOrderDetailForm')
+        this.resetForm('inspectionRuleForm')
         this.dialogStatus = 'create'
         this.dialogFormVisible = true
         // this.rules.password[0].required = true
         this.$nextTick(() => {
-          this.$refs['inboundOrderDetailForm'].clearValidate()
+          this.$refs['inspectionRuleForm'].clearValidate()
         })
       },
       submit() {
-        this.$refs['inboundOrderDetailForm'].validate((valid) => {
+        this.$refs['inspectionRuleForm'].validate((valid) => {
           if (valid) {
             // const tempData = deepClone(this.temp)
-            let inboundOrderDetail = deepClone(this.temp)
-            inboundOrderDetail.inboundOrderId = this.orderId
-            delete inboundOrderDetail.materialCode
-            delete inboundOrderDetail.materialName
-            addInboundOrderDetail(inboundOrderDetail).then((res) => {
-              res.model.materialCode=this.temp.materialCode
-              res.model.materialName=this.temp.materialName
+            let inspectionRule = deepClone(this.temp)
+            addInspectionRule(inspectionRule).then((res) => {
               this.list.unshift(res.model)
               this.total++
               this.dialogFormVisible = false
+              this.$emit('update:ruleId', '')
               this.$notify({
                 title: '成功',
                 message: '创建成功',
@@ -267,23 +229,18 @@
         // this.temp.password = ''
         this.dialogFormVisible = true
         this.$nextTick(() => {
-          this.$refs['inboundOrderDetailForm'].clearValidate()
+          this.$refs['inspectionRuleForm'].clearValidate()
         })
       },
       updateData() {
-        this.$refs['inboundOrderDetailForm'].validate((valid) => {
+        this.$refs['inspectionRuleForm'].validate((valid) => {
           if (valid) {
-            let inboundOrderDetail = deepClone(this.temp)
-            inboundOrderDetail.inboundOrderId = this.orderId
-            delete inboundOrderDetail.materialCode
-            delete inboundOrderDetail.materialName
-            updateInboundOrderDetail(inboundOrderDetail).then(() => {
+            let inspectionRule = deepClone(this.temp)
+            updateInspectionRule(inspectionRule).then(() => {
               for (const v of this.list) {
-                if (v.id === inboundOrderDetail.id) {
+                if (v.id === inspectionRule.id) {
                   const index = this.list.indexOf(v)
-                  inboundOrderDetail.materialCode=this.temp.materialCode
-                  inboundOrderDetail.materialName=this.temp.materialName
-                  this.list.splice(index, 1, inboundOrderDetail)
+                  this.list.splice(index, 1, inspectionRule)
                   break
                 }
               }
@@ -299,12 +256,12 @@
         })
       },
       handleDelete(row) {
-        this.$confirm('此操作将永久删除该不良代码, 是否继续?', '提示', {
+        this.$confirm('此操作将永久删除该检验规则, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteInboundOrderDetail(row.id).then(() => {
+          deleteInspectionRule(row.id).then(() => {
             this.$notify({
               title: '成功',
               message: '删除成功',
@@ -313,15 +270,19 @@
             })
             const index = this.list.indexOf(row)
             this.list.splice(index, 1)
+            this.$emit('update:ruleId', '')
           })
         })
+      },
+      handleCurrentChange(val) {
+        val && this.$emit('update:ruleId', val.id)
       }
 
     }
   }
 </script>
 <style lang="scss">
-  .inbound-order-detail {
+  .inspection-rule {
 
   .el-icon-edit.update, .el-icon-delete.delete {
     margin: 3px;
@@ -338,6 +299,8 @@
   }
 
   }
+
   }
+
 </style>
 
