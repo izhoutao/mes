@@ -144,6 +144,7 @@ const basicRouter = {
       path: 'quality',
       component: () => import('@/views/basic'), // Parent router-view
       name: 'quality',
+      alwaysShow: true, // 一直显示根路由
       meta: {
         title: '品质建模',
         icon: 'lock'

@@ -114,9 +114,7 @@
     updateOutboundOrderDetail,
     deleteOutboundOrderDetail
   } from '@/api/outboundorderdetail.js'
-  import { getDictInfos } from '@/api/dictionary.js'
-  import { getWarehouses } from '@/api/warehouse.js'
-  import { getCustomers } from '@/api/customer.js'
+  import { getMaterials } from '@/api/material'
 
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
@@ -139,12 +137,12 @@
           outboundOrderId: this.orderId
         },
         selectedMaterial: undefined,
-        warehouses: [],
+        // materials:[],
+        // materialMap:null,
         temp: {
           id: undefined,
           materialId: '',
-          materialCode: '',
-          materialName: '',
+          materialCode:'',
           outboundOrderId: '',
           checkResult: '',
           quantity: '',
@@ -169,23 +167,17 @@
         }
       }
     },
-    filters: {
-      showName: function(id, list) {
-        var item = list.find(item => item.id === id)
-        if (!item) return ''
-        return item.name
-      }
-    },
     created() {
       this.tempCopy = deepClone(this.temp)
+      // this.getMaterials()
       this.getList()
-      this.getWarehouses()
 
     },
     watch: {
       orderId: function(val) {
         // this.resetForm('filterForm')
         this.listQuery.outboundOrderId = val
+        this.temp.outboundOrderId = val
         this.handleFilter()
       }
     },
@@ -198,11 +190,14 @@
           this.listLoading = false
         })
       },
-      getWarehouses() {
-        getWarehouses({}).then(res => {
-          this.warehouses = res.queryResult.list
-        })
-      },
+      // getMaterials() {
+      //   getMaterials({}).then(res => {
+      //     this.materials = res.queryResult.list
+      //     this.materialMap = _.fromPairs(this.materials.map(material => {
+      //       return [material.id, material]
+      //     }))
+      //   })
+      // },
 
       handleFilter() {
         this.listQuery.current = 1
@@ -240,7 +235,6 @@
           if (valid) {
             // const tempData = deepClone(this.temp)
             let outboundOrderDetail = deepClone(this.temp)
-            outboundOrderDetail.outboundOrderId = this.orderId
             delete outboundOrderDetail.materialCode
             delete outboundOrderDetail.materialName
             addOutboundOrderDetail(outboundOrderDetail).then((res) => {

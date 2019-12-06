@@ -69,51 +69,90 @@
       :close-on-click-modal="false"
       :title="textMap[dialogStatus]"
       :visible.sync="dialogFormVisible"
-      width="600px"
+      width="800px"
     >
       <el-form
         ref="inspectionRuleItemForm"
         :rules="rules"
         :model="temp"
         label-position="right"
-        label-width="150px"
+        label-width="100px"
       >
-        <el-form-item label="检验项目：" prop="name">
-          <el-input v-model="temp.name"/>
-        </el-form-item>
-        <el-form-item label="项次：" prop="sequenceNumber">
-          <el-input v-model.number="temp.sequenceNumber"/>
-        </el-form-item>
-        <el-form-item label="检验内容：" prop="description">
-          <el-input v-model="temp.description"/>
-        </el-form-item>
-        <el-form-item label="检验工具：" prop="tool">
-          <el-input v-model="temp.tool"/>
-        </el-form-item>
-        <el-form-item label="检验频率：" prop="frequency">
-          <el-input v-model.number="temp.frequency"/>
-        </el-form-item>
-        <el-form-item label="检验规格：" prop="showSpecification">
-          <el-checkbox v-model="showSpecification"/>
-        </el-form-item>
-        <el-form-item label="检验方法：" prop="method">
-          <el-input v-model="temp.method"/>
-        </el-form-item>
-        <el-form-item label="检验规格：" prop="specification" v-show="showSpecification">
-          <el-input v-model.number="temp.specification"/>
-        </el-form-item>
-        <el-form-item label="规格单位：" prop="unit" v-show="showSpecification">
-          <el-input v-model="temp.specificationUnit"/>
-        </el-form-item>
-        <el-form-item label="规格下限：" prop="minValue" v-show="showSpecification">
-          <el-input v-model.number="temp.minValue"/>
-        </el-form-item>
-        <el-form-item label="规格上限：" prop="maxValue" v-show="showSpecification">
-          <el-input v-model.number="temp.maxValue"/>
-        </el-form-item>
-        <el-form-item label="检验类别：" prop="checkType">
-          <el-input v-model="temp.checkType"/>
-        </el-form-item>
+
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="检验项目：" prop="name">
+              <el-input v-model="temp.name"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项次：" prop="sequenceNumber">
+              <el-input v-model.number="temp.sequenceNumber"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="检验内容：" prop="description" style="width: 100%">
+              <el-input v-model="temp.description" type="textarea"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="检验工具：" prop="tool">
+              <el-input v-model="temp.tool"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="检验频率：" prop="frequency">
+              <el-input v-model.number="temp.frequency"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="检验规格：" prop="showSpecification">
+              <el-checkbox v-model="showSpecification"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="检验方法：" prop="method">
+              <el-input v-model="temp.method"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="检验规格：" prop="specification" v-show="showSpecification">
+              <el-input v-model.number="temp.specification"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="规格单位：" prop="unit" v-show="showSpecification">
+              <el-input v-model="temp.specificationUnit"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="规格下限：" prop="minValue" v-show="showSpecification">
+              <el-input v-model.number="temp.minValue"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="规格上限：" prop="maxValue" v-show="showSpecification">
+              <el-input v-model.number="temp.maxValue"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="检验类别：" prop="checkType">
+              <el-input v-model="temp.checkType"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="danger" size="small" @click="dialogFormVisible = false">取消</el-button>
@@ -128,20 +167,11 @@
   import { deepClone } from '@/utils'
 
   import {
-    getInspectionRules,
-    addInspectionRule,
-    updateInspectionRule,
-    deleteInspectionRule
-  } from '@/api/inspectionrule.js'
-  import {
     getInspectionRuleItems,
     addInspectionRuleItem,
     updateInspectionRuleItem,
     deleteInspectionRuleItem
   } from '@/api/inspectionruleitem.js'
-  import { getDictInfos } from '@/api/dictionary.js'
-  import { getWarehouses } from '@/api/warehouse.js'
-  import { getVendors } from '@/api/vendor.js'
 
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
@@ -163,21 +193,20 @@
           size: 10,
           inspectionRuleId: this.ruleId
         },
-        warehouses: [],
         temp: {
           id: undefined,
-          inspectionRuleId:'',
-          name:'',
-          sequenceNumber:'',
-          description:'',
-          tool:'',
-          frequency:'',
-          method:'',
-          specification:'',
-          specificationUnit:'',
-          minValue:'',
-          maxValue:'',
-          checkType:'',
+          inspectionRuleId: this.ruleId,
+          name: '',
+          sequenceNumber: '',
+          description: '',
+          tool: '',
+          frequency: '',
+          method: '',
+          specification: '',
+          specificationUnit: '',
+          minValue: '',
+          maxValue: '',
+          checkType: ''
         },
         tempCopy: null,
         dialogFormVisible: false,
@@ -191,29 +220,22 @@
           name: [
             { required: true, message: '请填写检验项目' }
           ],
-          quantity: [
-            { required: true, message: '请填写检验内容' },
+          description: [
+            { required: true, message: '请填写检验内容' }
           ]
         }
-      }
-    },
-    filters: {
-      showName: function(id, list) {
-        var item = list.find(item => item.id === id)
-        if (!item) return ''
-        return item.name
       }
     },
     created() {
       this.tempCopy = deepClone(this.temp)
       this.getList()
-      this.getWarehouses()
 
     },
     watch: {
       ruleId: function(val) {
         // this.resetForm('filterForm')
         this.listQuery.inspectionRuleId = val
+        this.temp.inspectionRuleId = val
         this.handleFilter()
       }
     },
@@ -226,17 +248,10 @@
           this.listLoading = false
         })
       },
-      getWarehouses() {
-        getWarehouses({}).then(res => {
-          this.warehouses = res.queryResult.list
-        })
-      },
-
       handleFilter() {
         this.listQuery.current = 1
         this.getList()
       },
-
       resetForm(formName) {
         if (this.$refs[formName] === undefined) {
           return false
@@ -259,7 +274,6 @@
           if (valid) {
             // const tempData = deepClone(this.temp)
             let inspectionRuleItem = deepClone(this.temp)
-            inspectionRuleItem.inspectionRuleId = this.ruleId
             addInspectionRuleItem(inspectionRuleItem).then((res) => {
               this.list.unshift(res.model)
               this.total++
@@ -275,7 +289,6 @@
         })
       },
       handleUpdate(row) {
-
         this.dialogStatus = 'update'
         // this.rules.password[0].required = false
         this.temp = deepClone(row) // copy obj
@@ -289,7 +302,6 @@
         this.$refs['inspectionRuleItemForm'].validate((valid) => {
           if (valid) {
             let inspectionRuleItem = deepClone(this.temp)
-            inspectionRuleItem.inspectionRuleId = this.ruleId
             updateInspectionRuleItem(inspectionRuleItem).then(() => {
               for (const v of this.list) {
                 if (v.id === inspectionRuleItem.id) {

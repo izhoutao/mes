@@ -245,12 +245,12 @@
     },
     created() {
       this.tempCopy = deepClone(this.temp)
-      this.getList()
       this.getTypes()
       this.getWarehouses()
       this.getStatuses()
       this.getLevels()
       this.getVendors()
+      this.getList()
     },
     methods: {
       handleStatusChange() {

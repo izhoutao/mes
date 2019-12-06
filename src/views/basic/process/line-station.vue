@@ -164,7 +164,9 @@
           name: undefined
         },
         lines: [],
+        lineMap:null,
         operations: [],
+        operationMap:null,
         temp: {
           id: undefined,
           name: '',
@@ -192,9 +194,9 @@
     },
     created() {
       this.tempCopy = deepClone(this.temp)
-      this.getList()
       this.getLines()
       this.getOperations()
+      this.getList()
     },
     methods: {
       handleGroupChange() {
@@ -203,7 +205,13 @@
       getList() {
         this.listLoading = true
         getLineStations(this.listQuery).then(res => {
-          this.list = res.queryResult.list
+          this.list = res.queryResult.list.map(item => {
+            let line = this.lineMap[item.lineId]
+            item.lineName = line.name
+            let operation = this.operationMap[item.operationId]
+            item.operationName = operation.name
+            return item
+          })
           this.total = res.queryResult.total
           this.listLoading = false
         })
@@ -211,11 +219,17 @@
       getLines() {
         getLines({}).then(res => {
           this.lines = res.queryResult.list
+          this.lineMap = _.fromPairs(this.lines.map(line => {
+            return [line.id, line]
+          }))
         })
       },
       getOperations() {
         getOperations({}).then(res => {
           this.operations = res.queryResult.list
+          this.operationMap = _.fromPairs(this.operations.map(operation => {
+            return [operation.id, operation]
+          }))
         })
       },
       handleFilter() {
@@ -248,10 +262,10 @@
             // const tempData = deepClone(this.temp)
             let lineStation = deepClone(this.temp)
             addLineStation(lineStation).then((res) => {
-              let line = this.lines.find(item => item.id === res.model.lineId)
-              if (line) res.model.lineName = line.name
-              let operation = this.operations.find(item => item.id === res.model.operationId)
-              if (operation) res.model.operationName = operation.name
+              let line = this.lineMap[lineStation.lineId]
+              res.model.lineName = line.name
+              let operation = this.operationMap[lineStation.operationId]
+              res.model.operationName = operation.name
               this.list.unshift(res.model)
               this.total++
               this.dialogFormVisible = false
@@ -266,7 +280,6 @@
         })
       },
       handleUpdate(row) {
-
         this.dialogStatus = 'update'
         // this.rules.password[0].required = false
         this.temp = deepClone(row) // copy obj
@@ -280,13 +293,11 @@
         this.$refs['lineStationForm'].validate((valid) => {
           if (valid) {
             let lineStation = deepClone(this.temp)
-            delete lineStation.lineName
-            delete lineStation.operationName
             updateLineStation(lineStation).then(() => {
-              let line = this.lines.find(item => item.id === lineStation.lineId)
-              if (line) lineStation.lineName = line.name
-              let operation = this.operations.find(item => item.id === lineStation.operationId)
-              if (operation) lineStation.operationName = operation.name
+              let line = this.lineMap[lineStation.lineId]
+              lineStation.lineName = line.name
+              let operation = this.operationMap[lineStation.operationId]
+              lineStation.operationName = operation.name
               for (const v of this.list) {
                 if (v.id === lineStation.id) {
                   const index = this.list.indexOf(v)

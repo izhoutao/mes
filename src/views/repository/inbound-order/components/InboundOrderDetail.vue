@@ -103,20 +103,12 @@
   import { deepClone } from '@/utils'
 
   import {
-    getInboundOrders,
-    addInboundOrder,
-    updateInboundOrder,
-    deleteInboundOrder
-  } from '@/api/inboundorder.js'
-  import {
     getInboundOrderDetails,
     addInboundOrderDetail,
     updateInboundOrderDetail,
     deleteInboundOrderDetail
   } from '@/api/inboundorderdetail.js'
-  import { getDictInfos } from '@/api/dictionary.js'
-  import { getWarehouses } from '@/api/warehouse.js'
-  import { getVendors } from '@/api/vendor.js'
+  import { getMaterials } from '@/api/material'
 
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
@@ -139,13 +131,13 @@
           inboundOrderId: this.orderId
         },
         selectedMaterial: undefined,
-        warehouses: [],
+        // materials:[],
+        // materialMap:null,
         temp: {
           id: undefined,
           materialId: '',
-          materialCode: '',
-          materialName: '',
-          inboundOrderId: '',
+          materialCode:'',
+          inboundOrderId: this.orderId,
           checkResult: '',
           quantity: '',
           receivedQuantity: ''
@@ -169,23 +161,17 @@
         }
       }
     },
-    filters: {
-      showName: function(id, list) {
-        var item = list.find(item => item.id === id)
-        if (!item) return ''
-        return item.name
-      }
-    },
     created() {
       this.tempCopy = deepClone(this.temp)
+      // this.getMaterials()
       this.getList()
-      this.getWarehouses()
 
     },
     watch: {
       orderId: function(val) {
         // this.resetForm('filterForm')
         this.listQuery.inboundOrderId = val
+        this.temp.inboundOrderId = val
         this.handleFilter()
       }
     },
@@ -198,11 +184,14 @@
           this.listLoading = false
         })
       },
-      getWarehouses() {
-        getWarehouses({}).then(res => {
-          this.warehouses = res.queryResult.list
-        })
-      },
+      // getMaterials() {
+      //   getMaterials({}).then(res => {
+      //     this.materials = res.queryResult.list
+      //     this.materialMap = _.fromPairs(this.materials.map(material => {
+      //       return [material.id, material]
+      //     }))
+      //   })
+      // },
 
       handleFilter() {
         this.listQuery.current = 1
@@ -240,7 +229,6 @@
           if (valid) {
             // const tempData = deepClone(this.temp)
             let inboundOrderDetail = deepClone(this.temp)
-            inboundOrderDetail.inboundOrderId = this.orderId
             delete inboundOrderDetail.materialCode
             delete inboundOrderDetail.materialName
             addInboundOrderDetail(inboundOrderDetail).then((res) => {
@@ -274,7 +262,6 @@
         this.$refs['inboundOrderDetailForm'].validate((valid) => {
           if (valid) {
             let inboundOrderDetail = deepClone(this.temp)
-            inboundOrderDetail.inboundOrderId = this.orderId
             delete inboundOrderDetail.materialCode
             delete inboundOrderDetail.materialName
             updateInboundOrderDetail(inboundOrderDetail).then(() => {

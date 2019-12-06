@@ -6,6 +6,7 @@
           <el-input
             v-model="listQuery.name"
             placeholder="请输入物料名称"
+            prefix-icon="el-icon-search"
             style="width: 200px;"
             class="filter-item"
             clearable=""
@@ -77,7 +78,6 @@
       return {
         tableKey: 0,
         list: [],
-        materialTypes: [],
         total: 0,
         listLoading: true,
         listQuery: {
@@ -94,6 +94,8 @@
           description: ''
         },
         tempCopy: null,
+        materialTypes:[],
+        materialTypeMap:null,
         dialogFormVisible: false,
         dialogStatus: '',
         textMap: {
@@ -112,21 +114,13 @@
     },
     created() {
       this.tempCopy = deepClone(this.temp)
-      this.getList()
       this.getMaterialTypes()
+      this.getList()
     },
     methods: {
-      handleModifyState(index, row) {
-        updateMaterial(row).then((res) => {
-          this.$message({
-            message: '操作成功',
-            type: 'success'
-          })
-        })
-      },
       handleSelect(selection, row) {
         //clearSelection：用于多选表格，清空用户的选择
-        //此时所有的checkbox处于未勾选，当用户第一次点击的时候，selectio为一个数组，里面存放的为当前这一行的数据
+        //此时所有的checkbox处于未勾选，当用户第一次点击的时候，selection为一个数组，里面存放的为当前这一行的数据
         this.$refs.selectMaterialTable.clearSelection()
         //此时selection仍然有值 ，只是勾选状态不显示了。
         if (selection.length === 0) {
@@ -144,7 +138,11 @@
       getList() {
         this.listLoading = true
         getMaterials(this.listQuery).then(res => {
-          this.list = res.queryResult.list
+          this.list = res.queryResult.list.map(item => {
+            let materialType = this.materialTypeMap[item.typeId]
+            item.typeName = materialType.name
+            return item
+          })
           this.total = res.queryResult.total
           this.listLoading = false
         })
@@ -152,22 +150,15 @@
       getMaterialTypes() {
         getMaterialTypes({}).then(res => {
           this.materialTypes = res.queryResult.list
+          this.materialTypeMap = _.fromPairs(this.materialTypes.map(materialType => {
+            return [materialType.id, materialType]
+          }))
         })
       },
       handleFilter() {
         this.listQuery.current = 1
         this.getList()
-      },
-
-      resetForm(formName) {
-        if (this.$refs[formName] === undefined) {
-          return false
-        }
-        this.$refs[formName].resetFields()
-
-        this.temp = deepClone(this.tempCopy)
       }
-
     }
   }
 </script>

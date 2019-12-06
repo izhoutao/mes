@@ -117,34 +117,6 @@
         <el-button type="primary" size="small" @click="dialogStatus==='create'?submit():updateData()">确认</el-button>
       </div>
     </div>
-
-    <!--
-        <el-dialog :close-on-click-modal="false" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible"
-                   width="600px">
-          <el-form
-            ref="materialForm"
-            :rules="rules"
-            :model="temp"
-            label-position="right"
-            label-width="150px"
-          >
-            <el-form-item label="工序编码：" prop="code">
-              <el-input v-model="temp.code"/>
-            </el-form-item>
-            <el-form-item label="工序名称：" prop="name">
-              <el-input v-model="temp.name"/>
-            </el-form-item>
-            <el-form-item label="描述：" prop="description">
-              <el-input v-model="temp.description"/>
-            </el-form-item>
-          </el-form>
-          <div slot="footer" class="dialog-footer">
-            <el-button type="danger" size="small" @click="dialogFormVisible = false">取消</el-button>
-            <el-button type="primary" size="small" @click="dialogStatus==='create'?submit():updateData()">确认</el-button>
-          </div>
-        </el-dialog>
-    -->
-
   </div>
 </template>
 
@@ -164,7 +136,6 @@
       return {
         tableKey: 0,
         list: [],
-        materialTypes:[],
         total: 0,
         listLoading: true,
         listQuery: {
@@ -182,6 +153,8 @@
           description: ''
         },
         tempCopy: null,
+        materialTypes:[],
+        materialTypeMap:null,
         dialogFormVisible: false,
         dialogStatus: '',
         textMap: {
@@ -200,8 +173,8 @@
     },
     created() {
       this.tempCopy = deepClone(this.temp)
-      this.getList()
       this.getMaterialTypes()
+      this.getList()
     },
     methods: {
       handleModifyState(index, row) {
@@ -215,7 +188,11 @@
       getList() {
         this.listLoading = true
         getMaterials(this.listQuery).then(res => {
-          this.list = res.queryResult.list
+          this.list = res.queryResult.list.map(item => {
+            let materialType = this.materialTypeMap[item.typeId]
+            item.typeName = materialType.name
+            return item
+          })
           this.total = res.queryResult.total
           this.listLoading = false
         })
@@ -223,6 +200,9 @@
       getMaterialTypes() {
         getMaterialTypes({}).then(res => {
           this.materialTypes = res.queryResult.list
+          this.materialTypeMap = _.fromPairs(this.materialTypes.map(materialType => {
+            return [materialType.id, materialType]
+          }))
         })
       },
       handleFilter() {
@@ -253,8 +233,8 @@
             // const tempData = deepClone(this.temp)
             let material = deepClone(this.temp)
             addMaterial(material).then((res) => {
-              let materialType = this.materialTypes.find(item => item.id === res.model.typeId)
-              if(materialType) res.model.typeName = materialType.name
+              let materialType = this.materialTypeMap[material.typeId]
+              res.model.typeName=materialType.name
               this.list.unshift(res.model)
               this.total++
               this.dialogFormVisible = false
@@ -269,7 +249,6 @@
         })
       },
       handleUpdate(row) {
-
         this.dialogStatus = 'update'
         // this.rules.password[0].required = false
         this.temp = deepClone(row) // copy obj
@@ -283,10 +262,9 @@
         this.$refs['materialForm'].validate((valid) => {
           if (valid) {
             let material = deepClone(this.temp)
-            delete material.typeName
             updateMaterial(material).then(() => {
-              let materialType = this.materialTypes.find(item => item.id === material.typeId)
-              if(materialType) material.typeName = materialType.name
+              let materialType = this.materialTypeMap[material.typeId]
+              material.typeName=materialType.name
               for (const v of this.list) {
                 if (v.id === material.id) {
                   const index = this.list.indexOf(v)

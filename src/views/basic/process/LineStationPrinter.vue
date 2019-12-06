@@ -100,15 +100,14 @@
     components: { Pagination },
     directives: { waves },
     props: ['lineStationId'],
-    watch: {
-      lineStationId: {
-        handler: function(val) {
-
-          this.listQuery.lineStationId = val
-        },
-        immediate: true
-      }
-    },
+    // watch: {
+    //   lineStationId: {
+    //     handler: function(val) {
+    //       this.listQuery.lineStationId = val
+    //     },
+    //     immediate: true
+    //   }
+    // },
     data() {
       return {
         tableKey: 0,
@@ -130,6 +129,7 @@
         dialogFormVisible: false,
         dialogStatus: '',
         printers: '',
+        printerMap: null,
         textMap: {
           update: '编辑',
           create: '添加'
@@ -143,14 +143,19 @@
     },
     created() {
       this.tempCopy = deepClone(this.temp)
-      this.getList()
       this.getPrinters()
+      this.getList()
     },
     methods: {
       getList() {
         this.listLoading = true
         getLineStationPrinters(this.listQuery).then(res => {
-          this.list = res.queryResult.list
+          this.list = res.queryResult.list.map(item => {
+            let printer = this.printerMap[item.printerId]
+            item.printerName = printer.name
+            item.printerPath = printer.path
+            return item
+          })
           this.total = res.queryResult.total
           this.listLoading = false
         })
@@ -158,6 +163,9 @@
       getPrinters() {
         getPrinters({}).then(res => {
           this.printers = res.queryResult.list
+          this.printerMap = _.fromPairs(this.printers.map(printer => {
+            return [printer.id, printer]
+          }))
         })
       },
       resetForm(formName) {
@@ -165,7 +173,6 @@
           return false
         }
         this.$refs[formName].resetFields()
-
         this.temp = deepClone(this.tempCopy)
       },
       handleAdd() {
@@ -183,11 +190,9 @@
             // const tempData = deepClone(this.temp)
             let lineStationPrinter = deepClone(this.temp)
             addLineStationPrinter(lineStationPrinter).then((res) => {
-              let printer = this.printers.find(item => item.id === res.model.printerId)
-              if (printer) {
-                res.model.printerName = printer.name
-                res.model.printerPath = printer.path
-              }
+              let printer = this.printerMap[lineStationPrinter.printerId]
+              res.model.printerName = printer.name
+              res.model.printerPath = printer.path
               this.list.unshift(res.model)
               this.total++
               this.dialogFormVisible = false
@@ -221,7 +226,7 @@
       },
       handleDefaultPrinter(row) {
         let lineStationPrinter = deepClone(row) // copy obj
-        lineStationPrinter.isDefault = true
+        lineStationPrinter.isDefault = 1
         updateLineStationPrinter(lineStationPrinter).then(() => {
           this.list.forEach(item => {
             if (item.printerId != lineStationPrinter.printerId) {
@@ -239,7 +244,6 @@
 
 <style lang="scss">
   .line-station-printer-container {
-
 
 
   .el-icon-star-on, .el-icon-star-off, .el-icon-delete {

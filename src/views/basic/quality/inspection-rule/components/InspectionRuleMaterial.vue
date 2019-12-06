@@ -1,32 +1,8 @@
 <template>
-  <div class="inspection-rule">
+  <div class="inspection-rule-material">
     <div class="filter-container">
       <el-form ref="filterForm" :model="listQuery" :inline="true">
-
-        <el-form-item label="" prop="code">
-          <el-input
-            v-model="listQuery.code"
-            placeholder="请输入检规编号"
-            prefix-icon="el-icon-search"
-            class="filter-item"
-            clearable=""
-            @keyup.enter.native="handleFilter"
-          />
-        </el-form-item>
-
-        <el-form-item label="" prop="statusId">
-          <el-select v-model="listQuery.materialId" filterable placeholder="请选择维护的物料" @change="handleMaterialIdChange">
-            <el-option
-              v-for="item in materials"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
-        <el-button v-waves class="filter-item" @click="resetForm('filterForm');handleFilter()">重置</el-button>
-        <el-button class="filter-item" style="margin-left: 10px;" type="success"
+        <el-button class="filter-item" style="margin: 16px 0px;" type="success"
                    icon="el-icon-edit" @click="handleAdd">
           添加
         </el-button>
@@ -40,40 +16,28 @@
       />
     </div>
 
-    <el-table
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="list"
-      border
-      fit
-      highlight-current-row
-      @current-change="handleCurrentChange"
-    >
+    <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row>
       <el-table-column label="序号" min-width="40px" align="center">
         <template slot-scope="scope">
           {{ scope.$index }}
         </template>
       </el-table-column>
-      <el-table-column label="检规编号" min-width="80px" align="center">
+      <el-table-column label="料号" min-width="80px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.code }}</span>
+          <span>{{ scope.row.materialCode }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="检规版次" min-width="80px" align="center">
+      <el-table-column label="料号类别" min-width="80px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.version }}</span>
+          <span>{{ scope.row.materialTypeName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="最后维护人" min-width="80px" align="center">
+      <el-table-column label="品名" min-width="80px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.updatePerson}}</span>
+          <span>{{ scope.row.materialName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="最后维护时间" min-width="80px" align="center">
-        <template slot-scope="scope">
-          <span>{{scope.row.updateTime | parseTime('{y}-{m}-{d} {h}:{i}:{s}') }}</span>
-        </template>
-      </el-table-column>
+
       <el-table-column label="操作" align="center" min-width="80">
         <template slot-scope="scope">
           <i class="el-icon-edit update" @click="handleUpdate(scope.row)"/>
@@ -82,20 +46,21 @@
       </el-table-column>
     </el-table>
 
-    <el-dialog :close-on-click-modal="false" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible"
-               width="600px">
+    <el-dialog
+      :close-on-click-modal="false"
+      :title="textMap[dialogStatus]"
+      :visible.sync="dialogFormVisible"
+      width="600px"
+    >
       <el-form
-        ref="inspectionRuleForm"
+        ref="inspectionRuleMaterialForm"
         :rules="rules"
         :model="temp"
         label-position="right"
         label-width="150px"
       >
-        <el-form-item label="检规编号：" prop="number">
-          <el-input v-model="temp.code"/>
-        </el-form-item>
-        <el-form-item label="检规版次：" prop="typeId">
-          <el-input v-model="temp.version"/>
+        <el-form-item label="料号：" prop="materialCode">
+          <el-input v-model="temp.materialCode" @click.native="handleSelectMaterial"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -104,6 +69,21 @@
       </div>
     </el-dialog>
 
+
+    <el-dialog
+      :close-on-click-modal="false"
+      title="请选择"
+      :visible.sync="materialDialogFormVisible"
+      width="800px"
+    >
+      <material :selectedMaterial.sync="selectedMaterial"/>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="danger" size="small" @click="materialDialogFormVisible = false">取消</el-button>
+        <el-button type="primary" size="small" @click="confirmMaterial()">确认</el-button>
+      </div>
+    </el-dialog>
+
+
   </div>
 </template>
 
@@ -111,19 +91,19 @@
   import { deepClone } from '@/utils'
 
   import {
-    getInspectionRules,
-    addInspectionRule,
-    updateInspectionRule,
-    deleteInspectionRule
-  } from '@/api/inspectionrule'
-  import { getMaterials } from '@/api/material.js'
+    getInspectionRuleMaterials,
+    addInspectionRuleMaterial,
+    updateInspectionRuleMaterial,
+    deleteInspectionRuleMaterial
+  } from '@/api/inspectionrulematerial.js'
 
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
+  import Material from './material.vue'
 
   export default {
-    name: 'InspectionRule',
-    components: { Pagination },
+    name: 'InspectionRuleMaterial',
+    components: { Pagination, Material },
     directives: { waves },
     props: ['ruleId'],
     data() {
@@ -135,60 +115,53 @@
         listQuery: {
           current: 1,
           size: 10,
-          code:undefined,
-          materialId: undefined
+          inspectionRuleId: this.ruleId
         },
-        materials: [],
+        selectedMaterial: undefined,
         temp: {
           id: undefined,
-          code: '',
-          version: '',
+          materialId: '',
+          materialCode:'',
+          inspectionRuleId: this.ruleId,
         },
         tempCopy: null,
         dialogFormVisible: false,
         dialogStatus: '',
+        materialDialogFormVisible: false,
         textMap: {
           update: '编辑',
           create: '添加'
         },
         rules: {
-          code: [
-            { required: true, trigger: 'blur', message: '请填写检规编码' }
+          materialCode: [
+            { required: true, message: '请选择料号' }
           ],
-          version: [
-            { required: true, trigger: 'blur', message: '请填写检规版次' }
-          ]
+          quantity: [
+            { required: true, message: '入库数量不能为空'},
+            { type: 'number', message: '入库数量必须为数字值'}
+          ],
         }
-      }
-    },
-    filters: {
-      showName: function(id, list) {
-        var item = list.find(item => item.id === id)
-        if (!item) return ''
-        return item.name
       }
     },
     created() {
       this.tempCopy = deepClone(this.temp)
       this.getList()
-      this.getMaterials()
+    },
+    watch: {
+      ruleId: function(val) {
+        // this.resetForm('filterForm')
+        this.listQuery.inspectionRuleId = val
+        this.temp.inspectionRuleId = val
+        this.handleFilter()
+      }
     },
     methods: {
-      handleMaterialIdChange() {
-        this.getList()
-      },
       getList() {
         this.listLoading = true
-        getInspectionRules(this.listQuery).then(res => {
-          this.$emit('update:ruleId', '')
+        getInspectionRuleMaterials(this.listQuery).then(res => {
           this.list = res.queryResult.list
           this.total = res.queryResult.total
           this.listLoading = false
-        })
-      },
-      getMaterials() {
-        getMaterials({}).then(res => {
-          this.materials = res.queryResult.list
         })
       },
 
@@ -205,25 +178,40 @@
 
         this.temp = deepClone(this.tempCopy)
       },
+      handleSelectMaterial() {
+        this.materialDialogFormVisible = true
+      },
+      confirmMaterial() {
+        this.materialDialogFormVisible = false
+        this.temp.materialId = this.selectedMaterial && this.selectedMaterial.id
+        this.temp.materialCode = this.selectedMaterial && this.selectedMaterial.code
+        this.temp.materialName = this.selectedMaterial && this.selectedMaterial.name
+        this.temp.materialTypeName = this.selectedMaterial && this.selectedMaterial.typeName
+      },
       handleAdd() {
-        this.resetForm('inspectionRuleForm')
+        this.resetForm('inspectionRuleMaterialForm')
         this.dialogStatus = 'create'
         this.dialogFormVisible = true
         // this.rules.password[0].required = true
         this.$nextTick(() => {
-          this.$refs['inspectionRuleForm'].clearValidate()
+          this.$refs['inspectionRuleMaterialForm'].clearValidate()
         })
       },
       submit() {
-        this.$refs['inspectionRuleForm'].validate((valid) => {
+        this.$refs['inspectionRuleMaterialForm'].validate((valid) => {
           if (valid) {
             // const tempData = deepClone(this.temp)
-            let inspectionRule = deepClone(this.temp)
-            addInspectionRule(inspectionRule).then((res) => {
+            let inspectionRuleMaterial = deepClone(this.temp)
+            delete inspectionRuleMaterial.materialCode
+            delete inspectionRuleMaterial.materialName
+            delete inspectionRuleMaterial.materialTypeName
+            addInspectionRuleMaterial(inspectionRuleMaterial).then((res) => {
+              res.model.materialCode=this.temp.materialCode
+              res.model.materialName=this.temp.materialName
+              res.model.materialTypeName=this.temp.materialTypeName
               this.list.unshift(res.model)
               this.total++
               this.dialogFormVisible = false
-              this.$emit('update:ruleId', '')
               this.$notify({
                 title: '成功',
                 message: '创建成功',
@@ -242,18 +230,24 @@
         // this.temp.password = ''
         this.dialogFormVisible = true
         this.$nextTick(() => {
-          this.$refs['inspectionRuleForm'].clearValidate()
+          this.$refs['inspectionRuleMaterialForm'].clearValidate()
         })
       },
       updateData() {
-        this.$refs['inspectionRuleForm'].validate((valid) => {
+        this.$refs['inspectionRuleMaterialForm'].validate((valid) => {
           if (valid) {
-            let inspectionRule = deepClone(this.temp)
-            updateInspectionRule(inspectionRule).then(() => {
+            let inspectionRuleMaterial = deepClone(this.temp)
+            delete inspectionRuleMaterial.materialCode
+            delete inspectionRuleMaterial.materialName
+            delete inspectionRuleMaterial.materialTypeName
+            updateInspectionRuleMaterial(inspectionRuleMaterial).then(() => {
               for (const v of this.list) {
-                if (v.id === inspectionRule.id) {
+                if (v.id === inspectionRuleMaterial.id) {
                   const index = this.list.indexOf(v)
-                  this.list.splice(index, 1, inspectionRule)
+                  inspectionRuleMaterial.materialCode=this.temp.materialCode
+                  inspectionRuleMaterial.materialName=this.temp.materialName
+                  inspectionRuleMaterial.materialTypeName=this.temp.materialTypeName
+                  this.list.splice(index, 1, inspectionRuleMaterial)
                   break
                 }
               }
@@ -269,12 +263,12 @@
         })
       },
       handleDelete(row) {
-        this.$confirm('此操作将永久删除该检验规则, 是否继续?', '提示', {
+        this.$confirm('此操作将永久删除该检规对应料号, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteInspectionRule(row.id).then(() => {
+          deleteInspectionRuleMaterial(row.id).then(() => {
             this.$notify({
               title: '成功',
               message: '删除成功',
@@ -283,19 +277,15 @@
             })
             const index = this.list.indexOf(row)
             this.list.splice(index, 1)
-            this.$emit('update:ruleId', '')
           })
         })
-      },
-      handleCurrentChange(val) {
-        val && this.$emit('update:ruleId', val.id)
       }
 
     }
   }
 </script>
 <style lang="scss">
-  .inspection-rule {
+  .inspection-rule-material {
 
   .el-icon-edit.update, .el-icon-delete.delete {
     margin: 3px;
@@ -312,8 +302,6 @@
   }
 
   }
-
   }
-
 </style>
 
