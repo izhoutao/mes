@@ -9,7 +9,8 @@
           <el-input v-model="deptName" clearable placeholder="输入部门名称搜索" prefix-icon="el-icon-search"
                     style="width: 100%;" class="filter-item" @input="getDepartments"/>
         </div>
-        <el-tree :data="treeData" :props="defaultProps" :expand-on-click-node="false" default-expand-all highlight-current
+        <el-tree :data="treeData" :props="defaultProps" :expand-on-click-node="false" default-expand-all
+                 highlight-current
                  @node-click="handleNodeClick"/>
       </el-col>
       <!--用户数据-->
@@ -328,9 +329,14 @@
     },
     created() {
       this.tempCopy = deepClone(this.temp)
-      this.getDepartments()
-      this.getRoles()
-      this.getList()
+      this.listLoading = true
+      this.$nextTick(async () => {
+        await Promise.all([
+          this.getDepartments(),
+          this.getRoles()
+        ])
+        this.getList()
+      })
     },
     methods: {
       async getRoles() {
@@ -384,7 +390,7 @@
       getDeptIdList(data) {
         let deptIdList = [data.id]
         if (data.children) {
-          data.children.forEach(item=>{
+          data.children.forEach(item => {
             deptIdList = deptIdList.concat(this.getDeptIdList(item))
           })
         }

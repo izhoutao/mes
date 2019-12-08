@@ -3,10 +3,10 @@
     <inspection-rule v-bind:ruleId.sync="ruleId"/>
     <el-tabs value="first" v-show="ruleId">
       <el-tab-pane label="检规对应料号" name="first">
-        <inspection-rule-material :ruleId="ruleId"/>
+        <inspection-rule-material :ruleId="ruleId" :key="ruleId"/>
       </el-tab-pane>
       <el-tab-pane label="检规项目" name="second">
-        <inspection-rule-item :ruleId="ruleId"/>
+        <inspection-rule-item :ruleId="ruleId" :key="ruleId"/>
       </el-tab-pane>
     </el-tabs>
   </div>

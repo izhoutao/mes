@@ -173,8 +173,12 @@
     },
     created() {
       this.tempCopy = deepClone(this.temp)
-      this.getMaterialTypes()
-      this.getList()
+      this.listLoading = true
+      this.$nextTick(async () => {
+        await this.getMaterialTypes()
+        this.getList()
+      })
+
     },
     methods: {
       handleModifyState(index, row) {
@@ -197,13 +201,12 @@
           this.listLoading = false
         })
       },
-      getMaterialTypes() {
-        getMaterialTypes({}).then(res => {
-          this.materialTypes = res.queryResult.list
-          this.materialTypeMap = _.fromPairs(this.materialTypes.map(materialType => {
-            return [materialType.id, materialType]
-          }))
-        })
+      async getMaterialTypes() {
+        let res = await getMaterialTypes({})
+        this.materialTypes = res.queryResult.list
+        this.materialTypeMap = _.fromPairs(this.materialTypes.map(materialType => {
+          return [materialType.id, materialType]
+        }))
       },
       handleFilter() {
         this.listQuery.current = 1

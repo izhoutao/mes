@@ -245,12 +245,17 @@
     },
     created() {
       this.tempCopy = deepClone(this.temp)
-      this.getTypes()
-      this.getWarehouses()
-      this.getStatuses()
-      this.getLevels()
-      this.getVendors()
-      this.getList()
+      this.listLoading = true
+      this.$nextTick(async() => {
+        await Promise.all([
+          this.getTypes(),
+          this.getWarehouses(),
+          this.getStatuses(),
+          this.getLevels(),
+          this.getVendors()
+        ])
+        this.getList()
+      })
     },
     methods: {
       handleStatusChange() {

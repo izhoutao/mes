@@ -174,8 +174,9 @@
     },
     created() {
       this.tempCopy = deepClone(this.temp)
-      this.getList()
+      this.listLoading = true
       this.getRoutes()
+      this.getList()
     },
     methods: {
       getList() {

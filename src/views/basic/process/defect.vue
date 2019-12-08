@@ -163,8 +163,8 @@
     },
     created() {
       this.tempCopy = deepClone(this.temp)
-      this.getList()
       this.getDefectGroups()
+      this.getList()
     },
     methods: {
       handleGroupChange() {

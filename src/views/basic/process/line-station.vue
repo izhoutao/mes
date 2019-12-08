@@ -194,9 +194,14 @@
     },
     created() {
       this.tempCopy = deepClone(this.temp)
-      this.getLines()
-      this.getOperations()
-      this.getList()
+      this.listLoading = true
+      this.$nextTick(async () => {
+        await Promise.all([
+          this.getLines(),
+          this.getOperations()
+        ])
+        this.getList()
+      })
     },
     methods: {
       handleGroupChange() {
@@ -216,21 +221,19 @@
           this.listLoading = false
         })
       },
-      getLines() {
-        getLines({}).then(res => {
-          this.lines = res.queryResult.list
-          this.lineMap = _.fromPairs(this.lines.map(line => {
-            return [line.id, line]
-          }))
-        })
+      async getLines() {
+        let res = await getLines({})
+        this.lines = res.queryResult.list
+        this.lineMap = _.fromPairs(this.lines.map(line => {
+          return [line.id, line]
+        }))
       },
-      getOperations() {
-        getOperations({}).then(res => {
-          this.operations = res.queryResult.list
-          this.operationMap = _.fromPairs(this.operations.map(operation => {
-            return [operation.id, operation]
-          }))
-        })
+      async getOperations() {
+        let res = await getOperations({})
+        this.operations = res.queryResult.list
+        this.operationMap = _.fromPairs(this.operations.map(operation => {
+          return [operation.id, operation]
+        }))
       },
       handleFilter() {
         this.listQuery.current = 1

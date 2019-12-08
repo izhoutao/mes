@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <outbound-order v-bind:orderId.sync="orderId"/>
-    <outbound-order-detail :orderId="orderId" v-show="orderId"/>
+    <outbound-order-detail :orderId="orderId" v-show="orderId" :key="orderId"/>
   </div>
 </template>
 

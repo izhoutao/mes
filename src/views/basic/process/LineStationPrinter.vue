@@ -143,8 +143,12 @@
     },
     created() {
       this.tempCopy = deepClone(this.temp)
-      this.getPrinters()
-      this.getList()
+      this.listLoading = true
+      this.$nextTick(async () => {
+        await this.getPrinters()
+        this.getList()
+      })
+
     },
     methods: {
       getList() {
@@ -160,13 +164,12 @@
           this.listLoading = false
         })
       },
-      getPrinters() {
-        getPrinters({}).then(res => {
-          this.printers = res.queryResult.list
-          this.printerMap = _.fromPairs(this.printers.map(printer => {
-            return [printer.id, printer]
-          }))
-        })
+      async getPrinters() {
+        let res = await getPrinters({})
+        this.printers = res.queryResult.list
+        this.printerMap = _.fromPairs(this.printers.map(printer => {
+          return [printer.id, printer]
+        }))
       },
       resetForm(formName) {
         if (this.$refs[formName] === undefined) {

@@ -135,14 +135,14 @@
         listQuery: {
           current: 1,
           size: 10,
-          code:undefined,
+          code: undefined,
           materialId: undefined
         },
         materials: [],
         temp: {
           id: undefined,
           code: '',
-          version: '',
+          version: ''
         },
         tempCopy: null,
         dialogFormVisible: false,
@@ -170,8 +170,11 @@
     },
     created() {
       this.tempCopy = deepClone(this.temp)
-      this.getList()
-      this.getMaterials()
+      this.listLoading = true
+      this.$nextTick(async() => {
+        await this.getMaterials()
+        this.getList()
+      })
     },
     methods: {
       handleMaterialIdChange() {
@@ -186,10 +189,9 @@
           this.listLoading = false
         })
       },
-      getMaterials() {
-        getMaterials({}).then(res => {
-          this.materials = res.queryResult.list
-        })
+      async getMaterials() {
+        let res = await getMaterials({})
+        this.materials = res.queryResult.list
       },
 
       handleFilter() {

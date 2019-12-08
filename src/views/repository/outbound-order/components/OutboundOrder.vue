@@ -248,12 +248,18 @@
     },
     created() {
       this.tempCopy = deepClone(this.temp)
-      this.getList()
-      this.getTypes()
-      this.getWarehouses()
-      this.getStatuses()
-      this.getLevels()
-      this.getCustomers()
+      this.listLoading = true
+      this.$nextTick(async() => {
+        await Promise.all([
+          this.getTypes(),
+          this.getWarehouses(),
+          this.getStatuses(),
+          this.getLevels(),
+          this.getCustomers()
+        ])
+        this.getList()
+      })
+
     },
     methods: {
       handleStatusChange() {
@@ -289,7 +295,7 @@
         })
       },
       getCustomers() {
-        getCustomers({ }).then(res => {
+        getCustomers({}).then(res => {
           this.customers = res.queryResult.list
         })
       },

@@ -167,14 +167,14 @@
       this.getList()
 
     },
-    watch: {
-      orderId: function(val) {
-        // this.resetForm('filterForm')
-        this.listQuery.inboundOrderId = val
-        this.temp.inboundOrderId = val
-        this.handleFilter()
-      }
-    },
+    // watch: {
+    //   orderId: function(val) {
+    //     // this.resetForm('filterForm')
+    //     this.listQuery.inboundOrderId = val
+    //     this.temp.inboundOrderId = val
+    //     this.handleFilter()
+    //   }
+    // },
     methods: {
       getList() {
         this.listLoading = true

@@ -239,8 +239,8 @@
     },
     created() {
       this.tempCopy = deepClone(this.temp)
-      this.getList()
       this.getMaterialTypes()
+      this.getList()
     },
     methods: {
       handleModifyState(index, row) {

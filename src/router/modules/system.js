@@ -39,6 +39,12 @@ const systemRouter = {
       meta: { title: '数据字典', icon: 'dashboard' }
     },
     {
+      path: 'coderule',
+      component: () => import('@/views/system/code-rule'),
+      name: 'coderule:list',
+      meta: { title: '编码规则', icon: 'dashboard' }
+    },
+    {
       path: 'department',
       name: 'department:list',
       component: () => import('@/views/system/department'),

@@ -147,14 +147,14 @@
       this.tempCopy = deepClone(this.temp)
       this.getList()
     },
-    watch: {
-      ruleId: function(val) {
-        // this.resetForm('filterForm')
-        this.listQuery.inspectionRuleId = val
-        this.temp.inspectionRuleId = val
-        this.handleFilter()
-      }
-    },
+    // watch: {
+    //   ruleId: function(val) {
+    //     // this.resetForm('filterForm')
+    //     this.listQuery.inspectionRuleId = val
+    //     this.temp.inspectionRuleId = val
+    //     this.handleFilter()
+    //   }
+    // },
     methods: {
       getList() {
         this.listLoading = true
