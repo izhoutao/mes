@@ -15,9 +15,14 @@
           {{ scope.$index }}
         </template>
       </el-table-column>
-      <el-table-column label="缺陷代号" min-width="80px" align="center">
+      <el-table-column label="缺陷名称" min-width="80px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
+          <span>{{ scope.row.name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="缺陷组名称" min-width="80px" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.groupName }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" min-width="80">
@@ -32,7 +37,7 @@
       :close-on-click-modal="false"
       :title="textMap[dialogStatus]"
       :visible.sync="dialogFormVisible"
-      width="800px"
+      width="1000px"
     >
       <el-form
         ref="iqcDefectForm"
@@ -41,45 +46,86 @@
         label-position="right"
         label-width="100px"
       >
-        <el-form-item label="缺陷代号：" prop="id">
-          <el-input v-model="temp.id"/>
-        </el-form-item>
-        <el-form-item label="上面：" prop="up">
-          <el-input v-model="temp.up"/>
-        </el-form-item>
-        <el-form-item label="下面：" prop="down">
-          <el-input v-model="temp.down"/>
-        </el-form-item>
-        <el-form-item label="宽度位置：" prop="widthPosition">
-          <el-input v-model="temp.widthPosition"/>
-        </el-form-item>
-        <el-form-item label="起始位置：" prop="startPosition">
-          <el-input v-model="temp.startPosition"/>
-        </el-form-item>
-        <el-form-item label="结束位置：" prop="endPosition">
-          <el-input v-model="temp.endPosition"/>
-        </el-form-item>
-        <el-form-item label="缺陷长度：" prop="defectLength">
-          <el-input v-model="temp.defectLength"/>
-        </el-form-item>
-        <el-form-item label="程度：" prop="degree">
-          <el-input v-model="temp.degree"/>
-        </el-form-item>
-        <el-form-item label="类别|波高：" prop="waveHeightCategory">
-          <el-input v-model="temp.waveHeightCategory"/>
-        </el-form-item>
-        <el-form-item label="周期|mm：" prop="period">
-          <el-input v-model="temp.period"/>
-        </el-form-item>
-        <el-form-item label="频率：" prop="frequency">
-          <el-input v-model="temp.frequency"/>
-        </el-form-item>
-        <el-form-item label="直径|mm：" prop="diameter">
-          <el-input v-model="temp.diameter"/>
-        </el-form-item>
-        <el-form-item label="距边|mm：" prop="margin">
-          <el-input v-model="temp.margin"/>
-        </el-form-item>
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="缺陷代号：" prop="id">
+              <el-cascader
+                v-model="defectActive"
+                :options="defects"
+                :props="{ expandTrigger: 'hover',value:'id',label:'name' }">
+              </el-cascader>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="上面：" prop="up">
+              <el-input v-model="temp.up"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="下面：" prop="down">
+              <el-input v-model="temp.down"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="宽度位置：" prop="widthPosition">
+              <el-input v-model="temp.widthPosition"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="起始位置：" prop="startPosition">
+              <el-input v-model="temp.startPosition"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="结束位置：" prop="endPosition">
+              <el-input v-model="temp.endPosition"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="缺陷长度：" prop="defectLength">
+              <el-input v-model="temp.defectLength"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="程度：" prop="degree">
+              <el-input v-model="temp.degree"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="类别|波高：" prop="waveHeightCategory">
+              <el-input v-model="temp.waveHeightCategory"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="周期|mm：" prop="period">
+              <el-input v-model="temp.period"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="频率：" prop="frequency">
+              <el-input v-model="temp.frequency"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="直径|mm：" prop="diameter">
+              <el-input v-model="temp.diameter"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="距边|mm：" prop="margin">
+              <el-input v-model="temp.margin"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="danger" size="small" @click="dialogFormVisible = false">取消</el-button>
@@ -94,7 +140,8 @@
   import { deepClone } from '@/utils'
 
   import waves from '@/directive/waves' // Waves directive
-  import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
+  import Pagination from '@/components/Pagination/index.vue'
+  import { getDefectGroups, getDefects } from '@/api/defect' // Secondary package based on el-pagination
 
   export default {
     name: 'IqcDefect',
@@ -107,10 +154,11 @@
         list: this.defectList,
         listQuery: {
           current: 1,
-          size: 10,
+          size: 10
         },
         temp: {
           id: '',
+          groupId: '',
           up: '',
           down: '',
           widthPosition: '',
@@ -124,6 +172,10 @@
           diameter: '',
           margin: ''
         },
+        defects: [],
+        defectActive: [],
+        defectGroupMap: null,
+        defectMap: null,
         tempCopy: null,
         dialogFormVisible: false,
         dialogStatus: '',
@@ -144,16 +196,48 @@
     },
     created() {
       this.tempCopy = deepClone(this.temp)
+      this.$nextTick(async() => {
+        await this.getDefects({})
+      })
     },
-    // watch: {
-    //   ruleId: function(val) {
-    //     // this.resetForm('filterForm')
-    //     this.listQuery.inspectionRuleId = val
-    //     this.temp.inspectionRuleId = val
-    //     this.handleFilter()
-    //   }
-    // },
+    watch: {
+      defectActive: function(val) {
+        if (val && val[0] && val[1]) {
+          this.temp.groupId = val[0]
+          this.temp.groupName = this.defectGroupMap[val[0]].name
+          this.temp.id = val[1]
+          this.temp.name = this.defectMap[val[1]].name
+        }
+      }
+    },
     methods: {
+      async getDefects() {
+        let res = await getDefectGroups({})
+        let defectGroups = res.queryResult.list
+        this.defectGroupMap = _.fromPairs(defectGroups.map(defectGroup => {
+          return [defectGroup.id, defectGroup]
+        }))
+        res = await getDefects({})
+        let defects = res.queryResult.list
+        this.defectMap = _.fromPairs(defects.map(defect => {
+          return [defect.id, defect]
+        }))
+
+        const defectMap = {}
+        defects.forEach(defect => {
+          if (defectMap[defect.groupId]) {
+            defectMap[defect.groupId] = [...defectMap[defect.groupId], defect]
+          } else {
+            defectMap[defect.groupId] = [defect]
+          }
+        })
+        this.defects = defectGroups.map(item => {
+          if (defectMap[item.id]) {
+            item.children = defectMap[item.id]
+          }
+          return item
+        })
+      },
       resetForm(formName) {
         if (this.$refs[formName] === undefined) {
           return false
@@ -167,6 +251,7 @@
         this.dialogStatus = 'create'
         this.dialogFormVisible = true
         // this.rules.password[0].required = true
+        this.defectActive = [this.temp.groupId, this.temp.id]
         this.$nextTick(() => {
           this.$refs['iqcDefectForm'].clearValidate()
         })
@@ -186,6 +271,8 @@
         this.dialogStatus = 'update'
         // this.rules.password[0].required = false
         this.temp = deepClone(row) // copy obj
+        this.defectActive = [this.temp.groupId, this.temp.id]
+
         // this.temp.password = ''
         this.dialogFormVisible = true
         this.$nextTick(() => {

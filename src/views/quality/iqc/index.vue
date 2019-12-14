@@ -214,8 +214,6 @@
           </el-col>
         </el-row>
       </el-form>
-
-
       <el-tabs value="first">
         <el-tab-pane label="检验记录" name="first">
 
@@ -258,182 +256,179 @@
           </el-table>
         </el-tab-pane>
       </el-tabs>
-
-
-      <el-tabs value="first">
+      <el-tabs value="first" style="margin-bottom: 20px;">
         <el-tab-pane label="不良类别" name="first">
           <iqc-defect v-bind:defectList.sync="temp.defectList" :key="temp.id"/>
-<!--
-          <div class="clearfix">
-            <div style="font-size: 20px;">编码规则明细</div>
-            <el-button class="filter-item" style="margin-top: 10px;" type="success"
-                       icon="el-icon-edit" @click="defectDialogFormVisible=true">
-              添加
-            </el-button>
-          </div>
-          <el-table :key="tableKey" v-loading="listLoading" :data="temp.defectList" border fit highlight-current-row>
-            <el-table-column type="expand">
-              <template slot-scope="props">
-                <el-form label-position="left" inline class="demo-table-expand">
-                  <el-form-item label="缺陷代号">
-                    <span>{{ props.row.defectCode }}</span>
-                  </el-form-item>
-                  <el-form-item label="上面">
-                    <span>{{ props.row.up }}</span>
-                  </el-form-item>
-                  <el-form-item label="下面">
-                    <span>{{ props.row.down }}</span>
-                  </el-form-item>
-                  <el-form-item label="宽度位置">
-                    <span>{{ props.row.widthPosition }}</span>
-                  </el-form-item>
-                  <el-form-item label="起始位置">
-                    <span>{{ props.row.startPosition }}</span>
-                  </el-form-item>
-                  <el-form-item label="结束位置">
-                    <span>{{ props.row.endPosition }}</span>
-                  </el-form-item>
-                  <el-form-item label="缺陷长度">
-                    <span>{{ props.row.defectLength }}</span>
-                  </el-form-item>
-                  <el-form-item label="程度">
-                    <span>{{ props.row.degree }}</span>
-                  </el-form-item>
-                  <el-form-item label="类别|波高">
-                    <span>{{ props.row.WaveHeightCategory }}</span>
-                  </el-form-item>
-                  <el-form-item label="周期|mm">
-                    <span>{{ props.row.period }}</span>
-                  </el-form-item>
-                  <el-form-item label="频率">
-                    <span>{{ props.row.frequency }}</span>
-                  </el-form-item>
-                  <el-form-item label="直径|mm">
-                    <span>{{ props.row.diameter }}</span>
-                  </el-form-item>
-                  <el-form-item label="距边|mm">
-                    <span>{{ props.row.margin }}</span>
-                  </el-form-item>
-                </el-form>
-              </template>
-            </el-table-column>
-            <el-table-column label="序号" min-width="40px" align="center">
-              <template slot-scope="scope">
-                {{ scope.$index }}
-              </template>
-            </el-table-column>
-            <el-table-column label="缺陷代号" min-width="80px" align="center">
-              <template slot-scope="scope">
-                <el-input v-model="temp.defectList[scope.$index].defectId "/>
-              </template>
-            </el-table-column>
-            <el-table-column label="上面" min-width="80px" align="center">
-              <template slot-scope="scope">
-                <el-input v-model="temp.defectList[scope.$index].up "/>
-              </template>
-            </el-table-column>
-            <el-table-column label="下面" min-width="80px" align="center">
-              <template slot-scope="scope">
-                <el-input v-model="temp.defectList[scope.$index].down "/>
-              </template>
-            </el-table-column>
-            <el-table-column label="宽度位置" min-width="80px" align="center">
-              <template slot-scope="scope">
-                <el-input v-model="temp.defectList[scope.$index].widthPosition  "/>
-              </template>
-            </el-table-column>
-            <el-table-column label="起始位置" min-width="100px" align="center">
-              <template slot-scope="scope">
-                <el-input v-model="temp.defectList[scope.$index].startPosition "/>
-              </template>
-            </el-table-column>
-            <el-table-column label="结束位置" min-width="100px" align="center">
-              <template slot-scope="scope">
-                <el-input v-model="temp.defectList[scope.$index].endPosition"/>
-              </template>
-            </el-table-column>
-            <el-table-column label="缺陷长度" min-width="100px" align="center">
-              <template slot-scope="scope">
-                <el-input v-model="temp.defectList[scope.$index].defectLength"/>
-              </template>
-            </el-table-column>
-            <el-table-column label="程度" min-width="100px" align="center">
-              <template slot-scope="scope">
-                <el-input v-model="temp.defectList[scope.$index].degree "/>
-              </template>
-            </el-table-column>
-            <el-table-column label="类别|波高" min-width="100px" align="center">
-              <template slot-scope="scope">
-                <el-input v-model="temp.defectList[scope.$index].WaveHeightCategory "/>
-              </template>
-            </el-table-column>
-            <el-table-column label="周期|mm" min-width="100px" align="center">
-              <template slot-scope="scope">
-                <el-input v-model="temp.defectList[scope.$index].period"/>
-              </template>
-            </el-table-column>
-            <el-table-column label="频率" min-width="100px" align="center">
-              <template slot-scope="scope">
-                <el-input v-model="temp.defectList[scope.$index].frequency"/>
-              </template>
-            </el-table-column>
-            <el-table-column label="直径|mm" min-width="100px" align="center">
-              <template slot-scope="scope">
-                <el-input v-model="temp.defectList[scope.$index].diameter"/>
-              </template>
-            </el-table-column>
-            <el-table-column label="距边|mm" min-width="100px" align="center">
-              <template slot-scope="scope">
-                <el-input v-model="temp.defectList[scope.$index].margin "/>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" align="center" min-width="80">
-              <template slot-scope="scope">
-                <el-button
-                  icon="el-icon-delete"
-                  size="mini"
-                  type="danger"
-                  @click="handleDeleteDefect(scope.$index)"
-                >删除
-                </el-button>
-              </template>
-            </el-table-column>
-          </el-table>
+          <!--
+                    <div class="clearfix">
+                      <div style="font-size: 20px;">编码规则明细</div>
+                      <el-button class="filter-item" style="margin-top: 10px;" type="success"
+                                 icon="el-icon-edit" @click="defectDialogFormVisible=true">
+                        添加
+                      </el-button>
+                    </div>
+                    <el-table :key="tableKey" v-loading="listLoading" :data="temp.defectList" border fit highlight-current-row>
+                      <el-table-column type="expand">
+                        <template slot-scope="props">
+                          <el-form label-position="left" inline class="demo-table-expand">
+                            <el-form-item label="缺陷代号">
+                              <span>{{ props.row.defectCode }}</span>
+                            </el-form-item>
+                            <el-form-item label="上面">
+                              <span>{{ props.row.up }}</span>
+                            </el-form-item>
+                            <el-form-item label="下面">
+                              <span>{{ props.row.down }}</span>
+                            </el-form-item>
+                            <el-form-item label="宽度位置">
+                              <span>{{ props.row.widthPosition }}</span>
+                            </el-form-item>
+                            <el-form-item label="起始位置">
+                              <span>{{ props.row.startPosition }}</span>
+                            </el-form-item>
+                            <el-form-item label="结束位置">
+                              <span>{{ props.row.endPosition }}</span>
+                            </el-form-item>
+                            <el-form-item label="缺陷长度">
+                              <span>{{ props.row.defectLength }}</span>
+                            </el-form-item>
+                            <el-form-item label="程度">
+                              <span>{{ props.row.degree }}</span>
+                            </el-form-item>
+                            <el-form-item label="类别|波高">
+                              <span>{{ props.row.WaveHeightCategory }}</span>
+                            </el-form-item>
+                            <el-form-item label="周期|mm">
+                              <span>{{ props.row.period }}</span>
+                            </el-form-item>
+                            <el-form-item label="频率">
+                              <span>{{ props.row.frequency }}</span>
+                            </el-form-item>
+                            <el-form-item label="直径|mm">
+                              <span>{{ props.row.diameter }}</span>
+                            </el-form-item>
+                            <el-form-item label="距边|mm">
+                              <span>{{ props.row.margin }}</span>
+                            </el-form-item>
+                          </el-form>
+                        </template>
+                      </el-table-column>
+                      <el-table-column label="序号" min-width="40px" align="center">
+                        <template slot-scope="scope">
+                          {{ scope.$index }}
+                        </template>
+                      </el-table-column>
+                      <el-table-column label="缺陷代号" min-width="80px" align="center">
+                        <template slot-scope="scope">
+                          <el-input v-model="temp.defectList[scope.$index].defectId "/>
+                        </template>
+                      </el-table-column>
+                      <el-table-column label="上面" min-width="80px" align="center">
+                        <template slot-scope="scope">
+                          <el-input v-model="temp.defectList[scope.$index].up "/>
+                        </template>
+                      </el-table-column>
+                      <el-table-column label="下面" min-width="80px" align="center">
+                        <template slot-scope="scope">
+                          <el-input v-model="temp.defectList[scope.$index].down "/>
+                        </template>
+                      </el-table-column>
+                      <el-table-column label="宽度位置" min-width="80px" align="center">
+                        <template slot-scope="scope">
+                          <el-input v-model="temp.defectList[scope.$index].widthPosition  "/>
+                        </template>
+                      </el-table-column>
+                      <el-table-column label="起始位置" min-width="100px" align="center">
+                        <template slot-scope="scope">
+                          <el-input v-model="temp.defectList[scope.$index].startPosition "/>
+                        </template>
+                      </el-table-column>
+                      <el-table-column label="结束位置" min-width="100px" align="center">
+                        <template slot-scope="scope">
+                          <el-input v-model="temp.defectList[scope.$index].endPosition"/>
+                        </template>
+                      </el-table-column>
+                      <el-table-column label="缺陷长度" min-width="100px" align="center">
+                        <template slot-scope="scope">
+                          <el-input v-model="temp.defectList[scope.$index].defectLength"/>
+                        </template>
+                      </el-table-column>
+                      <el-table-column label="程度" min-width="100px" align="center">
+                        <template slot-scope="scope">
+                          <el-input v-model="temp.defectList[scope.$index].degree "/>
+                        </template>
+                      </el-table-column>
+                      <el-table-column label="类别|波高" min-width="100px" align="center">
+                        <template slot-scope="scope">
+                          <el-input v-model="temp.defectList[scope.$index].WaveHeightCategory "/>
+                        </template>
+                      </el-table-column>
+                      <el-table-column label="周期|mm" min-width="100px" align="center">
+                        <template slot-scope="scope">
+                          <el-input v-model="temp.defectList[scope.$index].period"/>
+                        </template>
+                      </el-table-column>
+                      <el-table-column label="频率" min-width="100px" align="center">
+                        <template slot-scope="scope">
+                          <el-input v-model="temp.defectList[scope.$index].frequency"/>
+                        </template>
+                      </el-table-column>
+                      <el-table-column label="直径|mm" min-width="100px" align="center">
+                        <template slot-scope="scope">
+                          <el-input v-model="temp.defectList[scope.$index].diameter"/>
+                        </template>
+                      </el-table-column>
+                      <el-table-column label="距边|mm" min-width="100px" align="center">
+                        <template slot-scope="scope">
+                          <el-input v-model="temp.defectList[scope.$index].margin "/>
+                        </template>
+                      </el-table-column>
+                      <el-table-column label="操作" align="center" min-width="80">
+                        <template slot-scope="scope">
+                          <el-button
+                            icon="el-icon-delete"
+                            size="mini"
+                            type="danger"
+                            @click="handleDeleteDefect(scope.$index)"
+                          >删除
+                          </el-button>
+                        </template>
+                      </el-table-column>
+                    </el-table>
 
 
-          <el-dialog :close-on-click-modal="false" :title="textMap[dialogStatus]" :visible.sync="defectDialogFormVisible"
-                     width="600px">
-            <el-form
-              ref="lineForm"
-              :rules="[]"
-              :model="temp"
-              label-position="right"
-              label-width="100px"
-            >
-              <el-form-item label="线别代码：" prop="code">
-                <el-input v-model="temp.code"/>
-              </el-form-item>
-              <el-form-item label="线别名称：" prop="name">
-                <el-input v-model="temp.name"/>
-              </el-form-item>
-              <el-form-item label="线别类型：" prop="type">
-                <el-input v-model="temp.type"/>
-              </el-form-item>
-              <el-form-item label="描述：" prop="description">
-                <el-input v-model="temp.description"/>
-              </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-              <el-button type="danger" size="small" @click="defectDialogFormVisible = false">取消</el-button>
-              <el-button type="primary" size="small" @click="dialogStatus==='create'?submit():updateData()">确认</el-button>
-            </div>
-          </el-dialog>
+                    <el-dialog :close-on-click-modal="false" :title="textMap[dialogStatus]" :visible.sync="defectDialogFormVisible"
+                               width="600px">
+                      <el-form
+                        ref="lineForm"
+                        :rules="[]"
+                        :model="temp"
+                        label-position="right"
+                        label-width="100px"
+                      >
+                        <el-form-item label="线别代码：" prop="code">
+                          <el-input v-model="temp.code"/>
+                        </el-form-item>
+                        <el-form-item label="线别名称：" prop="name">
+                          <el-input v-model="temp.name"/>
+                        </el-form-item>
+                        <el-form-item label="线别类型：" prop="type">
+                          <el-input v-model="temp.type"/>
+                        </el-form-item>
+                        <el-form-item label="描述：" prop="description">
+                          <el-input v-model="temp.description"/>
+                        </el-form-item>
+                      </el-form>
+                      <div slot="footer" class="dialog-footer">
+                        <el-button type="danger" size="small" @click="defectDialogFormVisible = false">取消</el-button>
+                        <el-button type="primary" size="small" @click="dialogStatus==='create'?submit():updateData()">确认</el-button>
+                      </div>
+                    </el-dialog>
 
--->
+          -->
 
         </el-tab-pane>
       </el-tabs>
-
       <div slot="footer" class="form-footer">
         <el-button type="danger" size="small" @click="dialogFormVisible = false">取消</el-button>
         <el-button type="primary" size="small" @click="dialogStatus==='create'?submit():updateData()">确认</el-button>
@@ -523,7 +518,7 @@
 
         dialogFormVisible: false,
         dialogStatus: '',
-        defectDialogFormVisible:false,
+        defectDialogFormVisible: false,
         textMap: {
           update: '编辑',
           create: '添加'
