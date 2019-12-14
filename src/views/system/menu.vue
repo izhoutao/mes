@@ -351,6 +351,7 @@
           pid: '0',
           type: '0',
           hidden: false,
+          alwaysShow:true,
           description: ''
         },
         tempCopy: null,

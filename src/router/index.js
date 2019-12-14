@@ -10,6 +10,7 @@ import Layout from '@/layout'
 import basicRouter from './modules/basic'
 import repositoryRouter from './modules/repository'
 import systemRouter from './modules/system'
+import qualityRouter from '@/router/modules/quality'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -85,6 +86,7 @@ export const constantRoutes = [
 export const asyncRoutes = [
   basicRouter,
   repositoryRouter,
+  qualityRouter,
   systemRouter,
   {
     path: 'help',

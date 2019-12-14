@@ -143,7 +143,7 @@ const basicRouter = {
     {
       path: 'quality',
       component: () => import('@/views/basic'), // Parent router-view
-      name: 'quality',
+      name: 'qualitymodel',
       alwaysShow: true, // 一直显示根路由
       meta: {
         title: '品质建模',

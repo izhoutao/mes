@@ -140,7 +140,7 @@
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="编码规则：" prop="name">
+            <el-form-item label="编码规则：" prop="rule">
               <el-input v-model="temp.rule" :disabled="true"/>
             </el-form-item>
           </el-col>
@@ -204,7 +204,7 @@
                 icon="el-icon-delete"
                 size="mini"
                 type="danger"
-                @click="handleDeleteCodeRule(scope.row.$index)"
+                @click="handleDeleteCodeRule(scope.$index)"
               >删除
               </el-button>
             </template>
@@ -336,7 +336,6 @@
         this.resetTypeMap = _.fromPairs(this.resetTypes.map(resetType => {
           return [resetType.id, resetType]
         }))
-        console.log(this.resetTypeMap)
         this.paramTypes = res.model[dictTypeIds[2]]
         this.paramTypeMap = _.fromPairs(this.paramTypes.map(paramType => {
           return [paramType.id, paramType]
@@ -350,7 +349,6 @@
         this.listQuery.current = 1
         this.getList()
       },
-
       resetForm(formName) {
         if (this.$refs[formName] === undefined) {
           return false
@@ -364,6 +362,7 @@
         this.dialogStatus = 'create'
         this.dialogFormVisible = true
         // this.rules.password[0].required = true
+        this.codeRuleList = []
         this.$nextTick(() => {
           this.$refs['codeRuleForm'].clearValidate()
         })
@@ -412,7 +411,6 @@
           }
           this.codeRuleList.push({ paramType, paramValue })
         })
-        console.log(this.codeRuleList)
         this.$nextTick(() => {
           this.$refs['codeRuleForm'].clearValidate()
         })
