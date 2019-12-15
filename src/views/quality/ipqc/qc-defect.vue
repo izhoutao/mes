@@ -144,7 +144,7 @@
   import { getDefectGroups, getDefects } from '@/api/defect' // Secondary package based on el-pagination
 
   export default {
-    name: 'IqcDefect',
+    name: 'QcDefect',
     components: { Pagination },
     directives: { waves },
     props: ['defectList'],

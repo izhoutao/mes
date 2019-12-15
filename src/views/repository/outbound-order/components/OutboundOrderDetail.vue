@@ -1,7 +1,7 @@
 <template>
   <div class="outbound-order-detail">
     <div class="filter-container">
-      <el-form ref="filterForm" :model="listQuery" :inline="true">
+      <el-form ref="filterForm" :model="listQuery" :inline="true" @submit.native.prevent>
         <el-button class="filter-item" style="margin: 16px 0px;" type="success"
                    icon="el-icon-edit" @click="handleAdd">
           添加

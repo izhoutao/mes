@@ -5,7 +5,7 @@
       <div class="filter-container">
         <el-form ref="filterForm" :model="listQuery" :inline="true">
           <el-form-item label="" prop="isMark">
-            <el-select v-model="listQuery.isMark" filterable placeholder="进料单状态" @change="handleFilter">
+            <el-select v-model="listQuery.isMark" filterable placeholder="巡检单状态" @change="handleFilter">
               <el-option
                 v-for="item in markStatuses"
                 :key="item.id"
@@ -30,19 +30,14 @@
             {{ scope.$index }}
           </template>
         </el-table-column>
-        <el-table-column label="入库单号" min-width="80px" align="center">
+        <el-table-column label="批号" min-width="80px" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.inboundOrderId }}</span>
+            <span>{{ scope.row.id }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="原料编号" min-width="80px" align="center">
+        <el-table-column label="序列号" min-width="80px" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.materialCode }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="供应商" min-width="80px" align="center">
-          <template slot-scope="scope">
-            <span>{{ scope.row.vendorName }}</span>
+            <span>{{ scope.row.serialNumber }}</span>
           </template>
         </el-table-column>
         <el-table-column label="检验日期" min-width="80px" align="center">
@@ -50,12 +45,22 @@
             <span>{{ scope.row.inspectDate | parseTime('{y}-{m}-{d}') }}</span>
           </template>
         </el-table-column>
+        <el-table-column label="料号" min-width="80px" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.materialCode }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="线别" min-width="80px" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.lineName }}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="状态" min-width="50px" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.isMark?'已提交':'未提交' }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center" min-width="80">
+        <el-table-column label="操作" align="center" min-width="100">
           <template slot-scope="scope">
             <el-button type="primary" icon="el-icon-edit" size="mini"
                        @click="handleUpdate(scope.row)">编辑
@@ -86,7 +91,7 @@
         <el-button type="danger" size="small" @click="dialogFormVisible = false">取消</el-button>
       </div>
       <el-form
-        ref="iqcForm"
+        ref="ipqcForm"
         :rules="rules"
         :model="temp"
         label-position="right"
@@ -94,20 +99,7 @@
       >
         <el-row>
           <el-col :span="6">
-            <el-form-item label="入库单号：" prop="inboundOrderId">
-              <el-select v-model="temp.inboundOrderId" @change="handleInboundOrderChange" filterable placeholder="请选择"
-                         style="width:100%">
-                <el-option
-                  v-for="item in inboundOrders"
-                  :key="item.id"
-                  :label="item.number"
-                  :value="item.id">
-                </el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="原料编号：" prop="materialId">
+<!--            <el-form-item label="原料编号：" prop="materialId">
               <el-select v-model="temp.materialId" filterable placeholder="请选择" style="width:100%">
                 <el-option
                   v-for="item in materials"
@@ -116,6 +108,9 @@
                   :value="item.id">
                 </el-option>
               </el-select>
+            </el-form-item>-->
+            <el-form-item label="料号：" prop="materialCode">
+              <el-input v-model="temp.materialCode" @click.native="handleSelectMaterial"/>
             </el-form-item>
           </el-col>
           <el-col :span="6">
@@ -132,19 +127,6 @@
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="6">
-            <el-form-item label="产地：" prop="vendorId">
-              <el-select v-model="temp.vendorId" filterable placeholder="请选择" style="width:100%">
-                <el-option
-                  v-for="item in vendors"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
-
-            </el-form-item>
-          </el-col>
           <el-col :span="6">
             <el-form-item label="产线：" prop="lineId">
               <el-select v-model="temp.lineId" filterable placeholder="请选择" style="width:100%">
@@ -267,6 +249,20 @@
         </el-tab-pane>
       </el-tabs>
 
+
+      <el-dialog
+        :close-on-click-modal="false"
+        title="请选择"
+        :visible.sync="materialDialogFormVisible"
+        width="800px"
+      >
+        <material :selectedMaterial.sync="selectedMaterial"/>
+        <div slot="footer" class="dialog-footer">
+          <el-button type="danger" size="small" @click="materialDialogFormVisible = false">取消</el-button>
+          <el-button type="primary" size="small" @click="confirmMaterial()">确认</el-button>
+        </div>
+      </el-dialog>
+
     </div>
   </div>
 </template>
@@ -278,21 +274,18 @@
   import { getShifts } from '@/api/shift.js'
   import { getMaterialTypes } from '@/api/material.js'
   import { getCustomers } from '@/api/customer.js'
-  import { getInboundOrders } from '@/api/inboundorder.js'
-  import { getMaterials } from '@/api/material.js'
-  import { getVendors } from '@/api/vendor.js'
-  import { getInboundOrderDetails } from '@/api/inboundorderdetail.js'
-  import { getIqcs, addIqc, updateIqc, deleteIqc } from '@/api/iqc.js'
+  import { getIpqcs, addIpqc, updateIpqc, deleteIpqc } from '@/api/ipqc.js'
   import { getInspectionRuleMaterials } from '@/api/inspectionrulematerial.js'
   import { getInspectionRuleItems } from '@/api/inspectionruleitem.js'
 
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
-  import QcDefect from './qc-defect.vue' // Secondary package based on el-pagination
+  import QcDefect from './qc-defect' // Secondary package based on el-pagination
+  import Material from './material.vue'
 
   export default {
-    name: 'Iqc',
-    components: { Pagination, QcDefect },
+    name: 'Ipqc',
+    components: { Pagination, QcDefect, Material },
     directives: { waves },
     data() {
       return {
@@ -317,14 +310,13 @@
           surfaceGrade: '',
           uses: '',
           customerId: '',
-          inboundOrderId: '',
           materialId: '',
-          vendorId: '',
           serialNumber: '',
           isMark: 0,
           checkList: [],
           defectList: [],
-          inspectionRuleId: ''
+          inspectionRuleId: '',
+          inspector: ''
         },
         tempCopy: null,
         markStatuses: [{ id: 0, name: '未提交' }, { id: 1, name: '已提交' }],
@@ -338,20 +330,19 @@
         materialTypeMap: null,
         customers: [],
         customerMap: null,
-        inboundOrders: [],
-        inboundOrderMap: null,
-        inboundOrderDetails: [],
-        inboundOrderDetailMap: null,
+
         materials: [],
         materialMap: null,
         vendors: [],
         vendorMap: null,
-
         inspectionRules: [],
         inspectionRuleMap: null,
 
+        selectedMaterial: undefined,
+
         dialogFormVisible: false,
         dialogStatus: '',
+        materialDialogFormVisible: false,
         defectDialogFormVisible: false,
         textMap: {
           update: '编辑',
@@ -368,28 +359,23 @@
       }
     },
     watch: {
-      'temp.inboundOrderId': {
-        handler: async function(val) {
-          if (val) this.temp.vendorId = this.inboundOrderMap[val].vendorId
-          let query = { inboundOrderId: val }
-          await this.getInboundOrderDetails(query)
-          this.materials = this.inboundOrderDetails.map(item => {
-            let material = {}
-            material.id = item.materialId
-            material.name = item.materialName
-            material.code = item.materialCode
-            return material
-          }),
-          this.materialMap = _.fromPairs(this.materials.map(material => {
-            return [material.id, material]
-          }))
-        }
-        // deep: true
-      },
+      // 'temp.inboundOrderId': {
+      //   handler: async function(val) {
+      //     if (val) this.temp.vendorId = this.inboundOrderMap[val].vendorId
+      //     let query = { inboundOrderId: val }
+      //     await this.getInboundOrderDetails(query)
+      //     this.materials = this.inboundOrderDetails.map(item => {
+      //       let material = {}
+      //       material.id = item.materialId
+      //       material.name = item.materialName
+      //       return material
+      //     })
+      //   }
+      //   // deep: true
+      // },
       'temp.materialId': {
         handler: async function(val) {
           if (val) {
-            this.temp.materialCode = this.materialMap[val].code
             let query = { materialId: val }
             let res = await getInspectionRuleMaterials(query)
             if (res.queryResult.total) {
@@ -418,15 +404,22 @@
           this.getShifts({}),
           this.getMaterialTypes({}),
           this.getCustomers({}),
-          this.getInboundOrders({}),
-          // this.getMaterials({}),
-          this.getVendors({})
         ])
         this.getList()
       })
 
     },
     methods: {
+      handleSelectMaterial() {
+        this.materialDialogFormVisible = true
+      },
+      confirmMaterial() {
+        this.materialDialogFormVisible = false
+        this.temp.materialId = this.selectedMaterial && this.selectedMaterial.id
+        this.temp.materialCode = this.selectedMaterial && this.selectedMaterial.code
+        this.temp.materialName = this.selectedMaterial && this.selectedMaterial.name
+        this.temp.materialTypeName = this.selectedMaterial && this.selectedMaterial.typeName
+      },
       generateCheckList(checkList) {
         const checkMap = _.fromPairs(this.temp.checkList.map(check => {
           return [check.id, check]
@@ -474,34 +467,13 @@
           return [customer.id, customer]
         }))
       },
-      async getInboundOrders(query) {
-        const res = await getInboundOrders(query)
-        this.inboundOrders = res.queryResult.list
-        this.inboundOrderMap = _.fromPairs(this.inboundOrders.map(inboundOrder => {
-          return [inboundOrder.id, inboundOrder]
-        }))
-      },
-      async getInboundOrderDetails(query) {
-        const res = await getInboundOrderDetails(query)
-        this.inboundOrderDetails = res.queryResult.list
-        this.inboundOrderDetailMap = _.fromPairs(this.inboundOrderDetails.map(inboundOrderDetail => {
-          return [inboundOrderDetail.id, inboundOrderDetail]
-        }))
-      },
-      // async getMaterials(query) {
-      //   const res = await getMaterials(query)
-      //   this.materials = res.queryResult.list
-      //   this.materialMap = _.fromPairs(this.materials.map(material => {
-      //     return [material.id, material]
+      // async getVendors(query) {
+      //   const res = await getVendors(query)
+      //   this.vendors = res.queryResult.list
+      //   this.vendorMap = _.fromPairs(this.vendors.map(vendor => {
+      //     return [vendor.id, vendor]
       //   }))
       // },
-      async getVendors(query) {
-        const res = await getVendors(query)
-        this.vendors = res.queryResult.list
-        this.vendorMap = _.fromPairs(this.vendors.map(vendor => {
-          return [vendor.id, vendor]
-        }))
-      },
       async getInspectionRules(query) {
         const res = await getInspectionRules(query)
         this.inspectionRules = res.queryResult.list
@@ -511,10 +483,10 @@
       },
       getList() {
         this.listLoading = true
-        getIqcs(this.listQuery).then(res => {
+        getIpqcs(this.listQuery).then(res => {
           this.list = res.queryResult.list.map(item => {
-            let vendor = this.vendorMap[item.vendorId]
-            item.vendorName = vendor.name
+            let line = this.lineMap[item.lineId]
+            item.lineName = line.name
             item.checkList = JSON.parse(item.checkList)
             item.defectList = JSON.parse(item.defectList)
             return item
@@ -540,26 +512,30 @@
         await this.getInboundOrderDetails(query)
       },
       async handleAdd() {
-        this.resetForm('iqcForm')
+        this.resetForm('ipqcForm')
         this.dialogStatus = 'create'
         this.dialogFormVisible = true
         // this.rules.password[0].required = true
         this.$nextTick(() => {
-          this.$refs['iqcForm'].clearValidate()
+          this.$refs['ipqcForm'].clearValidate()
         })
       },
       submit() {
-        this.$refs['iqcForm'].validate((valid) => {
+        this.$refs['ipqcForm'].validate((valid) => {
           if (valid) {
             // const tempData = deepClone(this.temp)
-            let iqc = deepClone(this.temp)
-            iqc.checkList = JSON.stringify(iqc.checkList)
-            iqc.defectList = JSON.stringify(iqc.defectList)
-            delete iqc.materialCode
-            addIqc(iqc).then((res) => {
-              let vendor = this.vendorMap[iqc.vendorId]
-              res.model.vendorName = vendor.name
+            let ipqc = deepClone(this.temp)
+            ipqc.checkList = JSON.stringify(ipqc.checkList)
+            ipqc.defectList = JSON.stringify(ipqc.defectList)
+            delete ipqc.materialCode
+            delete ipqc.materialName
+            delete ipqc.materialTypeName
+            addIpqc(ipqc).then((res) => {
+              let line = this.lineMap[ipqc.lineId]
+              res.model.lineName = line.name
               res.model.materialCode=this.temp.materialCode
+              res.model.materialName=this.temp.materialName
+              res.model.materialTypeName=this.temp.materialTypeName
               this.list.unshift(res.model)
               this.total++
               this.dialogFormVisible = false
@@ -580,27 +556,30 @@
         // this.temp.password = ''
         this.dialogFormVisible = true
         this.$nextTick(() => {
-          this.$refs['iqcForm'].clearValidate()
+          this.$refs['ipqcForm'].clearValidate()
         })
       },
       updateData() {
-        this.$refs['iqcForm'].validate((valid) => {
+        this.$refs['ipqcForm'].validate((valid) => {
           if (valid) {
-            let iqc = deepClone(this.temp)
-            iqc.checkList = JSON.stringify(iqc.checkList)
-            iqc.defectList = JSON.stringify(iqc.defectList)
-            delete iqc.materialCode
-            updateIqc(iqc).then(() => {
-              let vendor = this.vendorMap[iqc.vendorId]
-              iqc.vendorName = vendor.name
-              iqc.checkList = this.temp.checkList
-              iqc.defectList = this.temp.defectList
-              iqc.materialCode=this.temp.materialCode
-
+            let ipqc = deepClone(this.temp)
+            ipqc.checkList = JSON.stringify(ipqc.checkList)
+            ipqc.defectList = JSON.stringify(ipqc.defectList)
+            delete ipqc.materialCode
+            delete ipqc.materialName
+            delete ipqc.materialTypeName
+            updateIpqc(ipqc).then(() => {
+              let line = this.lineMap[ipqc.lineId]
+              ipqc.lineName = line.name
+              ipqc.checkList = this.temp.checkList
+              ipqc.defectList = this.temp.defectList
+              ipqc.materialCode=this.temp.materialCode
+              ipqc.materialName=this.temp.materialName
+              ipqc.materialTypeName=this.temp.materialTypeName
               for (const v of this.list) {
-                if (v.id === iqc.id) {
+                if (v.id === ipqc.id) {
                   const index = this.list.indexOf(v)
-                  this.list.splice(index, 1, iqc)
+                  this.list.splice(index, 1, ipqc)
                   break
                 }
               }
@@ -621,7 +600,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteIqc(row.id).then(() => {
+          deleteIpqc(row.id).then(() => {
             this.$notify({
               title: '成功',
               message: '删除成功',

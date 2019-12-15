@@ -1,7 +1,7 @@
 <template>
   <div class="workflow-container">
     <div class="filter-container">
-      <el-form ref="filterForm" :model="listQuery" :inline="true">
+      <el-form ref="filterForm" :model="listQuery" :inline="true" @submit.native.prevent>
         <el-form-item label="" prop="name">
           <el-input
             v-model="listQuery.name"

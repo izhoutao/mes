@@ -17,7 +17,7 @@
                   class="getItem"
                 />-->
         <div class="filter-container">
-          <el-form :inline="true" :model="listQuery" style="margin: 0px;">
+          <el-form :inline="true" :model="listQuery" style="margin: 0px;" @submit.native.prevent>
             <el-form-item label="" prop="name" style="margin: 0px;">
               <el-input
                 v-model="listQuery.name"
