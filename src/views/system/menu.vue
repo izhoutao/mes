@@ -41,7 +41,6 @@
     </div>
     <el-table
       :key="tableKey"
-      default-expand-all
       row-key="id"
       v-loading="listLoading"
       :data="tableData"

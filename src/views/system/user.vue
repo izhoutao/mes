@@ -167,18 +167,14 @@
           <el-input v-model="temp.email"/>
         </el-form-item>
         <el-form-item label="出生日期：" prop="birthday">
-          <el-col :span="11">
-            <el-date-picker v-model="temp.birthday" type="date" placeholder="请选择日期" style="width: 100%;"
-                            format="yyyy 年 MM 月 dd 日"
-                            value-format="yyyy-MM-dd"/>
-          </el-col>
+          <el-date-picker v-model="temp.birthday" type="date" placeholder="请选择日期" style="width: 100%;"
+                          format="yyyy 年 MM 月 dd 日"
+                          value-format="yyyy-MM-dd"/>
         </el-form-item>
         <el-form-item label="入职日期：" prop="hiredate">
-          <el-col :span="11">
-            <el-date-picker v-model="temp.hiredate" type="date" placeholder="请选择日期" style="width: 100%;"
-                            format="yyyy 年 MM 月 dd 日"
-                            value-format="yyyy-MM-dd"/>
-          </el-col>
+          <el-date-picker v-model="temp.hiredate" type="date" placeholder="请选择日期" style="width: 100%;"
+                          format="yyyy 年 MM 月 dd 日"
+                          value-format="yyyy-MM-dd"/>
         </el-form-item>
         <el-form-item label="备注：" prop="description">
           <el-input v-model="temp.description"/>
@@ -330,7 +326,7 @@
     created() {
       this.tempCopy = deepClone(this.temp)
       this.listLoading = true
-      this.$nextTick(async () => {
+      this.$nextTick(async() => {
         await Promise.all([
           this.getDepartments(),
           this.getRoles()

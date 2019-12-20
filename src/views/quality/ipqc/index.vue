@@ -85,7 +85,7 @@
       />
     </div>
     <div v-show="dialogFormVisible">
-      <div style="font-size: 20px;">编辑检查单</div>
+      <div style="font-size: 20px;">{{textMap[dialogStatus]}}检查单</div>
       <div style="margin: 10px 0px 20px;">
         <el-button type="primary" size="small" @click="dialogStatus==='create'?submit():updateData()">确认</el-button>
         <el-button type="danger" size="small" @click="dialogFormVisible = false">取消</el-button>
@@ -248,7 +248,6 @@
           <qc-defect v-bind:defectList.sync="temp.defectList" :key="temp.id"/>
         </el-tab-pane>
       </el-tabs>
-
 
       <el-dialog
         :close-on-click-modal="false"
@@ -617,9 +616,8 @@
   }
 </script>
 <style lang="scss" scoped>
-  .form-footer {
-    float: right;
-  }
+
+
 </style>
 
 

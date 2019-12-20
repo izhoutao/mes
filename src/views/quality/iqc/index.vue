@@ -80,7 +80,7 @@
       />
     </div>
     <div v-show="dialogFormVisible">
-      <div style="font-size: 20px;">编辑检查单</div>
+      <div style="font-size: 20px;">{{textMap[dialogStatus]}}检查单</div>
       <div style="margin: 10px 0px 20px;">
         <el-button type="primary" size="small" @click="dialogStatus==='create'?submit():updateData()">确认</el-button>
         <el-button type="danger" size="small" @click="dialogFormVisible = false">取消</el-button>
@@ -370,39 +370,13 @@
     watch: {
       'temp.inboundOrderId': {
         handler: async function(val) {
-          if (val) this.temp.vendorId = this.inboundOrderMap[val].vendorId
-          let query = { inboundOrderId: val }
-          await this.getInboundOrderDetails(query)
-          this.materials = this.inboundOrderDetails.map(item => {
-            let material = {}
-            material.id = item.materialId
-            material.name = item.materialName
-            material.code = item.materialCode
-            return material
-          }),
-          this.materialMap = _.fromPairs(this.materials.map(material => {
-            return [material.id, material]
-          }))
+          this.handleInboundOrderIdChange(val)
         }
         // deep: true
       },
       'temp.materialId': {
-        handler: async function(val) {
-          if (val) {
-            this.temp.materialCode = this.materialMap[val].code
-            let query = { materialId: val }
-            let res = await getInspectionRuleMaterials(query)
-            if (res.queryResult.total) {
-              this.temp.inspectionRuleId = res.queryResult.list[0].inspectionRuleId
-              query = { inspectionRuleId: this.temp.inspectionRuleId }
-              res = await getInspectionRuleItems(query)
-              this.temp.checkList = this.generateCheckList(res.queryResult.list)
-            } else {
-              this.temp.checkList = []
-            }
-          } else {
-            this.temp.checkList = []
-          }
+        handler: function(val) {
+          this.handleMaterialIdChange(val)
         }
         // deep: true
       }
@@ -559,7 +533,7 @@
             addIqc(iqc).then((res) => {
               let vendor = this.vendorMap[iqc.vendorId]
               res.model.vendorName = vendor.name
-              res.model.materialCode=this.temp.materialCode
+              res.model.materialCode = this.temp.materialCode
               this.list.unshift(res.model)
               this.total++
               this.dialogFormVisible = false
@@ -595,7 +569,7 @@
               iqc.vendorName = vendor.name
               iqc.checkList = this.temp.checkList
               iqc.defectList = this.temp.defectList
-              iqc.materialCode=this.temp.materialCode
+              iqc.materialCode = this.temp.materialCode
 
               for (const v of this.list) {
                 if (v.id === iqc.id) {
@@ -632,15 +606,47 @@
             this.list.splice(index, 1)
           })
         })
+      },
+      async handleInboundOrderIdChange(val) {
+        if (val) this.temp.vendorId = this.inboundOrderMap[val].vendorId
+        let query = { inboundOrderId: val }
+        await this.getInboundOrderDetails(query)
+        this.materials = this.inboundOrderDetails.map(item => {
+          let material = {}
+          material.id = item.materialId
+          material.name = item.materialName
+          material.code = item.materialCode
+          return material
+        })
+        this.materialMap = _.fromPairs(this.materials.map(material => {
+          return [material.id, material]
+        }))
+        this.handleMaterialIdChange(this.temp.materialId)
+      },
+      async handleMaterialIdChange(val) {
+        if (!(this.materialMap && this.materialMap[val])) return
+        if (val) {
+          this.temp.materialCode = this.materialMap[val].code
+          let query = { materialId: val }
+          let res = await getInspectionRuleMaterials(query)
+          if (res.queryResult.total) {
+            this.temp.inspectionRuleId = res.queryResult.list[0].inspectionRuleId
+            query = { inspectionRuleId: this.temp.inspectionRuleId }
+            res = await getInspectionRuleItems(query)
+            this.temp.checkList = this.generateCheckList(res.queryResult.list)
+          } else {
+            this.temp.checkList = []
+          }
+        } else {
+          this.temp.checkList = []
+        }
       }
-
     }
   }
 </script>
 <style lang="scss" scoped>
-  .form-footer {
-    float: right;
-  }
+
+
 </style>
 
 

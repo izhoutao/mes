@@ -75,7 +75,7 @@
       />
     </div>
     <div v-show="dialogFormVisible">
-      <div style="font-size: 20px;">编辑编码规则</div>
+      <div style="font-size: 20px;">{{textMap[dialogStatus]}}编码规则</div>
       <div style="margin: 10px 0px 20px;">
         <el-button type="primary" size="small" @click="dialogStatus==='create'?submit():updateData()">确认</el-button>
         <el-button type="danger" size="small" @click="dialogFormVisible = false">关闭</el-button>
@@ -156,7 +156,7 @@
 
       <el-card class="box-card" style="margin: 20px;">
         <div slot="header" class="clearfix">
-          <div style="font-size: 20px;">编码规则明细</div>
+          <div style="font-size: 20px;">{{textMap[dialogStatus]}}规则明细</div>
           <el-button class="filter-item" style="margin-top: 10px;" type="success"
                      icon="el-icon-edit" @click="handleAddCodeRule">
             添加
