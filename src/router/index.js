@@ -12,6 +12,7 @@ import repositoryRouter from './modules/repository'
 import systemRouter from './modules/system'
 import qualityRouter from '@/router/modules/quality'
 import orderRouter from '@/router/modules/order'
+import journalingRouter from '@/router/modules/journaling'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -74,7 +75,7 @@ export const constantRoutes = [
     children: [{
       path: 'dashboard',
       name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
+      component: () => import('@/views/dashboard/index2.vue'),
       meta: { title: '主页', icon: 'dashboard' }
     }]
   }
@@ -87,6 +88,7 @@ export const constantRoutes = [
 export const asyncRoutes = [
   basicRouter,
   orderRouter,
+  journalingRouter,
   qualityRouter,
   repositoryRouter,
   systemRouter,

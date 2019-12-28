@@ -118,9 +118,9 @@
               <el-select v-model="temp.resetType" filterable placeholder="请选择" style="width:100%">
                 <el-option
                   v-for="item in resetTypes"
-                  :key="item.id"
+                  :key="item.code"
                   :label="item.name"
-                  :value="item.id">
+                  :value="item.code">
                 </el-option>
               </el-select>
             </el-form-item>
@@ -334,7 +334,7 @@
         }))
         this.resetTypes = res.model[dictTypeIds[1]]
         this.resetTypeMap = _.fromPairs(this.resetTypes.map(resetType => {
-          return [resetType.id, resetType]
+          return [resetType.code, resetType]
         }))
         this.paramTypes = res.model[dictTypeIds[2]]
         this.paramTypeMap = _.fromPairs(this.paramTypes.map(paramType => {

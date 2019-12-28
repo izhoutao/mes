@@ -142,7 +142,6 @@
                   :value="item.id">
                 </el-option>
               </el-select>
-
             </el-form-item>
           </el-col>
           <el-col :span="6">
