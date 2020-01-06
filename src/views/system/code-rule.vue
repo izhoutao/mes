@@ -95,8 +95,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="进制编码：" prop="name">
-              <el-input v-model="temp.name"/>
+            <el-form-item label="编码规则：" prop="rule">
+              <el-input v-model="temp.rule" :disabled="true"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -106,9 +106,9 @@
               <el-select v-model="temp.firstDayOfWeek" filterable placeholder="请选择" style="width:100%">
                 <el-option
                   v-for="item in weeks"
-                  :key="item.id"
+                  :key="item.code"
                   :label="item.name"
-                  :value="item.id">
+                  :value="item.code">
                 </el-option>
               </el-select>
             </el-form-item>
@@ -135,13 +135,6 @@
           <el-col :span="12">
             <el-form-item label="截止码：" prop="maxNumber">
               <el-input v-model="temp.maxNumber"/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="编码规则：" prop="rule">
-              <el-input v-model="temp.rule" :disabled="true"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -330,7 +323,7 @@
         let res = await getDictMaps(dictTypeIds)
         this.weeks = res.model[dictTypeIds[0]]
         this.weekMap = _.fromPairs(this.weeks.map(week => {
-          return [week.id, week]
+          return [week.code, week]
         }))
         this.resetTypes = res.model[dictTypeIds[1]]
         this.resetTypeMap = _.fromPairs(this.resetTypes.map(resetType => {

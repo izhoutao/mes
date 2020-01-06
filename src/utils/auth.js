@@ -5,15 +5,16 @@ import { Base64 } from 'js-base64'
 const TokenKey = 'uid'
 
 export function getToken() {
-  return Cookies.get(TokenKey)
+  return Cookies.get(TokenKey, { domain: process.env.VUE_APP_COOKIE_DOMAIN })
 }
 
 export function setToken(token) {
-  return Cookies.set(TokenKey, token)
+  return Cookies.set(TokenKey, token, { domain: process.env.VUE_APP_COOKIE_DOMAIN })
 }
 
 export function removeToken() {
-  return Cookies.remove(TokenKey)
+  return Cookies.remove(TokenKey, { domain: process.env.VUE_APP_COOKIE_DOMAIN })
+
 }
 
 export function getUserSession(key) {

@@ -287,7 +287,6 @@
               if (v.id === iqcDefect.id) {
                 const index = this.list.indexOf(v)
                 this.list.splice(index, 1, iqcDefect)
-                console.log(index)
                 break
               }
             }

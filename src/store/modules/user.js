@@ -36,7 +36,7 @@ const actions = {
       login({ username: username.trim(), password: password }).then(response => {
         const { token } = response
         commit('SET_TOKEN', token)
-        setToken(token)
+        // setToken(token)
         resolve()
       }).catch(error => {
         reject(error)
@@ -87,7 +87,7 @@ const actions = {
       logout(state.token).then(() => {
         commit('SET_TOKEN', '')
         commit('SET_ROLES', [])
-        removeToken()
+        // removeToken()
         resetRouter()
 
         // reset visited views and cached views
@@ -117,7 +117,7 @@ const actions = {
       const token = role + '-token'
 
       commit('SET_TOKEN', token)
-      setToken(token)
+      // setToken(token)
 
       const { roles } = await dispatch('getInfo')
 
