@@ -25,25 +25,25 @@ const basicRouter = {
       children: [
         {
           path: 'operation',
-          name: 'operation:list',
+          name: 'operation',
           component: () => import('@/views/basic/factory/operation.vue'),
           meta: { title: '生产工艺', icon: 'dashboard' }
         },
         {
           path: 'line',
-          name: 'line:list',
+          name: 'productionLine',
           component: () => import('@/views/basic/factory/line.vue'),
           meta: { title: '线别管理', icon: 'dashboard' }
         },
         {
           path: 'shift',
-          name: 'shift:list',
+          name: 'shift',
           component: () => import('@/views/basic/factory/shift.vue'),
           meta: { title: '班别管理', icon: 'dashboard' }
         },
         {
           path: 'printer',
-          name: 'printer:list',
+          name: 'printer',
           component: () => import('@/views/basic/factory/printer.vue'),
           meta: { title: '打印机管理', icon: 'dashboard' }
         }
@@ -61,13 +61,13 @@ const basicRouter = {
       children: [
         {
           path: 'materialtype',
-          name: 'materialType:list',
+          name: 'materialType',
           component: () => import('@/views/basic/product/material-type.vue'),
           meta: { title: '物料类型管理', icon: 'dashboard' }
         },
         {
           path: 'material',
-          name: 'material:list',
+          name: 'material',
           component: () => import('@/views/basic/product/material.vue'),
           meta: { title: '物料管理', icon: 'dashboard' }
         }
@@ -85,25 +85,25 @@ const basicRouter = {
       children: [
         {
           path: 'defectgroup',
-          name: 'defectGroup:list',
+          name: 'defectGroup',
           component: () => import('@/views/basic/process/defect-group.vue'),
           meta: { title: '不良代码组', icon: 'dashboard' }
         },
         {
           path: 'defect',
-          name: 'defect:list',
+          name: 'defect',
           component: () => import('@/views/basic/process/defect.vue'),
           meta: { title: '不良代码', icon: 'dashboard' }
         },
         {
           path: 'linestation',
-          name: 'linestation:list',
+          name: 'lineStation',
           component: () => import('@/views/basic/process/line-station.vue'),
           meta: { title: '线别工站', icon: 'dashboard' }
         },
         {
           path: 'workflow',
-          name: 'workflow:list',
+          name: 'workflow',
           component: () => import('@/views/basic/process/workflow/index'),
           meta: { title: '生产路线', icon: 'dashboard' }
         }
@@ -122,19 +122,19 @@ const basicRouter = {
       children: [
         {
           path: 'vendor',
-          name: 'vendor:list',
+          name: 'vendor',
           component: () => import('@/views/basic/storage/vendor.vue'),
           meta: { title: '供应商管理', icon: 'dashboard' }
         },
         {
           path: 'customer',
-          name: 'customer:list',
+          name: 'customer',
           component: () => import('@/views/basic/storage/customer.vue'),
           meta: { title: '客户管理', icon: 'dashboard' }
         },
         {
           path: 'warehouse',
-          name: 'warehouse:list',
+          name: 'warehouse',
           component: () => import('@/views/basic/storage/warehouse.vue'),
           meta: { title: '仓库管理', icon: 'dashboard' }
         }
@@ -153,7 +153,7 @@ const basicRouter = {
       children: [
         {
           path: 'inspectionrule',
-          name: 'inspectionrule:list',
+          name: 'inspection',
           component: () => import('@/views/basic/quality/inspection-rule'),
           meta: { title: '检规维护', icon: 'dashboard' }
         }

@@ -149,7 +149,7 @@
   import LineStationPrinter from './LineStationPrinter' // Secondary package based on el-pagination
 
   export default {
-    name: 'LineStation',
+    name: 'lineStation',
     components: { Pagination, LineStationPrinter },
     directives: { waves },
     data() {

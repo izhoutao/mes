@@ -11,7 +11,7 @@
   import InboundOrderDetail from './components/InboundOrderDetail.vue'
 
   export default {
-    name: 'Inbound',
+    name: 'inbound',
     components: { InboundOrder, InboundOrderDetail },
     data() {
       return {

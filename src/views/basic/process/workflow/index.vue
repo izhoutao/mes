@@ -29,6 +29,7 @@
   import { getOperations } from '@/api/workflow.js'
 
   export default {
+    name: 'workflow',
     data() {
       return {
         labels: [],

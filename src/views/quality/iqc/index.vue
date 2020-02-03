@@ -290,7 +290,7 @@
   import QcDefect from './qc-defect.vue' // Secondary package based on el-pagination
 
   export default {
-    name: 'Iqc',
+    name: 'iqc',
     components: { Pagination, QcDefect },
     directives: { waves },
     data() {

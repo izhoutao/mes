@@ -179,7 +179,7 @@
   import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
 
   export default {
-    name: 'Vendor',
+    name: 'vendor',
     components: { Pagination },
     directives: { waves },
     filters: {

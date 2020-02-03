@@ -219,7 +219,7 @@
   import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
 
   export default {
-    name: 'CodeRule',
+    name: 'codeRule',
     components: { Pagination },
     directives: { waves },
     watch: {

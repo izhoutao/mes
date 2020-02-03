@@ -219,7 +219,7 @@
   import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
   export default {
-    name: 'User',
+    name: 'user',
     components: { Pagination, Treeselect },
     directives: { waves },
     watch: {

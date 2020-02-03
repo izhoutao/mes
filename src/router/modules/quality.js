@@ -15,13 +15,13 @@ const qualityRouter = {
   children: [
     {
       path: 'iqc',
-      name: 'iqc:list',
+      name: 'iqc',
       component: () => import('@/views/quality/iqc/index'),
       meta: { title: '进料检验', icon: 'dashboard' }
     },
     {
       path: 'ipqc',
-      name: 'ipqc:list',
+      name: 'ipqc',
       component: () => import('@/views/quality/ipqc/index'),
       meta: { title: '制程检验', icon: 'dashboard' }
     }

@@ -315,7 +315,7 @@
   import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
   export default {
-    name: 'Menu',
+    name: 'menu',
     components: { Pagination, Treeselect },
     directives: { waves },
     watch: {

@@ -122,7 +122,7 @@
   import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
 
   export default {
-    name: 'Warehouse',
+    name: 'warehouse',
     components: { Pagination },
     directives: { waves },
     filters: {

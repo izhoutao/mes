@@ -202,7 +202,7 @@
   import OrderItem from './rewind-item.vue'
 
   export default {
-    name: 'Order',
+    name: 'rewind',
     components: { Pagination, OrderItem },
     directives: { waves },
     watch: {

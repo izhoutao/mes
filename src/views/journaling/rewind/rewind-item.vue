@@ -296,7 +296,7 @@
   import { getShifts } from '@/api/shift'
 
   export default {
-    name: 'JournalingRewindItem',
+    name: 'rewindItem',
     components: { Pagination, Material },
     directives: { waves },
     data() {

@@ -13,17 +13,15 @@ const journalingRouter = {
     icon: 'lock'
   },
   children: [
-
-
     {
       path: 'rewinditem',
-      name: 'rewinditem:list',
+      name: 'rewindItem',
       component: () => import('@/views/journaling/rewind/rewind-item'),
       meta: { title: '重卷报工', icon: 'dashboard' }
     },
     {
       path: 'rewind',
-      name: 'rewind:list',
+      name: 'rewind',
       component: () => import('@/views/journaling/rewind/rewind'),
       meta: { title: '重卷报工', icon: 'dashboard' }
     }

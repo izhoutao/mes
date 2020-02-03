@@ -15,7 +15,7 @@ const orderRouter = {
   children: [
     {
       path: 'order',
-      name: 'order:list',
+      name: 'order',
       component: () => import('@/views/order/order'),
       meta: { title: '订单管理', icon: 'dashboard' }
     }

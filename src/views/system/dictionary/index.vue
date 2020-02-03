@@ -18,7 +18,7 @@
   import DictInfo from './components/DictInfo'
 
   export default {
-    name: 'Dictionary',
+    name: 'dictionary',
     components: { DictInfo, DictType },
     data() {
       return {

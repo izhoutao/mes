@@ -17,36 +17,36 @@ const systemRouter = {
     {
       path: 'user',
       component: () => import('@/views/system/user'),
-      name: 'user:list',
+      name: 'user',
       meta: { title: '用户管理', icon: 'dashboard' }
     },
     {
       path: 'role',
       component: () => import('@/views/system/role'),
-      name: 'role:list',
+      name: 'role',
       meta: { title: '角色管理', icon: 'dashboard' }
     },
     {
       path: 'menu',
       component: () => import('@/views/system/menu'),
-      name: 'menu:list',
+      name: 'menu',
       meta: { title: '菜单管理', icon: 'dashboard' }
     },
     {
       path: 'dictionary',
       component: () => import('@/views/system/dictionary/index'),
-      name: 'dictionary:list',
+      name: 'dictionary',
       meta: { title: '数据字典', icon: 'dashboard' }
     },
     {
       path: 'coderule',
       component: () => import('@/views/system/code-rule'),
-      name: 'coderule:list',
+      name: 'codeRule',
       meta: { title: '编码规则', icon: 'dashboard' }
     },
     {
       path: 'department',
-      name: 'department:list',
+      name: 'department',
       component: () => import('@/views/system/department'),
       meta: { title: '部门管理', icon: 'dashboard' }
     }

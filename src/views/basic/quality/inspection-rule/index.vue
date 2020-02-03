@@ -19,7 +19,7 @@
   import InspectionRuleItem from './components/InspectionRuleItem'
 
   export default {
-    name: 'Inspection',
+    name: 'inspection',
     components: { InspectionRule, InspectionRuleMaterial, InspectionRuleItem },
     data() {
       return {

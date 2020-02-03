@@ -148,7 +148,7 @@
   import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
   export default {
-    name: 'Department',
+    name: 'department',
     components: { Pagination, Treeselect },
     directives: { waves },
     watch: {

@@ -116,7 +116,7 @@
   import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
 
   export default {
-    // name: 'v-Line',
+    name: 'productionLine',
     components: { Pagination },
     directives: { waves },
     data() {

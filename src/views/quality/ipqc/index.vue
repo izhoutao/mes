@@ -283,7 +283,7 @@
   import Material from './material.vue'
 
   export default {
-    name: 'Ipqc',
+    name: 'ipqc',
     components: { Pagination, QcDefect, Material },
     directives: { waves },
     data() {

@@ -10,7 +10,7 @@
   import OutboundOrderDetail from './components/OutboundOrderDetail.vue'
 
   export default {
-    name: 'Outbound',
+    name: 'outbound',
     components: { OutboundOrder, OutboundOrderDetail },
     data() {
       return {

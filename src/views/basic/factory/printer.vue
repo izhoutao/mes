@@ -127,7 +127,7 @@
   import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
 
   export default {
-    name: 'Printer',
+    name: 'printer',
     components: { Pagination },
     directives: { waves },
     data() {

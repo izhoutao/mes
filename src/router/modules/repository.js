@@ -15,13 +15,13 @@ const repositoryRouter = {
   children: [
     {
       path: 'inboundorder',
-      name: 'inboundorder:list',
+      name: 'inbound',
       component: () => import('@/views/repository/inbound-order/index'),
       meta: { title: '入库单管理', icon: 'dashboard' }
     },
     {
       path: 'outboundorder',
-      name: 'outboundorder:list',
+      name: 'outbound',
       component: () => import('@/views/repository/outbound-order/index'),
       meta: { title: '出库单管理', icon: 'dashboard' }
     }

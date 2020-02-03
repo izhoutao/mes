@@ -202,7 +202,7 @@
   import OrderItem from './order-item'
 
   export default {
-    name: 'Order',
+    name: 'order',
     components: { Pagination, OrderItem },
     directives: { waves },
     watch: {
