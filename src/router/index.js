@@ -12,7 +12,7 @@ import repositoryRouter from './modules/repository'
 import systemRouter from './modules/system'
 import qualityRouter from '@/router/modules/quality'
 import orderRouter from '@/router/modules/order'
-import journalingRouter from '@/router/modules/journaling'
+import productionRouter from '@/router/modules/production'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -39,6 +39,17 @@ import journalingRouter from '@/router/modules/journaling'
  * all roles can be accessed
  */
 export const constantRoutes = [
+  {
+    path: '/redirect',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/redirect/:path*',
+        component: () => import('@/views/redirect/index')
+      }
+    ]
+  },
   {
     path: '/login',
     component: () => import('@/views/login/index'),
@@ -88,7 +99,7 @@ export const constantRoutes = [
 export const asyncRoutes = [
   basicRouter,
   orderRouter,
-  journalingRouter,
+  productionRouter,
   qualityRouter,
   repositoryRouter,
   systemRouter,

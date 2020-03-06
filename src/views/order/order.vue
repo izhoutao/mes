@@ -146,7 +146,7 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+<!--          <el-col :span="6">
             <el-form-item label="状态：" prop="status">
               <el-select v-model="temp.status" filterable placeholder="请选择" style="width:100%">
                 <el-option
@@ -157,7 +157,7 @@
                 </el-option>
               </el-select>
             </el-form-item>
-          </el-col>
+          </el-col>-->
           <el-col :span="6">
             <el-form-item label="交货日期：" prop="deliveryDate">
               <el-date-picker v-model="temp.deliveryDate" type="date" placeholder="请选择日期" style="width: 100%;"
@@ -237,7 +237,7 @@
           customerName: '',
           deliveryDate: '',
           finishDate: '',
-          status: undefined,
+          // status: undefined,
           description: ''
         },
         tempCopy: null,

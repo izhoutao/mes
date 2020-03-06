@@ -2,9 +2,9 @@
   <div class="order-item">
     <div class="filter-container">
       <el-form ref="filterForm" :model="listQuery" :inline="true">
-        <el-form-item label="" prop="orderItemNumber">
+        <el-form-item label="" prop="WorkOrderMaterialNumber">
           <el-input
-            v-model="listQuery.orderItemNumber"
+            v-model="listQuery.workOrderMaterialNumber"
             placeholder="请输入子订单号"
             style="width: 200px;"
             class="filter-item"
@@ -44,31 +44,31 @@
           {{ scope.$index }}
         </template>
       </el-table-column>
-      <el-table-column label="子订单号" min-width="80px" align="center">
+
+      <el-table-column label="料号" min-width="80px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.orderItemNumber }}</span>
+          <span>{{ scope.row.materialCode }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="产品" min-width="80px" align="center">
+      <el-table-column label="物料名称" min-width="80px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.productName }}</span>
+          <span>{{ scope.row.materialName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="规格" min-width="80px" align="center">
+
+      <el-table-column label="需求数量" min-width="50px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.productSpecification }}</span>
+          <span>{{ scope.row.requestNum }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="数量" min-width="50px" align="center">
+      <el-table-column label="已使用数量" min-width="50px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.num }}</span>
+          <span>{{ scope.row.usedNum }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="状态" min-width="50px" align="center">
+      <el-table-column label="用量单位" min-width="50px" align="center">
         <template slot-scope="scope">
-          <el-tag :type="translateStatus(scope.row.status).tagType" style="margin:0 5px;">
-            {{ translateStatus(scope.row.status).text}}
-          </el-tag>
+          <span>{{ scope.row.unit}}</span>
         </template>
       </el-table-column>
 
@@ -91,31 +91,31 @@
     <el-dialog :close-on-click-modal="false" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible"
                width="600px">
       <el-form
-        ref="orderItemForm"
+        ref="workOrderMaterialForm"
         :rules="rules"
         :model="temp"
         label-position="right"
         label-width="150px"
       >
-        <el-form-item label="产品：" prop="productName">
-          <el-input v-model="temp.productName" @click.native="handleSelectMaterial"/>
+        <el-form-item label="料号：" prop="materialName">
+          <el-input v-model="temp.materialName" @click.native="handleSelectMaterial"/>
         </el-form-item>
-        <el-form-item label="规格：" prop="productSpecification">
-          <el-input v-model="temp.productSpecification"/>
+        <el-form-item label="需求数量：" prop="requestNum">
+          <el-input v-model.number="temp.requestNum"/>
         </el-form-item>
-        <el-form-item label="数量：" prop="num">
-          <el-input v-model="temp.num"/>
-        </el-form-item>
-<!--        <el-form-item label="状态：" prop="status">
-          <el-select v-model="temp.status" filterable placeholder="请选择" style="width:100%">
+<!--        <el-form-item label="已使用数量：" prop="usedNum">-->
+<!--          <el-input v-model.number="temp.usedNum"/>-->
+<!--        </el-form-item>-->
+        <el-form-item label="用量单位：" prop="typeId">
+          <el-select v-model="temp.unit" filterable placeholder="请选择" style="width:100%">
             <el-option
-              v-for="(item,index) in statuses"
-              :key="index"
-              :label="item"
-              :value="index">
+              v-for="item in units"
+              :key="item.id"
+              :label="item.name"
+              :value="item.name">
             </el-option>
           </el-select>
-        </el-form-item>-->
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="danger" size="small" @click="dialogFormVisible = false">取消</el-button>
@@ -143,18 +143,23 @@
 
 <script>
   import { deepClone } from '@/utils'
-
-  import { getOrderItems, addOrderItem, updateOrderItem, deleteOrderItem } from '@/api/orderitem.js'
+  import { getDictMaps } from '@/api/dictionary'
+  import {
+    getWorkOrderMaterials,
+    addWorkOrderMaterial,
+    updateWorkOrderMaterial,
+    deleteWorkOrderMaterial
+  } from '@/api/workordermaterial.js'
 
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
   import Material from './material.vue'
 
   export default {
-    name: 'OrderItem',
+    name: 'WorkOrderMaterial',
     components: { Pagination, Material },
     directives: { waves },
-    props: ['orderId'],
+    props: ['workOrderId'],
     data() {
       return {
         tableKey: 0,
@@ -164,28 +169,27 @@
         listQuery: {
           current: 1,
           size: 10,
-          orderId: this.orderId,
-          orderItemNumber: '',
-          status:undefined
+          workOrderId: this.workOrderId,
+          status: undefined
         },
         temp: {
           id: undefined,
-          orderItemNumber: '',
-          orderId: this.orderId,
-          productId: undefined,
-          productName: '',
-          productSpecification: '',
-          num: undefined,
-          status: undefined
+          workOrderId: this.workOrderId,
+          materialId: undefined,
+          materialCode: undefined,
+          materialName: '',
+          requestNum: undefined,
+          // usedNum: undefined,
+          unit: ''
         },
         tempCopy: null,
-        statuses: ['待排产', '已排产', '生产中', '已完成'],
-        tagTypes: ['success', 'info', 'warning', 'danger'],
+        statuses: ['待领料', '已领料'],
+        tagTypes: ['success', 'danger'],
+        units: [],
+        unitMap: null,
         selectedMaterial: undefined,
-
         dialogFormVisible: false,
         dialogStatus: '',
-
         materialDialogFormVisible: false,
         textMap: {
           update: '编辑',
@@ -203,31 +207,41 @@
     },
     created() {
       this.tempCopy = deepClone(this.temp)
-      this.getList()
+      this.listLoading = true
+      this.$nextTick(async() => {
+        await this.getDicts()
+        this.getList()
+      })
     },
     methods: {
-      translateStatus(status) {
-        return {
-          tagType: this.tagTypes[status],
-          text: this.statuses[status]
-        }
-      },
+
       handleSelectMaterial() {
         this.materialDialogFormVisible = true
       },
       confirmMaterial() {
         this.materialDialogFormVisible = false
-        this.temp.productId = this.selectedMaterial && this.selectedMaterial.id
-        this.temp.productName = this.selectedMaterial && this.selectedMaterial.name
+        this.temp.materialId = this.selectedMaterial && this.selectedMaterial.id
+        this.temp.materialCode = this.selectedMaterial && this.selectedMaterial.code
+        this.temp.materialName = this.selectedMaterial && this.selectedMaterial.name
       },
       getList() {
         this.listLoading = true
-        getOrderItems(this.listQuery).then(res => {
+        getWorkOrderMaterials(this.listQuery).then(res => {
           this.list = res.queryResult.list
           this.total = res.queryResult.total
           this.listLoading = false
         })
       },
+
+      async getDicts() {
+        const dictTypeIds = ['1233012081154904066']
+        let res = await getDictMaps(dictTypeIds)
+        this.units = res.model[dictTypeIds[0]]
+        this.unitMap = _.fromPairs(this.units.map(unit => {
+          return [unit.id, unit]
+        }))
+      },
+
       handleFilter() {
         this.listQuery.current = 1
         this.getList()
@@ -242,20 +256,20 @@
         this.temp = deepClone(this.tempCopy)
       },
       handleAdd() {
-        this.resetForm('orderItemForm')
+        this.resetForm('workOrderMaterialForm')
         this.dialogStatus = 'create'
         this.dialogFormVisible = true
         // this.rules.password[0].required = true
         this.$nextTick(() => {
-          this.$refs['orderItemForm'].clearValidate()
+          this.$refs['workOrderMaterialForm'].clearValidate()
         })
       },
       submit() {
-        this.$refs['orderItemForm'].validate((valid) => {
+        this.$refs['workOrderMaterialForm'].validate((valid) => {
           if (valid) {
             // const tempData = deepClone(this.temp)
-            let orderItem = deepClone(this.temp)
-            addOrderItem(orderItem).then((res) => {
+            let workOrderMaterial = deepClone(this.temp)
+            addWorkOrderMaterial(workOrderMaterial).then((res) => {
               this.list.unshift(res.model)
               this.total++
               this.dialogFormVisible = false
@@ -277,18 +291,18 @@
         // this.temp.password = ''
         this.dialogFormVisible = true
         this.$nextTick(() => {
-          this.$refs['orderItemForm'].clearValidate()
+          this.$refs['workOrderMaterialForm'].clearValidate()
         })
       },
       updateData() {
-        this.$refs['orderItemForm'].validate((valid) => {
+        this.$refs['workOrderMaterialForm'].validate((valid) => {
           if (valid) {
-            let orderItem = deepClone(this.temp)
-            updateOrderItem(orderItem).then(() => {
+            let workOrderMaterial = deepClone(this.temp)
+            updateWorkOrderMaterial(workOrderMaterial).then(() => {
               for (const v of this.list) {
-                if (v.id === orderItem.id) {
+                if (v.id === workOrderMaterial.id) {
                   const index = this.list.indexOf(v)
-                  this.list.splice(index, 1, orderItem)
+                  this.list.splice(index, 1, workOrderMaterial)
                   break
                 }
               }
@@ -309,7 +323,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteOrderItem(row.id).then(() => {
+          deleteWorkOrderMaterial(row.id).then(() => {
             this.$notify({
               title: '成功',
               message: '删除成功',

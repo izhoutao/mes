@@ -6,7 +6,7 @@ const orderRouter = {
   path: '/order',
   component: Layout,
   redirect: '/order/order',
-  name: 'order',
+  name: 'orderManagement',
   alwaysShow: true, // 一直显示根路由
   meta: {
     title: '订单管理',

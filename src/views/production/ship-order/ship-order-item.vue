@@ -1,11 +1,11 @@
 <template>
-  <div class="order-item">
+  <div class="ship-order-item">
     <div class="filter-container">
       <el-form ref="filterForm" :model="listQuery" :inline="true">
-        <el-form-item label="" prop="orderItemNumber">
+        <el-form-item label="" prop="shipOrderItemNumber">
           <el-input
-            v-model="listQuery.orderItemNumber"
-            placeholder="请输入子订单号"
+            v-model="listQuery.shipOrderItemNumber"
+            placeholder="请输入出货项号"
             style="width: 200px;"
             class="filter-item"
             clearable=""
@@ -44,24 +44,29 @@
           {{ scope.$index }}
         </template>
       </el-table-column>
-      <el-table-column label="子订单号" min-width="80px" align="center">
+      <el-table-column label="出货项号" min-width="80px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.orderItemNumber }}</span>
+          <span>{{ scope.row.shipOrderItemNumber }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="产品" min-width="80px" align="center">
+      <el-table-column label="物料名称" min-width="80px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.productName }}</span>
+          <span>{{ scope.row.materialName }}</span>
         </template>
       </el-table-column>
       <el-table-column label="规格" min-width="80px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.productSpecification }}</span>
+          <span>{{ scope.row.specification }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="数量" min-width="50px" align="center">
+      <el-table-column label="目标数量" min-width="50px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.num }}</span>
+          <span>{{ scope.row.requestNum }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="已完成数量" min-width="50px" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.shippedNum }}</span>
         </template>
       </el-table-column>
       <el-table-column label="状态" min-width="50px" align="center">
@@ -91,23 +96,26 @@
     <el-dialog :close-on-click-modal="false" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible"
                width="600px">
       <el-form
-        ref="orderItemForm"
+        ref="shipOrderItemForm"
         :rules="rules"
         :model="temp"
         label-position="right"
         label-width="150px"
       >
-        <el-form-item label="产品：" prop="productName">
-          <el-input v-model="temp.productName" @click.native="handleSelectMaterial"/>
+        <el-form-item label="产品：" prop="materialName">
+          <el-input v-model="temp.materialName" @click.native="handleSelectMaterial"/>
         </el-form-item>
-        <el-form-item label="规格：" prop="productSpecification">
-          <el-input v-model="temp.productSpecification"/>
+        <el-form-item label="规格：" prop="specification">
+          <el-input v-model="temp.specification"/>
         </el-form-item>
-        <el-form-item label="数量：" prop="num">
-          <el-input v-model="temp.num"/>
+        <el-form-item label="目标数量：" prop="num">
+          <el-input v-model="temp.requestNum"/>
         </el-form-item>
-<!--        <el-form-item label="状态：" prop="status">
-          <el-select v-model="temp.status" filterable placeholder="请选择" style="width:100%">
+        <el-form-item label="完成数量：" prop="num" v-if="dialogStatus!=='create'">
+          <el-input :value="temp.shippedNum" :disabled="true"/>
+        </el-form-item>
+        <el-form-item label="状态：" prop="status" v-if="dialogStatus!=='create'">
+          <el-select :value="temp.status" :disabled="true" placeholder="" style="width:100%">
             <el-option
               v-for="(item,index) in statuses"
               :key="index"
@@ -115,7 +123,7 @@
               :value="index">
             </el-option>
           </el-select>
-        </el-form-item>-->
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="danger" size="small" @click="dialogFormVisible = false">取消</el-button>
@@ -144,17 +152,17 @@
 <script>
   import { deepClone } from '@/utils'
 
-  import { getOrderItems, addOrderItem, updateOrderItem, deleteOrderItem } from '@/api/orderitem.js'
+  import { getShipOrderItems, addShipOrderItem, updateShipOrderItem, deleteShipOrderItem } from '@/api/shiporderitem.js'
 
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
   import Material from './material.vue'
 
   export default {
-    name: 'OrderItem',
+    name: 'ShipOrderItem',
     components: { Pagination, Material },
     directives: { waves },
-    props: ['orderId'],
+    props: ['shipOrderId'],
     data() {
       return {
         tableKey: 0,
@@ -164,22 +172,23 @@
         listQuery: {
           current: 1,
           size: 10,
-          orderId: this.orderId,
-          orderItemNumber: '',
-          status:undefined
+          shipOrderId: this.shipOrderId,
+          shipOrderItemNumber: '',
+          status: undefined
         },
         temp: {
           id: undefined,
-          orderItemNumber: '',
-          orderId: this.orderId,
-          productId: undefined,
-          productName: '',
-          productSpecification: '',
-          num: undefined,
+          shipOrderItemNumber: '',
+          shipOrderId: this.shipOrderId,
+          materialId: undefined,
+          materialName: '',
+          specification: '',
+          requestNum: undefined,
+          shippedNum: undefined,
           status: undefined
         },
         tempCopy: null,
-        statuses: ['待排产', '已排产', '生产中', '已完成'],
+        statuses: ['未完成', '已完成'],
         tagTypes: ['success', 'info', 'warning', 'danger'],
         selectedMaterial: undefined,
 
@@ -217,12 +226,12 @@
       },
       confirmMaterial() {
         this.materialDialogFormVisible = false
-        this.temp.productId = this.selectedMaterial && this.selectedMaterial.id
-        this.temp.productName = this.selectedMaterial && this.selectedMaterial.name
+        this.temp.materialId = this.selectedMaterial && this.selectedMaterial.id
+        this.temp.materialName = this.selectedMaterial && this.selectedMaterial.name
       },
       getList() {
         this.listLoading = true
-        getOrderItems(this.listQuery).then(res => {
+        getShipOrderItems(this.listQuery).then(res => {
           this.list = res.queryResult.list
           this.total = res.queryResult.total
           this.listLoading = false
@@ -242,20 +251,20 @@
         this.temp = deepClone(this.tempCopy)
       },
       handleAdd() {
-        this.resetForm('orderItemForm')
+        this.resetForm('shipOrderItemForm')
         this.dialogStatus = 'create'
         this.dialogFormVisible = true
         // this.rules.password[0].required = true
         this.$nextTick(() => {
-          this.$refs['orderItemForm'].clearValidate()
+          this.$refs['shipOrderItemForm'].clearValidate()
         })
       },
       submit() {
-        this.$refs['orderItemForm'].validate((valid) => {
+        this.$refs['shipOrderItemForm'].validate((valid) => {
           if (valid) {
             // const tempData = deepClone(this.temp)
-            let orderItem = deepClone(this.temp)
-            addOrderItem(orderItem).then((res) => {
+            let shipOrderItem = deepClone(this.temp)
+            addShipOrderItem(shipOrderItem).then((res) => {
               this.list.unshift(res.model)
               this.total++
               this.dialogFormVisible = false
@@ -277,18 +286,18 @@
         // this.temp.password = ''
         this.dialogFormVisible = true
         this.$nextTick(() => {
-          this.$refs['orderItemForm'].clearValidate()
+          this.$refs['shipOrderItemForm'].clearValidate()
         })
       },
       updateData() {
-        this.$refs['orderItemForm'].validate((valid) => {
+        this.$refs['shipOrderItemForm'].validate((valid) => {
           if (valid) {
-            let orderItem = deepClone(this.temp)
-            updateOrderItem(orderItem).then(() => {
+            let shipOrderItem = deepClone(this.temp)
+            updateShipOrderItem(shipOrderItem).then(() => {
               for (const v of this.list) {
-                if (v.id === orderItem.id) {
+                if (v.id === shipOrderItem.id) {
                   const index = this.list.indexOf(v)
-                  this.list.splice(index, 1, orderItem)
+                  this.list.splice(index, 1, shipOrderItem)
                   break
                 }
               }
@@ -304,12 +313,12 @@
         })
       },
       handleDelete(row) {
-        this.$confirm('此操作将永久删除该子订单, 是否继续?', '提示', {
+        this.$confirm('此操作将永久删除该出货单项, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteOrderItem(row.id).then(() => {
+          deleteShipOrderItem(row.id).then(() => {
             this.$notify({
               title: '成功',
               message: '删除成功',
@@ -326,7 +335,7 @@
   }
 </script>
 <style lang="scss">
-  .order-item {
+  .ship-order-item {
 
   .el-icon-edit.update, .el-icon-delete.delete {
     margin: 3px;

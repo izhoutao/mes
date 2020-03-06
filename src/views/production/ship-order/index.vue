@@ -4,25 +4,15 @@
 
       <div class="filter-container">
         <el-form ref="filterForm" :model="listQuery" :inline="true">
-          <el-form-item label="" prop="orderNumber">
+          <el-form-item label="" prop="shipOrderNumber">
             <el-input
-              v-model="listQuery.orderNumber"
-              placeholder="请输入订单编号"
+              v-model="listQuery.shipOrderNumber"
+              placeholder="请输入出货单编号"
               style="width: 200px;"
               class="filter-item"
               clearable=""
               @keyup.enter.native="handleFilter"
             />
-          </el-form-item>
-          <el-form-item label="" prop="customerId">
-            <el-select v-model="listQuery.customerId" filterable placeholder="客户" @change="handleFilter">
-              <el-option
-                v-for="item in customers"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id">
-              </el-option>
-            </el-select>
           </el-form-item>
           <el-form-item label="" prop="status">
             <el-select v-model="listQuery.status" filterable placeholder="状态" @change="handleFilter">
@@ -50,48 +40,38 @@
             {{ scope.$index }}
           </template>
         </el-table-column>
+        <el-table-column label="出货单号" min-width="80px" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.shipOrderNumber }}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="订单编号" min-width="80px" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.orderNumber }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="客户名称" min-width="80px" align="center">
+
+        <el-table-column label="地址" min-width="90px" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.customerName }}</span>
+            <span>{{ scope.row.address }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="交货日期" min-width="80px" align="center">
+        <el-table-column label="城市" min-width="90px" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.deliveryDate | parseTime('{y}-{m}-{d}')}}</span>
+            <span>{{ scope.row.city }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="完成日期" min-width="80px" align="center">
+        <el-table-column label="省州" min-width="90px" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.finishDate  | parseTime('{y}-{m}-{d}')}}</span>
+            <span>{{ scope.row.province }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="状态" min-width="80px" align="center">
+        <el-table-column label="国家" min-width="90px" align="center">
           <template slot-scope="scope">
-            <el-tag :type="translateStatus(scope.row.status).tagType" style="margin:0 5px;">
-              {{ translateStatus(scope.row.status).text}}
-            </el-tag>
+            <span>{{ scope.row.country }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="描述" min-width="100px" align="center">
-          <template slot-scope="scope">
-            <span>{{ scope.row.description }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="创建人" min-width="80px" align="center">
-          <template slot-scope="scope">
-            <span>{{ scope.row.createPerson }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="创建日期"  min-width="80px" align="center">
-          <template slot-scope="scope">
-            <span>{{ scope.row.createTime  | parseTime('{y}-{m}-{d}') }}</span>
-          </template>
-        </el-table-column>
+
         <el-table-column label="操作" align="center" min-width="80">
           <template slot-scope="scope">
 <!--
@@ -121,69 +101,42 @@
       />
     </div>
     <div v-show="dialogFormVisible">
-      <div style="font-size: 20px;">{{textMap[dialogStatus]}}订单</div>
+      <div style="font-size: 20px;">{{textMap[dialogStatus]}}出货单</div>
       <div style="margin: 10px 0px 20px;">
         <el-button type="primary" size="small" @click="dialogStatus==='create'?submit():updateData()">{{dialogStatus==='create'?'创建':'确认'}}</el-button>
         <el-button type="danger" size="small" @click="dialogFormVisible = false">取消</el-button>
       </div>
       <el-form
-        ref="orderForm"
+        ref="shipOrderForm"
         :rules="rules"
         :model="temp"
         label-position="right"
         label-width="100px"
       >
-        <el-row>
-          <el-col :span="6">
-            <el-form-item label="客户：" prop="customer">
-              <el-select v-model="temp.customerId" filterable placeholder="请选择" style="width:100%">
-                <el-option
-                  v-for="item in customers"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="状态：" prop="status">
-              <el-select v-model="temp.status" filterable placeholder="请选择" style="width:100%">
-                <el-option
-                  v-for="(item,index) in statuses"
-                  :key="index"
-                  :label="item"
-                  :value="index">
-                </el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="交货日期：" prop="deliveryDate">
-              <el-date-picker v-model="temp.deliveryDate" type="date" placeholder="请选择日期" style="width: 100%;"
-                              format="yyyy 年 MM 月 dd 日"
-                              value-format="yyyy-MM-dd"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="完成日期：" prop="deliveryDate">
-              <el-date-picker v-model="temp.finishDate" type="date" placeholder="请选择日期" style="width: 100%;"
-                              format="yyyy 年 MM 月 dd 日"
-                              value-format="yyyy-MM-dd"/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-form-item label="描述：" prop="description">
-          <el-input type="textarea" :rows="2" v-model="temp.description"/>
+        <el-form-item label="订单编号：" prop="address">
+          <el-input v-model="temp.orderNumber"/>
         </el-form-item>
+        <el-form-item label="出货地址：" prop="address">
+          <el-input v-model="temp.address"/>
+        </el-form-item>
+        <el-form-item label="城市：" prop="city">
+          <el-input v-model="temp.city"/>
+        </el-form-item>
+        <el-form-item label="省州：" prop="province">
+          <el-input v-model="temp.province"/>
+        </el-form-item>
+        <el-form-item label="国家：" prop="country">
+          <el-input v-model="temp.country"/>
+        </el-form-item>
+      </el-form>
       </el-form>
 
 
       <el-card class="box-card" v-if="temp.id">
         <div slot="header" class="clearfix">
-          <div style="font-size: 20px;">子订单信息</div>
+          <div style="font-size: 20px;">出货单详情</div>
         </div>
-        <order-item :orderId="temp.id" :key="temp.id"/>
+        <ship-order-item :shipOrderId="temp.id" :key="temp.id"/>
       </el-card>
 
     </div>
@@ -194,16 +147,16 @@
 <script>
   import { deepClone } from '@/utils'
 
-  import { getOrders, addOrder, updateOrder, deleteOrder } from '@/api/order.js'
+  import { getShipOrders, addShipOrder, updateShipOrder, deleteShipOrder } from '@/api/shiporder.js'
   import { getCustomers } from '@/api/customer' // Secondary package based on el-pagination
 
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination/index.vue'
-  import OrderItem from './rewind-item.vue'
+  import ShipOrderItem from './ship-order-item'
 
   export default {
-    name: 'rewind',
-    components: { Pagination, OrderItem },
+    name: 'shiporder',
+    components: { Pagination, ShipOrderItem },
     directives: { waves },
     watch: {
       'temp.customerId': {
@@ -226,25 +179,22 @@
         listQuery: {
           current: 1,
           size: 10,
-          orderNumber:undefined,
-          customerId: undefined,
+          shipOrderNumber:undefined,
           status:undefined
           /*orders: ['code desc']*/
         },
         temp: {
           id: undefined,
-          customerId: '',
-          customerName: '',
-          deliveryDate: '',
-          finishDate: '',
-          status: undefined,
-          description: ''
+          orderNumber:undefined,
+          address:undefined,
+          city:undefined,
+          province:undefined,
+          country:undefined,
+          // status: undefined,
         },
         tempCopy: null,
-        statuses: ['已创建', '生产中', '已完成'],
+        statuses: ['新建', '已完成'],
         tagTypes: ['success', 'info', 'warning', 'danger'],
-        customers: [],
-        customerMap: null,
         dialogFormVisible: false,
         dialogStatus: '',
         textMap: {
@@ -264,8 +214,7 @@
     created() {
       this.tempCopy = deepClone(this.temp)
       this.listLoading = true
-      this.$nextTick(async() => {
-        await this.getCustomers()
+      this.$nextTick(() => {
         this.getList()
       })
 
@@ -273,22 +222,11 @@
     methods: {
       getList() {
         this.listLoading = true
-        getOrders(this.listQuery).then(res => {
-          this.list = res.queryResult.list.map(item => {
-            let customer = this.customerMap[item.customerId]
-            item.customerName = customer.name
-            return item
-          })
+        getShipOrders(this.listQuery).then(res => {
+          this.list = res.queryResult.list
           this.total = res.queryResult.total
           this.listLoading = false
         })
-      },
-      async getCustomers() {
-        let res = await getCustomers({})
-        this.customers = res.queryResult.list
-        this.customerMap = _.fromPairs(this.customers.map(customer => {
-          return [customer.id, customer]
-        }))
       },
       handleFilter() {
         this.listQuery.current = 1
@@ -309,22 +247,20 @@
         this.temp = deepClone(this.tempCopy)
       },
       handleAdd() {
-        this.resetForm('orderForm')
+        this.resetForm('shipOrderForm')
         this.dialogStatus = 'create'
         this.dialogFormVisible = true
         // this.rules.password[0].required = true
         this.$nextTick(() => {
-          this.$refs['orderForm'].clearValidate()
+          this.$refs['shipOrderForm'].clearValidate()
         })
       },
       submit() {
-        this.$refs['orderForm'].validate((valid) => {
+        this.$refs['shipOrderForm'].validate((valid) => {
           if (valid) {
             // const tempData = deepClone(this.temp)
-            let order = deepClone(this.temp)
-            addOrder(rewind).then((res) => {
-              let customer = this.customerMap[rewind.customerId]
-              res.model.customerName = customer.name
+            let shipOrder = deepClone(this.temp)
+            addShipOrder(shipOrder).then((res) => {
               this.list.unshift(res.model)
               this.total++
               this.handleUpdate(res.model)
@@ -346,20 +282,18 @@
         // this.temp.password = ''
         this.dialogFormVisible = true
         this.$nextTick(() => {
-          this.$refs['orderForm'].clearValidate()
+          this.$refs['shipOrderForm'].clearValidate()
         })
       },
       updateData() {
-        this.$refs['orderForm'].validate((valid) => {
+        this.$refs['shipOrderForm'].validate((valid) => {
           if (valid) {
-            let order = deepClone(this.temp)
-            updateOrder(rewind).then(() => {
-              let customer = this.customerMap[rewind.customerId]
-              rewind.customerName = customer.name
+            let shipOrder = deepClone(this.temp)
+            updateShipOrder(shipOrder).then(() => {
               for (const v of this.list) {
-                if (v.id === rewind.id) {
+                if (v.id === shipOrder.id) {
                   const index = this.list.indexOf(v)
-                  this.list.splice(index, 1, rewind)
+                  this.list.splice(index, 1, shipOrder)
                   break
                 }
               }
@@ -375,12 +309,12 @@
         })
       },
       handleDelete(row) {
-        this.$confirm('此操作将永久删除该工艺, 是否继续?', '提示', {
+        this.$confirm('此操作将永久删除该出货单, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteOrder(row.id).then(() => {
+          deleteShipOrder(row.id).then(() => {
             this.$notify({
               title: '成功',
               message: '删除成功',
