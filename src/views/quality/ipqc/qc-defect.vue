@@ -298,6 +298,7 @@
       handleDelete(row) {
         const index = this.list.indexOf(row)
         this.list.splice(index, 1)
+        this.total--
         this.$emit('update:defectList', this.list)
       }
 

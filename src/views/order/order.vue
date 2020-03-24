@@ -60,6 +60,11 @@
             <span>{{ scope.row.customerName }}</span>
           </template>
         </el-table-column>
+        <el-table-column label="下单日期" min-width="80px" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.beginDate | parseTime('{y}-{m}-{d}')}}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="交货日期" min-width="80px" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.deliveryDate | parseTime('{y}-{m}-{d}')}}</span>
@@ -159,6 +164,13 @@
             </el-form-item>
           </el-col>-->
           <el-col :span="6">
+            <el-form-item label="下单日期：" prop="beginDate">
+              <el-date-picker v-model="temp.beginDate" type="date" placeholder="请选择日期" style="width: 100%;"
+                              format="yyyy 年 MM 月 dd 日"
+                              value-format="yyyy-MM-dd"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
             <el-form-item label="交货日期：" prop="deliveryDate">
               <el-date-picker v-model="temp.deliveryDate" type="date" placeholder="请选择日期" style="width: 100%;"
                               format="yyyy 年 MM 月 dd 日"
@@ -235,6 +247,7 @@
           id: undefined,
           customerId: '',
           customerName: '',
+          beginDate:'',
           deliveryDate: '',
           finishDate: '',
           // status: undefined,
@@ -389,6 +402,7 @@
             })
             const index = this.list.indexOf(row)
             this.list.splice(index, 1)
+            this.total--
           })
         })
       }

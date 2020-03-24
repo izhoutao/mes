@@ -74,18 +74,18 @@
 
         <el-table-column label="操作" align="center" min-width="80">
           <template slot-scope="scope">
-<!--
-            <el-button type="primary" icon="el-icon-edit" size="mini"
-                       @click="handleUpdate(scope.row)">编辑
-            </el-button>
-            <el-button
-              icon="el-icon-delete"
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.row,'true')"
-            >删除
-            </el-button>
--->
+            <!--
+                        <el-button type="primary" icon="el-icon-edit" size="mini"
+                                   @click="handleUpdate(scope.row)">编辑
+                        </el-button>
+                        <el-button
+                          icon="el-icon-delete"
+                          size="mini"
+                          type="danger"
+                          @click="handleDelete(scope.row,'true')"
+                        >删除
+                        </el-button>
+            -->
             <i class="el-icon-edit" @click="handleUpdate(scope.row)"/>
             <i class="el-icon-delete" @click="handleDelete(scope.row,'true')"/>
           </template>
@@ -103,7 +103,9 @@
     <div v-show="dialogFormVisible">
       <div style="font-size: 20px;">{{textMap[dialogStatus]}}出货单</div>
       <div style="margin: 10px 0px 20px;">
-        <el-button type="primary" size="small" @click="dialogStatus==='create'?submit():updateData()">{{dialogStatus==='create'?'创建':'确认'}}</el-button>
+        <el-button type="primary" size="small" @click="dialogStatus==='create'?submit():updateData()">
+          {{dialogStatus==='create'?'创建':'确认'}}
+        </el-button>
         <el-button type="danger" size="small" @click="dialogFormVisible = false">取消</el-button>
       </div>
       <el-form
@@ -113,21 +115,35 @@
         label-position="right"
         label-width="100px"
       >
-        <el-form-item label="订单编号：" prop="address">
-          <el-input v-model="temp.orderNumber"/>
-        </el-form-item>
-        <el-form-item label="出货地址：" prop="address">
-          <el-input v-model="temp.address"/>
-        </el-form-item>
-        <el-form-item label="城市：" prop="city">
-          <el-input v-model="temp.city"/>
-        </el-form-item>
-        <el-form-item label="省州：" prop="province">
-          <el-input v-model="temp.province"/>
-        </el-form-item>
-        <el-form-item label="国家：" prop="country">
-          <el-input v-model="temp.country"/>
-        </el-form-item>
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="订单编号：" prop="address">
+              <el-input v-model="temp.orderNumber"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="出货地址：" prop="address">
+              <el-input v-model="temp.address"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="城市：" prop="city">
+              <el-input v-model="temp.city"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="省州：" prop="province">
+              <el-input v-model="temp.province"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="国家：" prop="country">
+              <el-input v-model="temp.country"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       </el-form>
 
@@ -179,17 +195,17 @@
         listQuery: {
           current: 1,
           size: 10,
-          shipOrderNumber:undefined,
-          status:undefined
+          shipOrderNumber: undefined,
+          status: undefined
           /*orders: ['code desc']*/
         },
         temp: {
           id: undefined,
-          orderNumber:undefined,
-          address:undefined,
-          city:undefined,
-          province:undefined,
-          country:undefined,
+          orderNumber: undefined,
+          address: undefined,
+          city: undefined,
+          province: undefined,
+          country: undefined
           // status: undefined,
         },
         tempCopy: null,
@@ -323,6 +339,7 @@
             })
             const index = this.list.indexOf(row)
             this.list.splice(index, 1)
+            this.total--
           })
         })
       }

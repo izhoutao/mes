@@ -12,7 +12,7 @@
             @keyup.enter.native="handleFilter"
           />
         </el-form-item>
-        <el-form-item label="" prop="status">
+<!--        <el-form-item label="" prop="status">
           <el-select v-model="listQuery.status" filterable placeholder="状态" @change="handleFilter">
             <el-option
               v-for="(item,index) in statuses"
@@ -21,7 +21,7 @@
               :value="index">
             </el-option>
           </el-select>
-        </el-form-item>
+        </el-form-item>-->
         <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
         <el-button v-waves class="filter-item" @click="resetForm('filterForm');handleFilter()">重置</el-button>
         <el-button class="filter-item" style="margin-left: 10px;" type="success"
@@ -64,13 +64,13 @@
           <span>{{ scope.row.num }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="状态" min-width="50px" align="center">
+<!--      <el-table-column label="状态" min-width="50px" align="center">
         <template slot-scope="scope">
           <el-tag :type="translateStatus(scope.row.status).tagType" style="margin:0 5px;">
             {{ translateStatus(scope.row.status).text}}
           </el-tag>
         </template>
-      </el-table-column>
+      </el-table-column>-->
 
       <el-table-column label="操作" align="center" min-width="80">
         <template slot-scope="scope">
@@ -166,7 +166,7 @@
           size: 10,
           orderId: this.orderId,
           orderItemNumber: '',
-          status:undefined
+          // status:undefined
         },
         temp: {
           id: undefined,
@@ -176,10 +176,10 @@
           productName: '',
           productSpecification: '',
           num: undefined,
-          status: undefined
+          // status: undefined
         },
         tempCopy: null,
-        statuses: ['待排产', '已排产', '生产中', '已完成'],
+        // statuses: ['待排产', '已排产', '生产中', '已完成'],
         tagTypes: ['success', 'info', 'warning', 'danger'],
         selectedMaterial: undefined,
 
@@ -206,12 +206,12 @@
       this.getList()
     },
     methods: {
-      translateStatus(status) {
-        return {
-          tagType: this.tagTypes[status],
-          text: this.statuses[status]
-        }
-      },
+      // translateStatus(status) {
+      //   return {
+      //     tagType: this.tagTypes[status],
+      //     text: this.statuses[status]
+      //   }
+      // },
       handleSelectMaterial() {
         this.materialDialogFormVisible = true
       },
@@ -318,6 +318,7 @@
             })
             const index = this.list.indexOf(row)
             this.list.splice(index, 1)
+            this.total--
           })
         })
       }
