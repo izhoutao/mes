@@ -18,6 +18,12 @@ const apsRouter = {
       name: 'resource',
       component: () => import('@/views/aps/resource'),
       meta: { title: '排产资源管理', icon: 'dashboard' }
+    },
+    {
+      path: 'gantt',
+      name: 'DhtmlxGantt',
+      component: () => import('@/views/aps/gantt'),
+      meta: { title: '工单排产管理', icon: 'dashboard' }
     }
   ]
 }

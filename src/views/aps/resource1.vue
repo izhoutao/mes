@@ -1,16 +1,167 @@
 <template>
   <div class="app-container">
+    <div class="filter-container">
+      <el-form ref="filterForm" :model="listQuery" :inline="true">
+        <el-form-item label="" prop="status">
+          <el-select v-model="listQuery.status" filterable placeholder="状态" @change="handleFilter">
+            <el-option
+              v-for="item in statuses"
+              :key="item.sequenceNumber"
+              :label="item.code"
+              :value="item.sequenceNumber">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
+        <el-button v-waves class="filter-item" @click="resetForm('filterForm');handleFilter()">重置</el-button>
+        <el-button class="filter-item" style="margin-left: 10px;" type="success"
+                   icon="el-icon-edit" @click="handleAdd">
+          添加
+        </el-button>
+      </el-form>
+    </div>
+
+    <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row>
+      <el-table-column label="序号" min-width="40px" align="center">
+        <template slot-scope="scope">
+          {{ scope.$index }}
+        </template>
+      </el-table-column>
+      <el-table-column label="排产资源代码" min-width="80px" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.code }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="排产资源名称" min-width="80px" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.name }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="资源描述" min-width="100px" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.description }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="最后维护人" min-width="80px" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.updatePerson}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="最后编辑时间" min-width="80px" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.updateTime | parseTime('{y}-{m}-{d} {h}:{i}:{s}')}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" min-width="80">
+        <template slot-scope="scope">
+          <el-button type="primary" icon="el-icon-edit" size="mini"
+                     @click="handleUpdate(scope.row)">编辑
+          </el-button>
+          <el-button
+            icon="el-icon-delete"
+            size="mini"
+            type="danger"
+            @click="handleDelete(scope.row,'true')"
+          >删除
+          </el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <pagination
+      v-show="total>0"
+      :total="total"
+      :page.sync="listQuery.current"
+      :limit.sync="listQuery.size"
+      @pagination="getList"
+    />
+
+    <el-dialog :close-on-click-modal="false" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible"
+               width="600px">
+      <el-form
+        ref="resourceForm"
+        :rules="rules"
+        :model="temp"
+        label-position="right"
+        label-width="150px"
+      >
+        <el-form-item label="排产资源代码" prop="code">
+          <el-input v-model="temp.code"/>
+        </el-form-item>
+        <el-form-item label="资源名称：" prop="name">
+          <el-input v-model="temp.name"/>
+        </el-form-item>
+        <el-form-item label="资源描述：" prop="description">
+          <el-input v-model="temp.description"/>
+        </el-form-item>
+        <el-form-item label="状态：" prop="status">
+          <el-select v-model="temp.status" placeholder="" style="width:100%">
+            <el-option
+              v-for="item in statuses"
+              :key="item.sequenceNumber"
+              :label="item.code"
+              :value="item.sequenceNumber">
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="danger" size="small" @click="dialogFormVisible = false">取消</el-button>
+        <el-button type="primary" size="small" @click="dialogStatus==='create'?submit():updateData()">确认</el-button>
+      </div>
+    </el-dialog>
 
   </div>
 </template>
 
 <script>
+  import { deepClone } from '@/utils'
+  import { getDictMaps } from '@/api/dictionary'
+
+  import { getResources, addResource, updateResource, deleteResource } from '@/api/resource.js'
+
+  import waves from '@/directive/waves' // Waves directive
+  import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
 
   export default {
     name: 'resource',
+    components: { Pagination },
     directives: { waves },
     data() {
       return {
+        tableKey: 0,
+        list: [],
+        total: 0,
+        listLoading: true,
+        listQuery: {
+          current: 1,
+          size: 10,
+          status: undefined
+        },
+        temp: {
+          id: undefined,
+          name: '',
+          code: '',
+          description: '',
+          status: 0
+        },
+        tempCopy: null,
+        statuses: [],
+        dialogFormVisible: false,
+        dialogStatus: '',
+        textMap: {
+          update: '编辑',
+          create: '添加'
+        },
+        rules: {
+          name: [
+            { required: true, trigger: 'blur', message: '请填写线别名称' }
+          ],
+          code: [
+            { required: true, trigger: 'blur', message: '请填写线别代码' }
+          ]
+        }
       }
     },
     created() {

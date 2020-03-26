@@ -28,7 +28,7 @@ const productionRouter = {
     {
       path: 'rewinditem',
       name: 'rewindItem',
-      component: () => import('@/views/production/rewind'),
+      component: () => import('@/views/production/rewind1'),
       meta: { title: '重卷报工', icon: 'dashboard' }
     }
   ]

@@ -138,7 +138,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="5">
-            <el-form-item label="上线数量(kg)：" prop="num">
+            <el-form-item label="上线重量(kg)：" prop="num">
               <el-input :value="temp.onLineNum" :disabled="true"/>
             </el-form-item>
           </el-col>

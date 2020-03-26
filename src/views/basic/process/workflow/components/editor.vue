@@ -11,6 +11,7 @@
         curZoom: 1, // 当前缩放比率
         minZoom: 0.5, // 最小缩放比率
         maxZoom: 2, // 最大缩放比率
+        nodeLabel:undefined,
       }
     },
     mounted() {
@@ -45,9 +46,23 @@
         // noEndEdge: false,
         // edgeResizeable: false
       })
+      // 监听选择变化
       page.on('afteritemselected', ev => {
         this.selectedModel = ev.item.getModel()
         // console.log(this.selectedModel)
+        // 选择对象为Node节点
+        if (ev.item.isNode) {
+          // 获取属性
+          const nm = ev.item.getModel()
+          this.nodeLabel = nm.label
+        }
+
+        // 选择对象为Edge节点
+        if (ev.item.isEdge) {
+          // 获取属性
+          const nm = ev.item.getModel()
+          this.nodeLabel = nm.label
+        }
       })
       page.on('afterzoom', ev => {
         this.curZoom = ev.updateMatrix[0]

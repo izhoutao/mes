@@ -54,7 +54,16 @@
         </div>
         <div id="edge_detailpannel" data-status="edge-selected" class="pannel">
           <div class="pannel-title">边</div>
-          <div class="block-container">test</div>
+          <div class="block-container">
+            <el-form ref="form" label-width="50px">
+              <el-form-item label="名称">
+                <el-select v-model="nodeLabel" clearable placeholder="请选择" @change="changeNodeLabel">
+                  <el-option label="失败" value="FAIL"></el-option>
+                  <el-option label="返回" value="RETURN"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-form>
+          </div>
         </div>
         <div id="group_detailpannel" data-status="group-selected" class="pannel">
           <div class="pannel-title">组</div>
@@ -87,6 +96,7 @@
   import Page from './page.vue'
   import Editor from './editor.vue'
   import { getOperations, updateWorkflow } from '@/api/workflow.js'
+  import { deepClone } from '@/utils'
 
   export default {
     components: {
@@ -102,7 +112,8 @@
         temp: 'base-flow-editor',
         listQuery: {
           name: ''
-        }
+        },
+        edgeLabel: undefined
       }
     },
     props: ['labels', 'currentWorkflow'],
@@ -116,14 +127,12 @@
       currentWorkflow: {
         handler: function(val) {
           this.$nextTick(() => {
-            if (val && val.jsonText) {
-              let data = JSON.parse(val.jsonText)
+            if (val && val.jsonTextEditor) {
+              let data = JSON.parse(val.jsonTextEditor)
               this.page.read(data)
             }
           })
-
-        }
-        ,
+        },
         immediate: true
       }
     },
@@ -149,8 +158,111 @@
         getOperations(this.listQuery).then(res => {
           this.labels_data = res.queryResult.list.map(item => item.name)
         })
-      }
-      ,
+      },
+      /*      // methods
+            changeNodeLabel(value) {
+              const editor = this.editor
+              // 执行命令
+              editor.executeCommand(() => {
+                const page = editor.getCurrentPage()
+                const selectedItems = page.getSelected()
+                selectedItems.forEach(item => {
+                  // 更新属性
+                  page.update(item.id, {
+                    label: value,
+                    style: {
+                      fill: "#00f",
+                      fontSize: 14
+                    }
+                  })
+                })
+              })
+            },*/
+      // methods
+      changeNodeLabel(value) {
+        this.updateGraph('label', value)
+        /*        const editor = this.editor
+                // 执行命令
+                editor.executeCommand(() => {
+                  const page = editor.getCurrentPage()
+                  const selectedItems = page.getSelected()
+                  selectedItems.forEach(item => {
+                    // 更新属性
+                    page.update(item.id, {
+                      label: value,
+                      style: {
+                        fill: "#00f",
+                        fontSize: 14
+                      }
+                    })
+                  })
+                })*/
+
+      },
+      handleCalcWorkflow(obj) {
+        const nodeMap = _.fromPairs(obj.nodes.map(node => {
+          return [node.id, node]
+        }))
+        let sources = []
+        let targets = []
+        let conditions = []
+        for (let i = 0; i < obj.edges.length; i++) {
+          let src = {
+            label: nodeMap[obj.edges[i].source].label,
+            next: []
+          }
+          let tgt = {
+            label: nodeMap[obj.edges[i].target].label,
+            next: []
+          }
+          sources.push(src)
+          targets.push(tgt)
+          conditions.push(obj.edges[i].label)
+        }
+        const arr = []
+        for (let i = 0; i < sources.length; i++) {
+          let index = arr.findIndex(val => val.label == sources[i].label)
+          if (index == -1) {
+            let source = deepClone(sources[i])
+            arr.push(source)
+            // sources[i].index = arr.length - 1
+            index = arr.findIndex(val => val.label == targets[i].label)
+            if (index == -1) {
+              let target = deepClone(targets[i])
+              arr.push(target)
+              // targets[i].index = arr.length - 1
+              source.next.push({
+                index: arr.length - 1,
+                condition: conditions[i]
+              })
+            } else {
+              source.next.push({
+                index,
+                condition: conditions[i]
+              })
+            }
+          } else {
+            let source = arr[index]
+            // sources[i].index = index
+            index = arr.findIndex(val => val.label == targets[i].label)
+            if (index == -1) {
+              let target = deepClone(targets[i])
+              arr.push(target)
+              // targets[i].index = arr.length - 1
+              source.next.push({
+                index: arr.length - 1,
+                condition: conditions[i]
+              })
+            } else {
+              source.next.push({
+                index,
+                condition: conditions[i]
+              })
+            }
+          }
+        }
+        return arr
+      },
       saveData(data) {
         if (!this.currentWorkflow.id) {
           this.$message({
@@ -159,8 +271,10 @@
           })
           return
         }
-
-        this.currentWorkflow.jsonText = JSON.stringify(this.page.save())
+        let obj = this.page.save()
+        this.currentWorkflow.jsonTextEditor = JSON.stringify(obj)
+        let workflow = this.handleCalcWorkflow(obj)
+        this.currentWorkflow.jsonTextWorkflow = JSON.stringify(workflow)
         updateWorkflow(this.currentWorkflow).then(response => {
           this.$notify({
             title: '成功',
@@ -169,7 +283,7 @@
             duration: 2000
           })
         }).catch(error => {
-          console.log(error);
+          console.log(error)
         })
       }
       /*      loadData(data) {
