@@ -11,7 +11,14 @@
         label-width="150px"
       >
 
-        <el-row>
+        <el-row :gutter="40">
+          <el-col :span="8">
+            <el-form-item label="日期：" prop="date">
+              <el-date-picker v-model="temp.date" type="date" placeholder="请选择日期" style="width: 100%;"
+                              format="yyyy 年 MM 月 dd 日"
+                              value-format="yyyy-MM-dd"/>
+            </el-form-item>
+          </el-col>
           <el-col :span="8">
             <el-form-item label="班别：" prop="shiftId">
               <el-select v-model="temp.shiftId" filterable placeholder="请选择" style="width:100%">
@@ -25,61 +32,60 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="钢卷编号：" prop="serialNumber">
-              <el-input v-model="temp.serialNumber"/>
-            </el-form-item>
-          </el-col>
-          <!--<el-col :span="8">
-            <el-form-item label="钢种：" prop="materailType">
-              <el-input v-model="temp.materialName" @click.native="handleSelectMaterial"/>
-            </el-form-item>
-          </el-col>-->
-        </el-row>
-
-        <el-row>
-         <!-- <el-col :span="8">
-            <el-form-item label="产地：" prop="vendorId">
-              <el-select v-model="temp.vendorId" filterable placeholder="请选择" style="width:100%">
+            <el-form-item label="钢卷编号：" prop="productNumber">
+              <el-select
+                v-model="temp.productNumber"
+                filterable
+                remote
+                reserve-keyword
+                placeholder="请输入钢卷号"
+                :remote-method="getPendingRawItems"
+                :loading="loading">
                 <el-option
-                  v-for="item in vendors"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
+                  v-for="item in pendingRawItems"
+                  :key="item"
+                  :label="item"
+                  :value="item">
                 </el-option>
               </el-select>
+
             </el-form-item>
-          </el-col>-->
+
+          </el-col>
+
+        </el-row>
+        <el-row :gutter="40">
           <el-col :span="8">
             <el-form-item label="进料厚度(mm)：" prop="inputThickness">
-              <el-input v-model="temp.inputThickness"/>
+              <el-input v-model.number="temp.inputThickness"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="进料重量(kg)：" prop="inputWeight">
-              <el-input v-model="temp.inputWeight"/>
+              <el-input v-model.number="temp.inputWeight"/>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
           <el-col :span="8">
             <el-form-item label="生产速度(m/min)：" prop="processVelocity">
-              <el-input v-model="temp.processVelocity"/>
+              <el-input v-model.number="temp.processVelocity"/>
             </el-form-item>
           </el-col>
+
+        </el-row>
+
+        <el-row :gutter="40">
           <el-col :span="8">
             <el-form-item label="焊机电流：" prop="welderCurrent">
-              <el-input v-model="temp.welderCurrent"/>
+              <el-input v-model.number="temp.welderCurrent"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="焊机速度：" prop="welderVelocity">
-              <el-input v-model="temp.welderVelocity"/>
+              <el-input v-model.number="temp.welderVelocity"/>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
           <el-col :span="8">
-            <el-form-item label="上机时间：" prop="startTime">
+            <el-form-item label="上机时间：" prop="beginTime">
               <el-date-picker
                 v-model="temp.beginTime"
                 type="datetime"
@@ -91,8 +97,10 @@
               </el-date-picker>
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row :gutter="40">
           <el-col :span="8">
-            <el-form-item label="下机时间：" prop="stopTime">
+            <el-form-item label="下机时间：" prop="endTime">
               <el-date-picker
                 v-model="temp.endTime"
                 type="datetime"
@@ -106,14 +114,12 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="出料重量(kg)：" prop="outputWeight">
-              <el-input v-model="temp.outputWeight"/>
+              <el-input v-model.number="temp.outputWeight"/>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
           <el-col :span="8">
             <el-form-item label="出料长度(m)：" prop="outputLength">
-              <el-input v-model="temp.outputLength"/>
+              <el-input v-model.number="temp.outputLength"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
@@ -128,18 +134,6 @@
         </el-button>
         <!--        <el-button type="danger" size="small" @click="dialogFormVisible = false">取消</el-button>-->
       </div>
-      <el-dialog
-        :close-on-click-modal="false"
-        title="请选择"
-        :visible.sync="materialDialogFormVisible"
-        width="800px"
-      >
-        <material :selectedMaterial.sync="selectedMaterial"/>
-        <div slot="footer" class="dialog-footer">
-          <el-button type="danger" size="small" @click="materialDialogFormVisible = false">取消</el-button>
-          <el-button type="primary" size="small" @click="confirmMaterial()">确认</el-button>
-        </div>
-      </el-dialog>
     </div>
 
     <el-card class="box-card">
@@ -194,17 +188,17 @@
           </el-table-column>
           <el-table-column label="钢卷编号" min-width="80px" align="center">
             <template slot-scope="scope">
-              <span>{{ scope.row.serialNumber }}</span>
+              <span>{{ scope.row.productNumber }}</span>
             </template>
           </el-table-column>
           <el-table-column label="钢种" min-width="80px" align="center">
             <template slot-scope="scope">
-              <span>{{ scope.row.materialName }}</span>
+              <span>{{ scope.row.steelGrade }}</span>
             </template>
           </el-table-column>
           <el-table-column label="产地" min-width="80px" align="center">
             <template slot-scope="scope">
-              <span>{{ scope.row.vendorName }}</span>
+              <span>{{ scope.row.hotRollOrigin }}</span>
             </template>
           </el-table-column>
 
@@ -287,6 +281,7 @@
 </template>
 
 <script>
+  import { mapGetters } from 'vuex'
   import { deepClone, parseTime } from '@/utils'
 
   import {
@@ -298,13 +293,12 @@
 
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
-  import Material from './material.vue'
-  import { getVendors } from '@/api/vendor'
   import { getShifts } from '@/api/shift'
+  import { getOutboundOrderRawItems } from '@/api/outboundorderrawitem'
 
   export default {
     name: 'rewindItem',
-    components: { Pagination, Material },
+    components: { Pagination },
     directives: { waves },
     data() {
       return {
@@ -318,14 +312,16 @@
           //journalingBeginTime: parseTime(new Date(new Date(new Date().toLocaleDateString()).getTime()), '{y}-{m}-{d}T{h}:{i}:{s}'),
           //journalingEndTime: parseTime(new Date(new Date(new Date().toLocaleDateString()).getTime() + 24 * 60 * 60 * 1000 - 1), '{y}-{m}-{d}T{h}:{i}:{s}')
           journalingBeginTime: undefined,
-          journalingEndTime: undefined
-
+          journalingEndTime: undefined,
+          createPerson: '',
+          // shiftId: '',
+          // date: parseTime(new Date(),'{y}-{m}-{d} {h}:{i}:{s}')
         },
         temp: {
           id: undefined,
-          serialNumber: '',
-          materialId: '',
-          vendorId: undefined,
+          productNumber: '',
+/*          steelGrade: '',
+          hotRollOrigin: '',*/
           inputThickness: '',
           inputWeight: '',
           processVelocity: '',
@@ -336,41 +332,91 @@
           outputWeight: '',
           outputLength: '',
           lossReason: '',
-          shiftId: ''
+          shiftId: '',
+          date: parseTime(new Date(),'{y}-{m}-{d}T{h}:{i}:{s}')
         },
         tempCopy: null,
+        pendingRawItems: [],
+        loading: false,
         shifts: [],
         shiftMap: null,
-        vendors: [],
-        vendorMap: null,
-        selectedMaterial: undefined,
 
         // dialogFormVisible: false,
-        dialogStatus: '',
+        dialogStatus: 'create',
 
-        materialDialogFormVisible: false,
-        textMap: {
+/*        textMap: {
           update: '编辑',
           create: '添加'
-        },
+        },*/
         rules: {
-          name: [
-            { required: true, trigger: 'blur', message: '请填写子订单名称' }
+          date: [
+            { required: true, trigger: 'blur', message: '请选择日期' }
           ],
-          code: [
-            { required: true, trigger: 'blur', message: '请填写子订单编码' }
+          shiftId: [
+            { required: true, trigger: 'blur', message: '请选择班别' }
+          ],
+          productNumber: [
+            { required: true, message: '钢卷编号不能为空' }
+          ],
+          inputThickness: [
+            { required: true, message: '进料厚度不能为空' },
+            { type: 'number', message: '进料厚度必须为数字值' }
+          ],
+          inputWeight: [
+            { required: true, message: '进料重量不能为空' },
+            { type: 'number', message: '进料重量必须为数字值' }
+          ],
+          processVelocity: [
+            { required: true, message: '生产速度不能为空' },
+            { type: 'number', message: '生产速度必须为数字值' }
+          ],
+          welderCurrent: [
+            { required: true, message: '焊机电流不能为空' },
+            { type: 'number', message: '焊机电流必须为数字值' }
+          ],
+          welderVelocity: [
+            { required: true, message: '焊机速度不能为空' },
+            { type: 'number', message: '焊机速度必须为数字值' }
+          ],
+          startTime: [
+            { required: true, message: '上机时间不能为空' }
+          ],
+          stopTime: [
+            { required: true, message: '下机时间不能为空' }
+          ],
+          outputWeight: [
+            { required: true, message: '出料重量不能为空' },
+            { type: 'number', message: '出料重量必须为数字值' }
+          ],
+          outputLength: [
+            { required: true, message: '出料长度不能为空' },
+            { type: 'number', message: '出料长度必须为数字值' }
+          ],
+          lossReason: [
+            { required: true, message: '损耗原因不能为空' }
           ]
         }
       }
+    },
+    computed: {
+      ...mapGetters([
+        'id'
+      ])
     },
     created() {
       this.tempCopy = deepClone(this.temp)
       this.listLoading = true
       this.$nextTick(async() => {
-        await Promise.all([
-          this.getVendors({}),
-          this.getShifts({})
-        ])
+        await this.getShifts({})
+        this.listQuery.createPerson = this.id
+        const timeStr = parseTime(new Date(), '{h}:{i}:{s}')
+        this.listQuery.shiftId = this.shifts.filter(shift => {
+          if (shift.beginTime <= shift.endTime) {
+            return timeStr >= shift.beginTime && timeStr <= shift.endTime
+          } else {
+            return timeStr >= shift.beginTime && timeStr <= Number(shift.endTime.slice(0, 2)) + 24 + shift.endTime.slice(2)
+          }
+        })[0].shiftId
         this.getList()
       })
     },
@@ -383,33 +429,31 @@
         ])
       },
 
-      handleSelectMaterial() {
-        this.materialDialogFormVisible = true
-      },
-      confirmMaterial() {
-        this.materialDialogFormVisible = false
-        this.temp.materialId = this.selectedMaterial && this.selectedMaterial.id
-        this.temp.materialName = this.selectedMaterial && this.selectedMaterial.name
-      },
       async getShifts(query) {
         const res = await getShifts(query)
         this.shifts = res.queryResult.list
         this.shiftMap = _.fromPairs(this.shifts.map(shift => {
           return [shift.id, shift]
         }))
-      }, async getVendors(query) {
-        const res = await getVendors(query)
-        this.vendors = res.queryResult.list
-        this.vendorMap = _.fromPairs(this.vendors.map(vendor => {
-          return [vendor.id, vendor]
-        }))
+      },
+      getPendingRawItems(query) {
+        if (query !== '') {
+          this.loading = true
+          getOutboundOrderRawItems({ current_operation_label: '重卷' }).then(res => {
+            this.loading = false
+            this.pendingRawItems = res.queryResult.list.map(item => item.productNumber).filter(item => {
+              return item.toLowerCase()
+                .indexOf(query.toLowerCase()) > -1
+            })
+          })
+        } else {
+          this.pendingRawItems = []
+        }
       },
       getList() {
         this.listLoading = true
         getJournalingRewindItems(this.listQuery).then(res => {
           this.list = res.queryResult.list.map(item => {
-            let vendor = this.vendorMap[item.vendorId]
-            item.vendorName = vendor.name
             let shift = this.shiftMap[item.shiftId]
             item.shiftName = shift.name
             return item
@@ -445,18 +489,15 @@
           if (valid) {
             // const tempData = deepClone(this.temp)
             let journalingRewindItem = deepClone(this.temp)
-            delete journalingRewindItem.vendorName
             delete journalingRewindItem.shiftName
-            delete journalingRewindItem.materialName
             addJournalingRewindItem(journalingRewindItem).then((res) => {
-              let vendor = this.vendorMap[journalingRewindItem.vendorId]
               let shift = this.shiftMap[journalingRewindItem.shiftId]
-              res.model.vendorName = vendor.name
               res.model.shiftName = shift.name
-              res.model.materialName = this.temp.materialName
               this.list.unshift(res.model)
               this.total++
+              this.pendingRawItems = []
               // this.dialogFormVisible = false
+              this.handleAdd()
               this.$notify({
                 title: '成功',
                 message: '创建成功',
@@ -468,7 +509,6 @@
         })
       },
       handleUpdate(row) {
-
         this.dialogStatus = 'update'
         // this.rules.password[0].required = false
         this.temp = deepClone(row) // copy obj
@@ -482,14 +522,10 @@
         this.$refs['journalingRewindItemForm'].validate((valid) => {
           if (valid) {
             let journalingRewindItem = deepClone(this.temp)
-            delete journalingRewindItem.vendorName
             delete journalingRewindItem.shiftName
-            delete journalingRewindItem.materialName
             updateJournalingRewindItem(journalingRewindItem).then(() => {
-              let vendor = this.vendorMap[journalingRewindItem.vendorId]
               let shift = this.shiftMap[journalingRewindItem.shiftId]
               journalingRewindItem.shiftName = shift.name
-              journalingRewindItem.materialName = this.temp.materialName
               for (const v of this.list) {
                 if (v.id === journalingRewindItem.id) {
                   const index = this.list.indexOf(v)
@@ -497,6 +533,7 @@
                   break
                 }
               }
+              this.handleAdd()
               // this.dialogFormVisible = false
               this.$notify({
                 title: '成功',

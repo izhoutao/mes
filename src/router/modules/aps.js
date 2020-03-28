@@ -16,7 +16,7 @@ const apsRouter = {
     {
       path: 'resource',
       name: 'resource',
-      component: () => import('@/views/aps/resource'),
+      component: () => import('@/views/aps/resource1'),
       meta: { title: '排产资源管理', icon: 'dashboard' }
     },
     {

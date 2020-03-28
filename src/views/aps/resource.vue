@@ -5,6 +5,10 @@
 </template>
 
 <script>
+  import waves from '@/directive/waves'
+  import { deepClone } from '@/utils'
+  import { addResource, deleteResource, getResources, updateResource } from '@/api/resource'
+  import { getDictMaps } from '@/api/dictionary' // Waves directive
 
   export default {
     name: 'resource',

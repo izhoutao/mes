@@ -79,7 +79,7 @@
         <el-form-item label="角色编码：" prop="code">
           <el-input v-model="temp.code" placeholder="角色编码"/>
         </el-form-item>
-        <el-form-item label="不良代码名称：" prop="name">
+        <el-form-item label="角色名称：" prop="name">
           <el-input v-model="temp.name" placeholder="角色名"/>
         </el-form-item>
         <el-form-item label="描述：" prop="description">
@@ -158,10 +158,10 @@
         },
         rules: {
           name: [
-            { required: true, trigger: 'blur', message: '请填写不良代码名称' }
+            { required: true, trigger: 'blur', message: '请填写角色名称' }
           ],
           code: [
-            { required: true, trigger: 'blur', message: '请填写不良代码编码' }
+            { required: true, trigger: 'blur', message: '请填写角色编码' }
           ]
         }
       }

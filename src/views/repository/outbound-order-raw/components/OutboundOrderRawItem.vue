@@ -619,6 +619,7 @@
               this.list.unshift(res.model)
               this.$emit('update:outQuantity', ++this.total)
               this.dialogFormVisible = false
+              this.storedRawItems = []
               this.$notify({
                 title: '成功',
                 message: '创建成功',

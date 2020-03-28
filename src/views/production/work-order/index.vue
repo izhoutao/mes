@@ -463,7 +463,7 @@
     },
     created() {
       this.tempCopy = deepClone(this.temp)
-      this.workOrderCopy = deepClone(this.selectedWorkOrder)
+      this.selectedWorkOrderCopy = deepClone(this.selectedWorkOrder)
       this.listLoading = true
       this.$nextTick(async() => {
         await Promise.all([
@@ -491,7 +491,7 @@
         this.$refs.selectWorkOrder.clearSelection()
         //此时selection仍然有值 ，只是勾选状态不显示了。
         if (selection.length === 0) {
-          this.selectedWorkOrder = this.workOrderCopy
+          this.selectedWorkOrder = this.selectedWorkOrderCopy
           return
         }
         //这这里将这行的状态又变为了勾选
@@ -501,7 +501,7 @@
       },
       handleSelectAll(selection) {
         this.$refs.selectWorkOrder.clearSelection()
-        this.selectedWorkOrder = this.workOrderCopy
+        this.selectedWorkOrder = this.selectedWorkOrderCopy
       },
       handleSelectMaterial() {
         this.materialDialogFormVisible = true

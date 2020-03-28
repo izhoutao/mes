@@ -7,7 +7,9 @@ const state = {
   name: '',
   avatar: '',
   department: '',
-  roles: []
+  roles: [],
+  staffId: '',
+  id: ''
 }
 
 const mutations = {
@@ -25,6 +27,12 @@ const mutations = {
   },
   SET_ROLES: (state, roles) => {
     state.roles = roles
+  },
+  SET_STAFF_ID: (state, staffId) => {
+    state.staffId = staffId
+  },
+  SET_ID: (state, id) => {
+    state.id = id
   }
 }
 
@@ -55,7 +63,7 @@ const actions = {
         } else {
           reject('验证失败，请重新登录。')
         }
-        const { roles, name, avatar, department } = activeUser
+        const { roles, name, avatar, department, staffId, id } = activeUser
         // alert(JSON.stringify(activeUser))
         // const { data } = response
         //
@@ -74,6 +82,8 @@ const actions = {
         commit('SET_NAME', name)
         commit('SET_AVATAR', avatar)
         commit('SET_DEPARTMENT', department)
+        commit('SET_STAFF_ID', staffId)
+        commit('SET_ID', id)
         resolve(activeUser)
       }).catch(error => {
         reject(error)

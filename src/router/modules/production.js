@@ -28,8 +28,14 @@ const productionRouter = {
     {
       path: 'rewinditem',
       name: 'rewindItem',
-      component: () => import('@/views/production/rewind1'),
-      meta: { title: '重卷报工', icon: 'dashboard' }
+      component: () => import('@/views/production/rewind1/item'),
+      meta: { title: '重卷报工管理', icon: 'dashboard' }
+    },
+    {
+      path: 'rewindreport',
+      name: 'rewindReport',
+      component: () => import('@/views/production/rewind1/report'),
+      meta: { title: '重卷生产班管理', icon: 'dashboard' }
     }
   ]
 }
