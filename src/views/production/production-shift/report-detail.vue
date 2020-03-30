@@ -64,8 +64,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="出勤姓名：" prop="actualAttendance">
-              <el-input :value="detail.actualAttendance" :disabled="true"/>
+            <el-form-item label="出勤姓名：" prop="actualAttendanceName">
+              <el-input :value="detail.actualAttendanceName" :disabled="true"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -146,13 +146,12 @@
 <script>
 
   export default {
+    name: 'ReportDetail',
     components: {},
     props: ['detail'],
     data() {
       return {
-        name: 'RewindOrderDetail',
         activeName: 'first',
-        detailInfo: this.detail
       }
     },
     methods: {

@@ -1,16 +1,15 @@
 <template>
-  <div class="app-container journaling-rewind-item">
+  <div class="app-container journaling-finishing-tension-leveler-item">
     <div>
       <!--      <div style="font-size: 20px;">{{textMap[dialogStatus]}}报工</div>-->
 
       <el-form
-        ref="journalingRewindItemForm"
+        ref="journalingFinishingTensionLevelerItemForm"
         :rules="rules"
         :model="temp"
         label-position="right"
         label-width="150px"
       >
-
         <el-row :gutter="40">
           <el-col :span="8">
             <el-form-item label="日期：" prop="date">
@@ -48,13 +47,15 @@
                   :value="item">
                 </el-option>
               </el-select>
-
             </el-form-item>
-
           </el-col>
-
         </el-row>
         <el-row :gutter="40">
+          <el-col :span="8">
+            <el-form-item label="进料宽度(mm)：" prop="inputWidth">
+              <el-input v-model.number="temp.inputWidth"/>
+            </el-form-item>
+          </el-col>
           <el-col :span="8">
             <el-form-item label="进料厚度(mm)：" prop="inputThickness">
               <el-input v-model.number="temp.inputThickness"/>
@@ -65,25 +66,67 @@
               <el-input v-model.number="temp.inputWeight"/>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
-            <el-form-item label="生产速度(m/min)：" prop="processVelocity">
-              <el-input v-model.number="temp.processVelocity"/>
-            </el-form-item>
-          </el-col>
-
         </el-row>
-
         <el-row :gutter="40">
           <el-col :span="8">
-            <el-form-item label="焊机电流：" prop="welderCurrent">
-              <el-input v-model.number="temp.welderCurrent"/>
+            <el-form-item label="生产方式：" prop="paramProductionMode">
+              <el-radio-group v-model="temp.paramProductionMode">
+                <el-radio :label="0">精整</el-radio>
+                <el-radio :label="1">拉矫</el-radio>
+              </el-radio-group>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="焊机速度：" prop="welderVelocity">
-              <el-input v-model.number="temp.welderVelocity"/>
+            <el-form-item label="入口张力(KN)：" prop="paramInletTesion">
+              <el-input v-model.number="temp.paramInletTesion"/>
             </el-form-item>
           </el-col>
+          <el-col :span="8">
+            <el-form-item label="总轧制力(T)：" prop="paramTotalRollingForce">
+              <el-input v-model.number="temp.paramTotalRollingForce"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="出口张力(KN)：" prop="paramOutletTesion">
+              <el-input v-model.number="temp.paramOutletTesion"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="延伸率(%)：" prop="paramPercentageElongation">
+              <el-input v-model.number="temp.paramPercentageElongation"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="40">
+          <el-col :span="8">
+            <el-form-item label="出料厚度(mm)：" prop="outputThickness">
+              <el-input v-model.number="temp.outputThickness"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="出料长度(mm)：" prop="outputLength">
+              <el-input v-model.number="temp.outputLength"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="出料重量(kg)：" prop="outputWeight">
+              <el-input v-model.number="temp.outputWeight"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="40">
+          <el-col :span="8">
+            <el-form-item label="套筒重量(kg)：" prop="outputSleeveWeight">
+              <el-input v-model.number="temp.outputSleeveWeight"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="出料速度(m/min)：" prop="outputSpeed">
+              <el-input v-model.number="temp.outputSpeed"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="40">
           <el-col :span="8">
             <el-form-item label="上机时间：" prop="beginTime">
               <el-date-picker
@@ -97,8 +140,6 @@
               </el-date-picker>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row :gutter="40">
           <el-col :span="8">
             <el-form-item label="下机时间：" prop="endTime">
               <el-date-picker
@@ -110,21 +151,6 @@
                 value-format="yyyy-MM-ddTHH:mm:ss"
               >
               </el-date-picker>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="出料重量(kg)：" prop="outputWeight">
-              <el-input v-model.number="temp.outputWeight"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="出料长度(m)：" prop="outputLength">
-              <el-input v-model.number="temp.outputLength"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="损耗原因：" prop="lossReason">
-              <el-input v-model="temp.lossReason"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -196,9 +222,9 @@
               <span>{{ scope.row.steelGrade }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="产地" min-width="80px" align="center">
+          <el-table-column label="表面" min-width="80px" align="center">
             <template slot-scope="scope">
-              <span>{{ scope.row.hotRollOrigin }}</span>
+              <span>{{ scope.row.surfaceFinish }}</span>
             </template>
           </el-table-column>
 
@@ -208,6 +234,11 @@
                 <span>{{ scope.row.inputThickness }}</span>
               </template>
             </el-table-column>
+            <el-table-column label="宽度|(mm)" min-width="50px" align="center" :render-header="renderHeader">
+              <template slot-scope="scope">
+                <span>{{ scope.row.inputWidth }}</span>
+              </template>
+            </el-table-column>
             <el-table-column label="重量|(kg)" min-width="50px" align="center" :render-header="renderHeader">
               <template slot-scope="scope">
                 <span>{{ scope.row.inputWeight }}</span>
@@ -215,47 +246,84 @@
             </el-table-column>
           </el-table-column>
 
-          <el-table-column label="生产参数" align="center">
-            <el-table-column label="速度|(m/min)" min-width="50px" align="center" :render-header="renderHeader">
+          <el-table-column label="精整拉矫参数" align="center">
+            <el-table-column label="生产方式" min-width="50px" align="center">
               <template slot-scope="scope">
-                <span>{{ scope.row.processVelocity }}</span>
+                <span>{{ scope.row.paramProductionMode }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="焊机参数" align="center">
-              <el-table-column label="电流" min-width="50px" align="center">
-                <template slot-scope="scope">
-                  <span>{{ scope.row.welderCurrent }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="速度" min-width="50px" align="center">
-                <template slot-scope="scope">
-                  <span>{{ scope.row.welderVelocity }}</span>
-                </template>
-              </el-table-column>
-            </el-table-column>
-            <el-table-column label="上下机时间" min-width="65px" align="center">
+            <el-table-column label="入口张力|(KN)" min-width="50px" align="center" :render-header="renderHeader">
               <template slot-scope="scope">
-                <span>{{ scope.row.beginTime  | parseTime('{h}:{i}') }}-{{ scope.row.endTime | parseTime('{h}:{i}') }}</span>
+                <span>{{ scope.row.paramInletTesion }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="总轧制力|(T)" min-width="50px" align="center" :render-header="renderHeader">
+              <template slot-scope="scope">
+                <span>{{ scope.row.paramTotalRollingForce }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="出口张力|(KN)" min-width="50px" align="center" :render-header="renderHeader">
+              <template slot-scope="scope">
+                <span>{{ scope.row.paramOutletTesion }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="延伸率|(%)" min-width="50px" align="center" :render-header="renderHeader">
+              <template slot-scope="scope">
+                <span>{{ scope.row.paramPercentageElongation }}</span>
               </template>
             </el-table-column>
           </el-table-column>
           <el-table-column label="出料" align="center">
+            <el-table-column label="厚度|(mm)" min-width="50px" align="center" :render-header="renderHeader">
+              <template slot-scope="scope">
+                <span>{{ scope.row.outputThickness }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="长度(mm)" min-width="50px" align="center" :render-header="renderHeader">
+              <template slot-scope="scope">
+                <span>{{ scope.row.outputLength }}</span>
+              </template>
+            </el-table-column>
             <el-table-column label="重量|(kg)" min-width="50px" align="center" :render-header="renderHeader">
               <template slot-scope="scope">
                 <span>{{ scope.row.outputWeight }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="长度|(m)" min-width="50px" align="center" :render-header="renderHeader">
+            <el-table-column label="套筒重量|(kg)" min-width="50px" align="center" :render-header="renderHeader">
               <template slot-scope="scope">
-                <span>{{ scope.row.outputLength }}</span>
+                <span>{{ scope.row.outputWeight }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="损耗原因" min-width="50px" align="center">
+            <el-table-column label="损耗|(kg)" min-width="50px" align="center" :render-header="renderHeader">
               <template slot-scope="scope">
-                <span>{{ scope.row.lossReason }}</span>
+                <span>{{ scope.row.outputWeightLoss }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="出料速度|(m/min)" min-width="50px" align="center" :render-header="renderHeader">
+              <template slot-scope="scope">
+                <span>{{ scope.row.outputSpeed }}</span>
               </template>
             </el-table-column>
           </el-table-column>
+          <el-table-column label="时间统计" align="center">
+            <el-table-column label="上机时间" min-width="65px" align="center">
+              <template slot-scope="scope">
+                <span>{{ scope.row.beginTime  | parseTime('{h}:{i}') }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="下机时间" min-width="65px" align="center">
+              <template slot-scope="scope">
+                <span>{{ scope.row.endTime | parseTime('{h}:{i}') }}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column label="用时|（min）" min-width="50px" align="center" :render-header="renderHeader">
+              <template slot-scope="scope">
+                <span>{{ scope.row.costTime }}</span>
+              </template>
+            </el-table-column>
+          </el-table-column>
+
           <el-table-column label="操作" align="center" min-width="60">
             <template slot-scope="scope">
               <!--          <el-button type="primary" icon="el-icon-edit" size="mini"
@@ -285,11 +353,11 @@
   import { deepClone, parseTime } from '@/utils'
 
   import {
-    getJournalingRewindItems,
-    addJournalingRewindItem,
-    updateJournalingRewindItem,
-    deleteJournalingRewindItem
-  } from '@/api/journalingrewinditem'
+    getJournalingFinishingTensionLevelerItems,
+    addJournalingFinishingTensionLevelerItem,
+    updateJournalingFinishingTensionLevelerItem,
+    deleteJournalingFinishingTensionLevelerItem
+  } from '@/api/journalingfinishingtensionleveleritem'
 
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
@@ -297,7 +365,7 @@
   import { getOutboundOrderRawItems } from '@/api/outboundorderrawitem'
 
   export default {
-    name: 'rewindItem',
+    name: 'finishingTensionLevelerItem',
     components: { Pagination },
     directives: { waves },
     data() {
@@ -313,27 +381,32 @@
           //journalingEndTime: parseTime(new Date(new Date(new Date().toLocaleDateString()).getTime() + 24 * 60 * 60 * 1000 - 1), '{y}-{m}-{d}T{h}:{i}:{s}')
           journalingBeginTime: undefined,
           journalingEndTime: undefined,
-          createPerson: '',
+          createPerson: ''
           // shiftId: '',
           // date: parseTime(new Date(),'{y}-{m}-{d} {h}:{i}:{s}')
         },
         temp: {
           id: undefined,
           productNumber: '',
-/*          steelGrade: '',
-          hotRollOrigin: '',*/
+          /*          steelGrade: '',
+                    hotRollOrigin: '',*/
           inputThickness: '',
           inputWeight: '',
-          processVelocity: '',
-          welderCurrent: '',
-          welderVelocity: '',
-          beginTime: undefined,
-          endTime: undefined,
-          outputWeight: '',
+          inputWidth: '',
+          paramProductionMode: '',
+          paramInletTesion: '',
+          paramTotalRollingForce: '',
+          paramOutletTesion: '',
+          paramPercentageElongation: '',
+          beginTime: '',
+          endTime: '',
+          outputThickness: '',
           outputLength: '',
-          lossReason: '',
+          outputWeight: '',
+          outputSleeveWeight: '',
+          outputSpeed: '',
           shiftId: '',
-          date: parseTime(new Date(),'{y}-{m}-{d}T{h}:{i}:{s}')
+          date: parseTime(new Date(), '{y}-{m}-{d}T{h}:{i}:{s}')
         },
         tempCopy: null,
         pendingRawItems: [],
@@ -344,10 +417,10 @@
         // dialogFormVisible: false,
         dialogStatus: 'create',
 
-/*        textMap: {
-          update: '编辑',
-          create: '添加'
-        },*/
+        /*        textMap: {
+                  update: '编辑',
+                  create: '添加'
+                },*/
         rules: {
           date: [
             { required: true, trigger: 'blur', message: '请选择日期' }
@@ -358,6 +431,10 @@
           productNumber: [
             { required: true, message: '钢卷编号不能为空' }
           ],
+          inputWidth: [
+            { required: true, message: '进料宽度不能为空' },
+            { type: 'number', message: '进料宽度必须为数字值' }
+          ],
           inputThickness: [
             { required: true, message: '进料厚度不能为空' },
             { type: 'number', message: '进料厚度必须为数字值' }
@@ -366,34 +443,50 @@
             { required: true, message: '进料重量不能为空' },
             { type: 'number', message: '进料重量必须为数字值' }
           ],
-          processVelocity: [
-            { required: true, message: '生产速度不能为空' },
-            { type: 'number', message: '生产速度必须为数字值' }
+          paramProductionMode: [
+            { required: true, message: '请选择生产方式' }
           ],
-          welderCurrent: [
-            { required: true, message: '焊机电流不能为空' },
-            { type: 'number', message: '焊机电流必须为数字值' }
+          paramInletTesion: [
+            { required: true, message: '入口张力不能为空' },
+            { type: 'number', message: '入口张力必须为数字值' }
           ],
-          welderVelocity: [
-            { required: true, message: '焊机速度不能为空' },
-            { type: 'number', message: '焊机速度必须为数字值' }
+          paramTotalRollingForce: [
+            { required: true, message: '总轧制力不能为空' },
+            { type: 'number', message: '总轧制力必须为数字值' }
+          ],
+          paramOutletTesion: [
+            { required: true, message: '出口张力不能为空' },
+            { type: 'number', message: '出口张力必须为数字值' }
+          ],
+          paramPercentageElongation: [
+            { required: true, message: '延伸率不能为空' },
+            { type: 'number', message: '延伸率必须为数字值' }
+          ],
+          outputThickness: [
+            { required: true, message: '出料厚度不能为空' },
+            { type: 'number', message: '出料厚度必须为数字值' }
+          ],
+          outputLength: [
+            { required: true, message: '出料长度不能为空' },
+            { type: 'number', message: '出料长度必须为数字值' }
+          ],
+          outputWeight: [
+            { required: true, message: '出料重量不能为空' },
+            { type: 'number', message: '出料重量必须为数字值' }
+          ],
+          outputSleeveWeight: [
+            { required: true, message: '套筒重量不能为空' },
+            { type: 'number', message: '套筒重量必须为数字值' }
+          ],
+          outputSpeed: [
+            { required: true, message: '出料速度不能为空' },
+            { type: 'number', message: '出料速度必须为数字值' }
           ],
           beginTime: [
             { required: true, message: '上机时间不能为空' }
           ],
           endTime: [
             { required: true, message: '下机时间不能为空' }
-          ],
-          outputWeight: [
-            { required: true, message: '出料重量不能为空' },
-            { type: 'number', message: '出料重量必须为数字值' }
-          ],
-          outputLength: [
-            { required: true, message: '出料长度不能为空' },
-            { type: 'number', message: '出料长度必须为数字值' }
-          ],
-          lossReason: [
-            { required: true, message: '损耗原因不能为空' }
           ]
         }
       }
@@ -439,7 +532,7 @@
       getPendingRawItems(query) {
         if (query !== '') {
           this.loading = true
-          getOutboundOrderRawItems({ current_operation_label: '重卷' }).then(res => {
+          getOutboundOrderRawItems({ current_operation_label: '精整拉矫' }).then(res => {
             this.loading = false
             this.pendingRawItems = res.queryResult.list.map(item => item.productNumber).filter(item => {
               return item.toLowerCase()
@@ -452,7 +545,7 @@
       },
       getList() {
         this.listLoading = true
-        getJournalingRewindItems(this.listQuery).then(res => {
+        getJournalingFinishingTensionLevelerItems(this.listQuery).then(res => {
           this.list = res.queryResult.list.map(item => {
             let shift = this.shiftMap[item.shiftId]
             item.shiftName = shift.name
@@ -476,22 +569,22 @@
         this.temp = deepClone(this.tempCopy)
       },
       handleAdd() {
-        this.resetForm('journalingRewindItemForm')
+        this.resetForm('journalingFinishingTensionLevelerItemForm')
         this.dialogStatus = 'create'
         // this.dialogFormVisible = true
         // this.rules.password[0].required = true
         this.$nextTick(() => {
-          this.$refs['journalingRewindItemForm'].clearValidate()
+          this.$refs['journalingFinishingTensionLevelerItemForm'].clearValidate()
         })
       },
       submit() {
-        this.$refs['journalingRewindItemForm'].validate((valid) => {
+        this.$refs['journalingFinishingTensionLevelerItemForm'].validate((valid) => {
           if (valid) {
             // const tempData = deepClone(this.temp)
-            let journalingRewindItem = deepClone(this.temp)
-            delete journalingRewindItem.shiftName
-            addJournalingRewindItem(journalingRewindItem).then((res) => {
-              let shift = this.shiftMap[journalingRewindItem.shiftId]
+            let journalingFinishingTensionLevelerItem = deepClone(this.temp)
+            delete journalingFinishingTensionLevelerItem.shiftName
+            addJournalingFinishingTensionLevelerItem(journalingFinishingTensionLevelerItem).then((res) => {
+              let shift = this.shiftMap[journalingFinishingTensionLevelerItem.shiftId]
               res.model.shiftName = shift.name
               this.list.unshift(res.model)
               this.total++
@@ -515,21 +608,21 @@
         // this.temp.password = ''
         // this.dialogFormVisible = true
         this.$nextTick(() => {
-          this.$refs['journalingRewindItemForm'].clearValidate()
+          this.$refs['journalingFinishingTensionLevelerItemForm'].clearValidate()
         })
       },
       updateData() {
-        this.$refs['journalingRewindItemForm'].validate((valid) => {
+        this.$refs['journalingFinishingTensionLevelerItemForm'].validate((valid) => {
           if (valid) {
-            let journalingRewindItem = deepClone(this.temp)
-            delete journalingRewindItem.shiftName
-            updateJournalingRewindItem(journalingRewindItem).then(() => {
-              let shift = this.shiftMap[journalingRewindItem.shiftId]
-              journalingRewindItem.shiftName = shift.name
+            let journalingFinishingTensionLevelerItem = deepClone(this.temp)
+            delete journalingFinishingTensionLevelerItem.shiftName
+            updateJournalingFinishingTensionLevelerItem(journalingFinishingTensionLevelerItem).then(() => {
+              let shift = this.shiftMap[journalingFinishingTensionLevelerItem.shiftId]
+              journalingFinishingTensionLevelerItem.shiftName = shift.name
               for (const v of this.list) {
-                if (v.id === journalingRewindItem.id) {
+                if (v.id === journalingFinishingTensionLevelerItem.id) {
                   const index = this.list.indexOf(v)
-                  this.list.splice(index, 1, journalingRewindItem)
+                  this.list.splice(index, 1, journalingFinishingTensionLevelerItem)
                   break
                 }
               }
@@ -546,12 +639,12 @@
         })
       },
       handleDelete(row) {
-        this.$confirm('此操作将永久删除该子订单, 是否继续?', '提示', {
+        this.$confirm('此操作将永久删除该轧机条目, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteJournalingRewindItem(row.id).then(() => {
+          deleteJournalingFinishingTensionLevelerItem(row.id).then(() => {
             this.$notify({
               title: '成功',
               message: '删除成功',
@@ -569,7 +662,7 @@
   }
 </script>
 <style lang="scss">
-  .journaling-rewind-item {
+  .journaling-finishing-tension-leveler-item {
 
   .el-table td, .el-table th {
     padding: 5px 0;

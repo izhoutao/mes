@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container journaling-rewind-report">
+  <div class="app-container journaling-report">
     <div class="filter-container">
       <el-form ref="filterForm" :model="listQuery" :inline="true">
         <el-form-item label="" prop="date">
@@ -19,6 +19,26 @@
           <el-select v-model="listQuery.status" filterable placeholder="状态" @change="handleFilter">
             <el-option
               v-for="(item,index) in statuses"
+              :key="index"
+              :label="item"
+              :value="index">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="" prop="role" v-if="shiftRoles==true">
+          <el-select v-model="listQuery.role" filterable placeholder="请选择自身角色" @change="handleFilter">
+            <el-option
+              v-for="(item,index) in shiftRoles"
+              :key="index"
+              :label="item.name"
+              :value="item.code">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="" prop="type" v-if="shiftTypes==true">
+          <el-select v-model="listQuery.type" filterable placeholder="请选择生产班类型" @change="handleFilter">
+            <el-option
+              v-for="(item,index) in shiftTypes"
               :key="index"
               :label="item"
               :value="index">
@@ -68,6 +88,11 @@
           <span>{{ scope.row.shiftName }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="类型" min-width="80px" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.type }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="生产钢卷数" min-width="80px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.producedCoilNumber }}</span>
@@ -109,18 +134,18 @@
           <span>{{ scope.row.actualAttendanceNum }}</span>
         </template>
       </el-table-column>
-<!--
-      <el-table-column label="问题记录" min-width="80px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.mattersRecord }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="交接班事宜" min-width="80px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.shiftHandover }}</span>
-        </template>
-      </el-table-column>
--->
+      <!--
+            <el-table-column label="问题记录" min-width="80px" align="center">
+              <template slot-scope="scope">
+                <span>{{ scope.row.mattersRecord }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="交接班事宜" min-width="80px" align="center">
+              <template slot-scope="scope">
+                <span>{{ scope.row.shiftHandover }}</span>
+              </template>
+            </el-table-column>
+      -->
 
       <el-table-column label="报表状态" min-width="80px" align="center">
         <template slot-scope="scope">
@@ -146,7 +171,7 @@
     <el-dialog :close-on-click-modal="false" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible"
                width="600px">
       <el-form
-        ref="rewindReportForm"
+        ref="reportForm"
         :rules="rules"
         :model="temp"
         label-position="right"
@@ -185,8 +210,8 @@
         <el-button type="primary" size="small" @click="dialogStatus==='create'?submit():updateData()">确认</el-button>
       </div>
     </el-dialog>
-    <rewind-report-detail v-if="currentRewindReport" :detail="currentRewindReport"
-                          :key="currentRewindReport.id"/>
+    <report-detail v-if="currentReport" :detail="currentReport"
+                   :key="currentReport.id"/>
 
   </div>
 </template>
@@ -206,18 +231,18 @@
 
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination/index.vue'
-  import RewindReportDetail from './rewind-report-detail.vue'
+  import ReportDetail from './report-detail.vue'
   import {
-    addJournalingRewindReport,
-    getJournalingRewindReports,
-    updateJournalingRewindReport,
-    deleteJournalingRewindReport
-  } from '@/api/journalingrewindreport'
+    addJournalingProductionShiftReport,
+    getJournalingProductionShiftReports,
+    updateJournalingProductionShiftReport,
+    deleteJournalingProductionShiftReport
+  } from '@/api/journalingproductionshiftreport'
   import { getShifts } from '@/api/shift'
 
   export default {
-    name: 'rewindReport',
-    components: { Pagination, RewindReportDetail },
+    name: 'productionShiftReport',
+    components: { Pagination, ReportDetail },
     directives: { waves },
 
     data() {
@@ -233,7 +258,8 @@
           shiftId: '',
           createPerson: undefined,
           status: undefined,
-          type:undefined
+          type: undefined,
+          role: undefined
           /*orders: ['code desc']*/
         },
         temp: {
@@ -262,9 +288,10 @@
         tagTypes: ['success', 'info', 'warning', 'danger'],
         shifts: [],
         shiftMap: null,
-
-        currentRewindReport: undefined,
-        selectedRewindReport: {
+        shiftRoles: [],
+        shiftTypes: [],
+        currentReport: undefined,
+        selectedReport: {
           id: null,
           date: null,
           shiftId: null,
@@ -285,26 +312,7 @@
           mattersRecord: null,
           shiftHandover: null
         },
-        selectedRewindReportCopy: null,
-
-        rewindItem: {
-          id: undefined,
-          productNumber: '',
-          /*          steelGrade: '',
-                    hotRollOrigin: '',*/
-          inputThickness: '',
-          inputWeight: '',
-          processVelocity: '',
-          welderCurrent: '',
-          welderVelocity: '',
-          beginTime: undefined,
-          endTime: undefined,
-          outputWeight: '',
-          outputLength: '',
-          lossReason: '',
-          shiftId: '',
-          date: parseTime(new Date(), '{y}-{m}-{d}T{h}:{i}:{s}')
-        },
+        selectedReportCopy: null,
 
         dialogFormVisible: false,
         dialogStatus: '',
@@ -328,18 +336,47 @@
         'roles'
       ])
     },
+    watch: {
+      'listQuery.role': {
+        handler: async function(val) {
+          const shiftLeaders = ['rewindShiftLeader', 'rollingMillShiftLeader',
+            'annealShiftLeader', 'finishingTensionLevelerShiftLeader']
+          const index = shiftLeaders.indexOf(val)
+          if (index != -1) {
+            this.shiftTypes = []
+            this.listQuery.type = index
+            this.listQuery.createPerson = this.id
+          } else {
+            this.shiftTypes = ['重卷生产班', '轧机生产班', '退火炉生产班', '精整拉矫生产班']
+            this.listQuery.type = 0
+            this.listQuery.createPerson = ''
+          }
+        },
+        immediate: true
+      }
+    },
     created() {
       this.tempCopy = deepClone(this.temp)
-      this.selectedRewindReportCopy = deepClone(this.selectedRewindReport)
-      if (this.roles.includes('rewindShiftLeader')) {
-        this.listQuery.createPerson = this.id
-        // this.listQuery.status = 0
-      } else if (this.roles.includes('supervisor')) {
-        // this.listQuery.status = 1
-      } else if (this.roles.includes('inspector')) {
-        // this.listQuery.status = 2
+      this.selectedReportCopy = deepClone(this.selectedReport)
+      const isShiftLeaderArr = [this.roles.includes('rewindShiftLeader'),
+        this.roles.includes('rollingMillShiftLeader'),
+        this.roles.includes('annealShiftLeader'),
+        this.roles.includes('finishingTensionLevelerShiftLeader')]
+      const isSupervisor = this.roles.includes('supervisor')
+      const isInspector = this.roles.includes('inspector')
+      let shiftRoles = [{ code: 'rewindShiftLeader', name: '重卷生产班班长', type: 0 },
+        { code: 'rollingMillShiftLeader', name: '轧机生产班班长', type: 1 },
+        { code: 'annealShiftLeader', name: '退火炉生产班班长', type: 2 },
+        { code: 'finishingTensionLevelerShiftLeader', name: '精整拉矫生产班班长', type: 3 },
+        { code: 'supervisor', name: '主管' },
+        { code: 'inspector', name: '呈阅' }]
+      const shiftRoleBoolArr = [...isShiftLeaderArr, isSupervisor, isInspector]
+      shiftRoles = shiftRoles.filter((item, index) => shiftRoleBoolArr[index])
+      if (shiftRoles.length > 1) {
+        this.shiftRoles = shiftRoles
       }
-
+      this.listQuery.role = shiftRoles[0].code
+      this.listQuery.type = shiftRoles[0].type
       this.listLoading = true
       this.$nextTick(async() => {
         await this.getShifts({})
@@ -353,17 +390,17 @@
         this.$refs.selectWorkOrder.clearSelection()
         //此时selection仍然有值 ，只是勾选状态不显示了。
         if (selection.length === 0) {
-          this.selectedRewindReport = this.selectedRewindReportCopy
+          this.selectedReport = this.selectedReportCopy
           return
         }
         //这这里将这行的状态又变为了勾选
         this.$refs.selectWorkOrder.toggleRowSelection(row, true)
         //用于多选表格，切换某一行的选中状态，如果使用了第二个参数，则是设置这一行选中与否（selected 为 true 则选中）
-        this.selectedRewindReport = row
+        this.selectedReport = row
       },
       handleSelectAll(selection) {
         this.$refs.selectWorkOrder.clearSelection()
-        this.selectedRewindReport = this.selectedRewindReportCopy
+        this.selectedReport = this.selectedReportCopy
       },
 
       async getShifts(query) {
@@ -376,7 +413,7 @@
 
       getList() {
         this.listLoading = true
-        getJournalingRewindReports(this.listQuery).then(res => {
+        getJournalingProductionShiftReports(this.listQuery).then(res => {
           this.list = res.queryResult.list.map(item => {
             let shift = this.shiftMap[item.shiftId]
             item.shiftName = shift.name
@@ -387,7 +424,7 @@
         })
       },
       handleCurrentChange(val) {
-        this.currentRewindReport = val
+        this.currentReport = val
       },
       handleFilter() {
         this.listQuery.current = 1
@@ -408,21 +445,20 @@
         this.temp = deepClone(this.tempCopy)
       },
       handleAdd() {
-        this.resetForm('rewindReportForm')
+        this.resetForm('reportForm')
         this.dialogStatus = 'create'
         this.dialogFormVisible = true
         // this.rules.password[0].required = true
         this.$nextTick(() => {
-          this.$refs['rewindReportForm'].clearValidate()
+          this.$refs['reportForm'].clearValidate()
         })
       },
       submit() {
-        this.$refs['rewindReportForm'].validate((valid) => {
+        this.$refs['reportForm'].validate((valid) => {
           if (valid) {
             // const tempData = deepClone(this.temp)
-            let rewindReport = deepClone(this.temp)
-            console.log(rewindReport)
-            addJournalingRewindReport(rewindReport).then((res) => {
+            let report = deepClone(this.temp)
+            addJournalingProductionShiftReport(report).then((res) => {
               let shift = this.shiftMap[res.model.shiftId]
               res.model.shiftName = shift.name
               this.list.unshift(res.model)
@@ -440,36 +476,40 @@
         })
       },
       handleApprove() {
-        if (!this.selectedRewindReport.id) {
+        if (!this.selectedReport.id) {
           this.$message({
             message: '请选择一条报告单',
             type: 'warning'
           })
           return
         }
-        const rr = {
-          id: this.selectedRewindReport.id,
-          shiftLeader: this.roles.includes('rewindShiftLeader') ? this.id : null,
+        const r = {
+          id: this.selectedReport.id,
+          shiftLeader: this.roles.includes('rewindShiftLeader')
+          || this.roles.includes('rollingMillShiftLeader')
+          || this.roles.includes('annealShiftLeader')
+          || this.roles.includes('finishingTensionLevelerShiftLeader')
+            ? this.id : null,
           supervisor: this.roles.includes('supervisor') ? this.id : null,
           inspector: this.roles.includes('inspector') ? this.id : null
         }
-        updateJournalingRewindReport(rr).then((res) => {
+        updateJournalingProductionShiftReport(r).then((res) => {
           for (const v of this.list) {
-            if (v.id === rr.id) {
+            if (v.id === r.id) {
               const index = this.list.indexOf(v)
-              if (!this.selectedRewindReport.shiftLeader && rr.shiftLeader) {
-                this.selectedRewindReport.shiftLeader = rr.shiftLeader
-                this.selectedRewindReport.status = 1
+              if (!this.selectedReport.shiftLeader && r.shiftLeader) {
+                this.selectedReport.shiftLeader = r.shiftLeader
+                this.selectedReport.status = 1
               }
-              if (!this.selectedRewindReport.supervisor && rr.supervisor) {
-                this.selectedRewindReport.supervisor = rr.supervisor
-                this.selectedRewindReport.status = 2
+              if (!this.selectedReport.supervisor && rr.supervisor) {
+                this.selectedReport.supervisor = r.supervisor
+                this.selectedReport.status = 2
               }
-              if (!this.selectedRewindReport.inspector && rr.inspector) {
-                this.selectedRewindReport.inspector = rr.inspector
-                this.selectedRewindReport.status = 3
+              if (!this.selectedReport.inspector && r.inspector) {
+                this.selectedReport.inspector = r.inspector
+                this.selectedReport.status = 3
               }
-              this.list.splice(index, 1, this.selectedRewindReport)
+              this.list.splice(index, 1, this.selectedReport)
               break
             }
           }
@@ -495,18 +535,18 @@
         // this.temp.password = ''
         this.dialogFormVisible = true
         this.$nextTick(() => {
-          this.$refs['rewindReportForm'].clearValidate()
+          this.$refs['reportForm'].clearValidate()
         })
       },
       updateData() {
-        this.$refs['rewindReportForm'].validate((valid) => {
+        this.$refs['reportForm'].validate((valid) => {
           if (valid) {
-            let rewindReport = deepClone(this.temp)
-            updateJournalingRewindReport(rewindReport).then(() => {
+            let report = deepClone(this.temp)
+            updateJournalingProductionShiftReport(report).then(() => {
               for (const v of this.list) {
-                if (v.id === rewindReport.id) {
+                if (v.id === report.id) {
                   const index = this.list.indexOf(v)
-                  this.list.splice(index, 1, rewindReport)
+                  this.list.splice(index, 1, report)
                   break
                 }
               }
@@ -527,7 +567,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteJournalingRewindReport(row.id).then(() => {
+          deleteJournalingProductionShiftReport(row.id).then(() => {
             this.$notify({
               title: '成功',
               message: '删除成功',
@@ -545,7 +585,7 @@
   }
 </script>
 <style scoped lang="scss">
-  .journaling-rewind-report {
+  .journaling-report {
 
   .el-table td, .el-table th {
     padding: 5px 0;

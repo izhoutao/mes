@@ -1,16 +1,15 @@
 <template>
-  <div class="app-container journaling-rewind-item">
+  <div class="app-container journaling-anneal-item">
     <div>
       <!--      <div style="font-size: 20px;">{{textMap[dialogStatus]}}报工</div>-->
 
       <el-form
-        ref="journalingRewindItemForm"
+        ref="journalingAnnealItemForm"
         :rules="rules"
         :model="temp"
         label-position="right"
         label-width="150px"
       >
-
         <el-row :gutter="40">
           <el-col :span="8">
             <el-form-item label="日期：" prop="date">
@@ -48,13 +47,16 @@
                   :value="item">
                 </el-option>
               </el-select>
-
             </el-form-item>
-
           </el-col>
 
         </el-row>
         <el-row :gutter="40">
+          <el-col :span="8">
+            <el-form-item label="进料宽度(mm)：" prop="inputWidth">
+              <el-input v-model.number="temp.inputWidth"/>
+            </el-form-item>
+          </el-col>
           <el-col :span="8">
             <el-form-item label="进料厚度(mm)：" prop="inputThickness">
               <el-input v-model.number="temp.inputThickness"/>
@@ -65,25 +67,26 @@
               <el-input v-model.number="temp.inputWeight"/>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
-            <el-form-item label="生产速度(m/min)：" prop="processVelocity">
-              <el-input v-model.number="temp.processVelocity"/>
-            </el-form-item>
-          </el-col>
-
         </el-row>
 
         <el-row :gutter="40">
           <el-col :span="8">
-            <el-form-item label="焊机电流：" prop="welderCurrent">
-              <el-input v-model.number="temp.welderCurrent"/>
+            <el-form-item label="操作各区温度（逗号分隔）：" prop="operationTemperatures">
+              <el-input v-model="temp.operationTemperatures"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="焊机速度：" prop="welderVelocity">
-              <el-input v-model.number="temp.welderVelocity"/>
+            <el-form-item label="操作TV：" prop="operationTv">
+              <el-input v-model.number="temp.operationTv"/>
             </el-form-item>
           </el-col>
+          <el-col :span="8">
+            <el-form-item label="操作速度：" prop="operationSpeed">
+              <el-input v-model.number="temp.operationSpeed"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="8">
             <el-form-item label="上机时间：" prop="beginTime">
               <el-date-picker
@@ -97,8 +100,6 @@
               </el-date-picker>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row :gutter="40">
           <el-col :span="8">
             <el-form-item label="下机时间：" prop="endTime">
               <el-date-picker
@@ -115,16 +116,6 @@
           <el-col :span="8">
             <el-form-item label="出料重量(kg)：" prop="outputWeight">
               <el-input v-model.number="temp.outputWeight"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="出料长度(m)：" prop="outputLength">
-              <el-input v-model.number="temp.outputLength"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="损耗原因：" prop="lossReason">
-              <el-input v-model="temp.lossReason"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -196,13 +187,12 @@
               <span>{{ scope.row.steelGrade }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="产地" min-width="80px" align="center">
-            <template slot-scope="scope">
-              <span>{{ scope.row.hotRollOrigin }}</span>
-            </template>
-          </el-table-column>
-
           <el-table-column label="进料" align="center">
+            <el-table-column label="宽度|(mm)" min-width="50px" align="center" :render-header="renderHeader">
+              <template slot-scope="scope">
+                <span>{{ scope.row.inputWidth }}</span>
+              </template>
+            </el-table-column>
             <el-table-column label="厚度|(mm)" min-width="50px" align="center" :render-header="renderHeader">
               <template slot-scope="scope">
                 <span>{{ scope.row.inputThickness }}</span>
@@ -215,27 +205,33 @@
             </el-table-column>
           </el-table-column>
 
-          <el-table-column label="生产参数" align="center">
-            <el-table-column label="速度|(m/min)" min-width="50px" align="center" :render-header="renderHeader">
+          <el-table-column label="操作条件" align="center">
+            <el-table-column label="各区温度" min-width="50px" align="center">
               <template slot-scope="scope">
-                <span>{{ scope.row.processVelocity }}</span>
+                <span>{{ scope.row.operationTemperatures }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="焊机参数" align="center">
-              <el-table-column label="电流" min-width="50px" align="center">
-                <template slot-scope="scope">
-                  <span>{{ scope.row.welderCurrent }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="速度" min-width="50px" align="center">
-                <template slot-scope="scope">
-                  <span>{{ scope.row.welderVelocity }}</span>
-                </template>
-              </el-table-column>
+            <el-table-column label="操作TV" min-width="50px" align="center">
+              <template slot-scope="scope">
+                <span>{{ scope.row.operationTv }}</span>
+              </template>
             </el-table-column>
-            <el-table-column label="上下机时间" min-width="65px" align="center">
+            <el-table-column label="操作速度" min-width="50px" align="center">
+              <template slot-scope="scope">
+                <span>{{ scope.row.operationSpeed }}</span>
+              </template>
+            </el-table-column>
+          </el-table-column>
+
+          <el-table-column label="时间统计" align="center">
+            <el-table-column label="操作时间段" min-width="65px" align="center">
               <template slot-scope="scope">
                 <span>{{ scope.row.beginTime  | parseTime('{h}:{i}') }}-{{ scope.row.endTime | parseTime('{h}:{i}') }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="用时|（min）" min-width="50px" align="center" :render-header="renderHeader">
+              <template slot-scope="scope">
+                <span>{{ scope.row.operationSpeed }}</span>
               </template>
             </el-table-column>
           </el-table-column>
@@ -245,14 +241,9 @@
                 <span>{{ scope.row.outputWeight }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="长度|(m)" min-width="50px" align="center" :render-header="renderHeader">
+            <el-table-column label="损耗|(kg)" min-width="50px" align="center" :render-header="renderHeader">
               <template slot-scope="scope">
-                <span>{{ scope.row.outputLength }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="损耗原因" min-width="50px" align="center">
-              <template slot-scope="scope">
-                <span>{{ scope.row.lossReason }}</span>
+                <span>{{ scope.row.outputWeightLoss }}</span>
               </template>
             </el-table-column>
           </el-table-column>
@@ -285,11 +276,11 @@
   import { deepClone, parseTime } from '@/utils'
 
   import {
-    getJournalingRewindItems,
-    addJournalingRewindItem,
-    updateJournalingRewindItem,
-    deleteJournalingRewindItem
-  } from '@/api/journalingrewinditem'
+    getJournalingAnnealItems,
+    addJournalingAnnealItem,
+    updateJournalingAnnealItem,
+    deleteJournalingAnnealItem
+  } from '@/api/journalingannealitem'
 
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
@@ -297,7 +288,7 @@
   import { getOutboundOrderRawItems } from '@/api/outboundorderrawitem'
 
   export default {
-    name: 'rewindItem',
+    name: 'annealItem',
     components: { Pagination },
     directives: { waves },
     data() {
@@ -313,27 +304,26 @@
           //journalingEndTime: parseTime(new Date(new Date(new Date().toLocaleDateString()).getTime() + 24 * 60 * 60 * 1000 - 1), '{y}-{m}-{d}T{h}:{i}:{s}')
           journalingBeginTime: undefined,
           journalingEndTime: undefined,
-          createPerson: '',
+          createPerson: ''
           // shiftId: '',
           // date: parseTime(new Date(),'{y}-{m}-{d} {h}:{i}:{s}')
         },
         temp: {
           id: undefined,
           productNumber: '',
-/*          steelGrade: '',
-          hotRollOrigin: '',*/
+          /*          steelGrade: '',
+                    hotRollOrigin: '',*/
           inputThickness: '',
           inputWeight: '',
-          processVelocity: '',
-          welderCurrent: '',
-          welderVelocity: '',
-          beginTime: undefined,
-          endTime: undefined,
+          inputWidth: '',
+          operationTemperatures: '',
+          operationTv: '',
+          operationSpeed: '',
+          beginTime: '',
+          endTime: '',
           outputWeight: '',
-          outputLength: '',
-          lossReason: '',
           shiftId: '',
-          date: parseTime(new Date(),'{y}-{m}-{d}T{h}:{i}:{s}')
+          date: parseTime(new Date(), '{y}-{m}-{d}T{h}:{i}:{s}')
         },
         tempCopy: null,
         pendingRawItems: [],
@@ -344,10 +334,10 @@
         // dialogFormVisible: false,
         dialogStatus: 'create',
 
-/*        textMap: {
-          update: '编辑',
-          create: '添加'
-        },*/
+        /*        textMap: {
+                  update: '编辑',
+                  create: '添加'
+                },*/
         rules: {
           date: [
             { required: true, trigger: 'blur', message: '请选择日期' }
@@ -358,6 +348,10 @@
           productNumber: [
             { required: true, message: '钢卷编号不能为空' }
           ],
+          inputWidth: [
+            { required: true, message: '进料宽度不能为空' },
+            { type: 'number', message: '进料宽度必须为数字值' }
+          ],
           inputThickness: [
             { required: true, message: '进料厚度不能为空' },
             { type: 'number', message: '进料厚度必须为数字值' }
@@ -366,18 +360,16 @@
             { required: true, message: '进料重量不能为空' },
             { type: 'number', message: '进料重量必须为数字值' }
           ],
-          processVelocity: [
-            { required: true, message: '生产速度不能为空' },
-            { type: 'number', message: '生产速度必须为数字值' }
+          operationTemperatures: [
+            { required: true, message: '操作各区温度（逗号分隔）不能为空' }
           ],
-          welderCurrent: [
-            { required: true, message: '焊机电流不能为空' },
-            { type: 'number', message: '焊机电流必须为数字值' }
+          operationTv: [
+            { required: true, message: '操作TV不能为空' }
           ],
-          welderVelocity: [
-            { required: true, message: '焊机速度不能为空' },
-            { type: 'number', message: '焊机速度必须为数字值' }
+          operationSpeed: [
+            { required: true, message: '操作速度不能为空' }
           ],
+
           beginTime: [
             { required: true, message: '上机时间不能为空' }
           ],
@@ -387,13 +379,6 @@
           outputWeight: [
             { required: true, message: '出料重量不能为空' },
             { type: 'number', message: '出料重量必须为数字值' }
-          ],
-          outputLength: [
-            { required: true, message: '出料长度不能为空' },
-            { type: 'number', message: '出料长度必须为数字值' }
-          ],
-          lossReason: [
-            { required: true, message: '损耗原因不能为空' }
           ]
         }
       }
@@ -439,7 +424,7 @@
       getPendingRawItems(query) {
         if (query !== '') {
           this.loading = true
-          getOutboundOrderRawItems({ current_operation_label: '重卷' }).then(res => {
+          getOutboundOrderRawItems({ current_operation_label: '退火' }).then(res => {
             this.loading = false
             this.pendingRawItems = res.queryResult.list.map(item => item.productNumber).filter(item => {
               return item.toLowerCase()
@@ -452,7 +437,7 @@
       },
       getList() {
         this.listLoading = true
-        getJournalingRewindItems(this.listQuery).then(res => {
+        getJournalingAnnealItems(this.listQuery).then(res => {
           this.list = res.queryResult.list.map(item => {
             let shift = this.shiftMap[item.shiftId]
             item.shiftName = shift.name
@@ -476,22 +461,22 @@
         this.temp = deepClone(this.tempCopy)
       },
       handleAdd() {
-        this.resetForm('journalingRewindItemForm')
+        this.resetForm('journalingAnnealItemForm')
         this.dialogStatus = 'create'
         // this.dialogFormVisible = true
         // this.rules.password[0].required = true
         this.$nextTick(() => {
-          this.$refs['journalingRewindItemForm'].clearValidate()
+          this.$refs['journalingAnnealItemForm'].clearValidate()
         })
       },
       submit() {
-        this.$refs['journalingRewindItemForm'].validate((valid) => {
+        this.$refs['journalingAnnealItemForm'].validate((valid) => {
           if (valid) {
             // const tempData = deepClone(this.temp)
-            let journalingRewindItem = deepClone(this.temp)
-            delete journalingRewindItem.shiftName
-            addJournalingRewindItem(journalingRewindItem).then((res) => {
-              let shift = this.shiftMap[journalingRewindItem.shiftId]
+            let journalingAnnealItem = deepClone(this.temp)
+            delete journalingAnnealItem.shiftName
+            addJournalingAnnealItem(journalingAnnealItem).then((res) => {
+              let shift = this.shiftMap[journalingAnnealItem.shiftId]
               res.model.shiftName = shift.name
               this.list.unshift(res.model)
               this.total++
@@ -515,21 +500,21 @@
         // this.temp.password = ''
         // this.dialogFormVisible = true
         this.$nextTick(() => {
-          this.$refs['journalingRewindItemForm'].clearValidate()
+          this.$refs['journalingAnnealItemForm'].clearValidate()
         })
       },
       updateData() {
-        this.$refs['journalingRewindItemForm'].validate((valid) => {
+        this.$refs['journalingAnnealItemForm'].validate((valid) => {
           if (valid) {
-            let journalingRewindItem = deepClone(this.temp)
-            delete journalingRewindItem.shiftName
-            updateJournalingRewindItem(journalingRewindItem).then(() => {
-              let shift = this.shiftMap[journalingRewindItem.shiftId]
-              journalingRewindItem.shiftName = shift.name
+            let journalingAnnealItem = deepClone(this.temp)
+            delete journalingAnnealItem.shiftName
+            updateJournalingAnnealItem(journalingAnnealItem).then(() => {
+              let shift = this.shiftMap[journalingAnnealItem.shiftId]
+              journalingAnnealItem.shiftName = shift.name
               for (const v of this.list) {
-                if (v.id === journalingRewindItem.id) {
+                if (v.id === journalingAnnealItem.id) {
                   const index = this.list.indexOf(v)
-                  this.list.splice(index, 1, journalingRewindItem)
+                  this.list.splice(index, 1, journalingAnnealItem)
                   break
                 }
               }
@@ -546,12 +531,12 @@
         })
       },
       handleDelete(row) {
-        this.$confirm('此操作将永久删除该子订单, 是否继续?', '提示', {
+        this.$confirm('此操作将永久删除该轧机条目, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteJournalingRewindItem(row.id).then(() => {
+          deleteJournalingAnnealItem(row.id).then(() => {
             this.$notify({
               title: '成功',
               message: '删除成功',
@@ -569,7 +554,7 @@
   }
 </script>
 <style lang="scss">
-  .journaling-rewind-item {
+  .journaling-anneal-item {
 
   .el-table td, .el-table th {
     padding: 5px 0;

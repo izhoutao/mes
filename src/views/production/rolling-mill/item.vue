@@ -1,10 +1,10 @@
 <template>
-  <div class="app-container journaling-rewind-item">
+  <div class="app-container journaling-rolling-mill-item">
     <div>
       <!--      <div style="font-size: 20px;">{{textMap[dialogStatus]}}报工</div>-->
 
       <el-form
-        ref="journalingRewindItemForm"
+        ref="journalingRollingMillItemForm"
         :rules="rules"
         :model="temp"
         label-position="right"
@@ -66,8 +66,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="生产速度(m/min)：" prop="processVelocity">
-              <el-input v-model.number="temp.processVelocity"/>
+            <el-form-item label="轧延参数-总道次数：" prop="paramTotalRollingPass">
+              <el-input v-model.number="temp.paramTotalRollingPass"/>
             </el-form-item>
           </el-col>
 
@@ -75,56 +75,42 @@
 
         <el-row :gutter="40">
           <el-col :span="8">
-            <el-form-item label="焊机电流：" prop="welderCurrent">
-              <el-input v-model.number="temp.welderCurrent"/>
+            <el-form-item label="轧延参数-总轧下率(%)：" prop="paramTotalReductionRate">
+              <el-input v-model.number="temp.paramTotalReductionRate"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="焊机速度：" prop="welderVelocity">
-              <el-input v-model.number="temp.welderVelocity"/>
+            <el-form-item label="出料厚度(mm)：" prop="outputThickness">
+              <el-input v-model.number="temp.outputThickness"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="上机时间：" prop="beginTime">
-              <el-date-picker
-                v-model="temp.beginTime"
-                type="datetime"
-                placeholder="选择日期时间"
-                default-time="12:00:00"
-                format="yyyy-MM-dd HH:mm:ss"
-                value-format="yyyy-MM-ddTHH:mm:ss"
-              >
-              </el-date-picker>
+            <el-form-item label="出料长度(mm)：" prop="outputLength">
+              <el-input v-model.number="temp.outputLength"/>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="40">
-          <el-col :span="8">
-            <el-form-item label="下机时间：" prop="endTime">
-              <el-date-picker
-                v-model="temp.endTime"
-                type="datetime"
-                placeholder="选择日期时间"
-                default-time="12:00:00"
-                format="yyyy-MM-dd HH:mm:ss"
-                value-format="yyyy-MM-ddTHH:mm:ss"
-              >
-              </el-date-picker>
-            </el-form-item>
-          </el-col>
           <el-col :span="8">
             <el-form-item label="出料重量(kg)：" prop="outputWeight">
               <el-input v-model.number="temp.outputWeight"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="出料长度(m)：" prop="outputLength">
-              <el-input v-model.number="temp.outputLength"/>
+            <el-form-item label="辊号：" prop="rollerNumber">
+              <el-input v-model.number="temp.rollerNumber"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="损耗原因：" prop="lossReason">
-              <el-input v-model="temp.lossReason"/>
+            <el-form-item label="辊类别：" prop="rollerType">
+              <el-input v-model.number="temp.rollerType"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="辊更换原因：" prop="outputThickness">
+              <el-input v-model.number="temp.rollerReplaceReason"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -196,12 +182,6 @@
               <span>{{ scope.row.steelGrade }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="产地" min-width="80px" align="center">
-            <template slot-scope="scope">
-              <span>{{ scope.row.hotRollOrigin }}</span>
-            </template>
-          </el-table-column>
-
           <el-table-column label="进料" align="center">
             <el-table-column label="厚度|(mm)" min-width="50px" align="center" :render-header="renderHeader">
               <template slot-scope="scope">
@@ -215,47 +195,54 @@
             </el-table-column>
           </el-table-column>
 
-          <el-table-column label="生产参数" align="center">
-            <el-table-column label="速度|(m/min)" min-width="50px" align="center" :render-header="renderHeader">
+          <el-table-column label="轧延参数" align="center">
+            <el-table-column label="总道次数" min-width="50px" align="center">
               <template slot-scope="scope">
-                <span>{{ scope.row.processVelocity }}</span>
+                <span>{{ scope.row.paramTotalRollingPass }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="焊机参数" align="center">
-              <el-table-column label="电流" min-width="50px" align="center">
-                <template slot-scope="scope">
-                  <span>{{ scope.row.welderCurrent }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="速度" min-width="50px" align="center">
-                <template slot-scope="scope">
-                  <span>{{ scope.row.welderVelocity }}</span>
-                </template>
-              </el-table-column>
-            </el-table-column>
-            <el-table-column label="上下机时间" min-width="65px" align="center">
+            <el-table-column label="总轧下率|(%)" min-width="50px" align="center" :render-header="renderHeader">
               <template slot-scope="scope">
-                <span>{{ scope.row.beginTime  | parseTime('{h}:{i}') }}-{{ scope.row.endTime | parseTime('{h}:{i}') }}</span>
+                <span>{{ scope.row.paramTotalReductionRate }}</span>
               </template>
             </el-table-column>
           </el-table-column>
           <el-table-column label="出料" align="center">
+            <el-table-column label="厚度|(mm)" min-width="50px" align="center" :render-header="renderHeader">
+              <template slot-scope="scope">
+                <span>{{ scope.row.outputThickness }}</span>
+              </template>
+            </el-table-column>
             <el-table-column label="重量|(kg)" min-width="50px" align="center" :render-header="renderHeader">
               <template slot-scope="scope">
                 <span>{{ scope.row.outputWeight }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="长度|(m)" min-width="50px" align="center" :render-header="renderHeader">
+            <el-table-column label="长度|(mm)" min-width="50px" align="center" :render-header="renderHeader">
               <template slot-scope="scope">
                 <span>{{ scope.row.outputLength }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="损耗原因" min-width="50px" align="center">
+          </el-table-column>
+          <el-table-column label="轧辊使用信息" align="center">
+            <el-table-column label="辊号" min-width="50px" align="center" :render-header="renderHeader">
               <template slot-scope="scope">
-                <span>{{ scope.row.lossReason }}</span>
+                <span>{{ scope.row.rollerNumber }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="辊类别" min-width="50px" align="center" :render-header="renderHeader">
+              <template slot-scope="scope">
+                <span>{{ scope.row.rollerType }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="辊更换原因" min-width="50px" align="center" :render-header="renderHeader">
+              <template slot-scope="scope">
+                <span>{{ scope.row.rollerReplaceReason }}</span>
               </template>
             </el-table-column>
           </el-table-column>
+
+
           <el-table-column label="操作" align="center" min-width="60">
             <template slot-scope="scope">
               <!--          <el-button type="primary" icon="el-icon-edit" size="mini"
@@ -285,11 +272,11 @@
   import { deepClone, parseTime } from '@/utils'
 
   import {
-    getJournalingRewindItems,
-    addJournalingRewindItem,
-    updateJournalingRewindItem,
-    deleteJournalingRewindItem
-  } from '@/api/journalingrewinditem'
+    getJournalingRollingMillItems,
+    addJournalingRollingMillItem,
+    updateJournalingRollingMillItem,
+    deleteJournalingRollingMillItem
+  } from '@/api/journalingrollingmillitem'
 
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
@@ -297,7 +284,7 @@
   import { getOutboundOrderRawItems } from '@/api/outboundorderrawitem'
 
   export default {
-    name: 'rewindItem',
+    name: 'rollingMillItem',
     components: { Pagination },
     directives: { waves },
     data() {
@@ -313,27 +300,27 @@
           //journalingEndTime: parseTime(new Date(new Date(new Date().toLocaleDateString()).getTime() + 24 * 60 * 60 * 1000 - 1), '{y}-{m}-{d}T{h}:{i}:{s}')
           journalingBeginTime: undefined,
           journalingEndTime: undefined,
-          createPerson: '',
+          createPerson: ''
           // shiftId: '',
           // date: parseTime(new Date(),'{y}-{m}-{d} {h}:{i}:{s}')
         },
         temp: {
           id: undefined,
           productNumber: '',
-/*          steelGrade: '',
-          hotRollOrigin: '',*/
+          /*          steelGrade: '',
+                    hotRollOrigin: '',*/
           inputThickness: '',
           inputWeight: '',
-          processVelocity: '',
-          welderCurrent: '',
-          welderVelocity: '',
-          beginTime: undefined,
-          endTime: undefined,
-          outputWeight: '',
+          paramTotalRollingPass: '',
+          paramTotalReductionRate: '',
+          outputThickness: '',
           outputLength: '',
-          lossReason: '',
+          outputWeight: '',
+          rollerNumber: '',
+          rollerType: '',
+          rollerReplaceReason: '',
           shiftId: '',
-          date: parseTime(new Date(),'{y}-{m}-{d}T{h}:{i}:{s}')
+          date: parseTime(new Date(), '{y}-{m}-{d}T{h}:{i}:{s}')
         },
         tempCopy: null,
         pendingRawItems: [],
@@ -344,10 +331,10 @@
         // dialogFormVisible: false,
         dialogStatus: 'create',
 
-/*        textMap: {
-          update: '编辑',
-          create: '添加'
-        },*/
+        /*        textMap: {
+                  update: '编辑',
+                  create: '添加'
+                },*/
         rules: {
           date: [
             { required: true, trigger: 'blur', message: '请选择日期' }
@@ -366,23 +353,13 @@
             { required: true, message: '进料重量不能为空' },
             { type: 'number', message: '进料重量必须为数字值' }
           ],
-          processVelocity: [
-            { required: true, message: '生产速度不能为空' },
-            { type: 'number', message: '生产速度必须为数字值' }
+          paramTotalRollingPass: [
+            { required: true, message: '总道次数不能为空' },
+            { type: 'number', message: '总道次数必须为数字值' }
           ],
-          welderCurrent: [
-            { required: true, message: '焊机电流不能为空' },
-            { type: 'number', message: '焊机电流必须为数字值' }
-          ],
-          welderVelocity: [
-            { required: true, message: '焊机速度不能为空' },
-            { type: 'number', message: '焊机速度必须为数字值' }
-          ],
-          beginTime: [
-            { required: true, message: '上机时间不能为空' }
-          ],
-          endTime: [
-            { required: true, message: '下机时间不能为空' }
+          paramTotalReductionRate: [
+            { required: true, message: '总轧下率不能为空' },
+            { type: 'number', message: '总轧下率必须为数字值' }
           ],
           outputWeight: [
             { required: true, message: '出料重量不能为空' },
@@ -392,8 +369,14 @@
             { required: true, message: '出料长度不能为空' },
             { type: 'number', message: '出料长度必须为数字值' }
           ],
-          lossReason: [
-            { required: true, message: '损耗原因不能为空' }
+          rollerNumber: [
+            { required: true, message: '辊号不能为空' }
+          ],
+          rollerType: [
+            { required: true, message: '辊类别不能为空' }
+          ],
+          rollerReplaceReason: [
+            { required: true, message: '辊更换原因不能为空' }
           ]
         }
       }
@@ -439,7 +422,7 @@
       getPendingRawItems(query) {
         if (query !== '') {
           this.loading = true
-          getOutboundOrderRawItems({ current_operation_label: '重卷' }).then(res => {
+          getOutboundOrderRawItems({ current_operation_label: '轧机' }).then(res => {
             this.loading = false
             this.pendingRawItems = res.queryResult.list.map(item => item.productNumber).filter(item => {
               return item.toLowerCase()
@@ -452,7 +435,7 @@
       },
       getList() {
         this.listLoading = true
-        getJournalingRewindItems(this.listQuery).then(res => {
+        getJournalingRollingMillItems(this.listQuery).then(res => {
           this.list = res.queryResult.list.map(item => {
             let shift = this.shiftMap[item.shiftId]
             item.shiftName = shift.name
@@ -476,22 +459,22 @@
         this.temp = deepClone(this.tempCopy)
       },
       handleAdd() {
-        this.resetForm('journalingRewindItemForm')
+        this.resetForm('journalingRollingMillItemForm')
         this.dialogStatus = 'create'
         // this.dialogFormVisible = true
         // this.rules.password[0].required = true
         this.$nextTick(() => {
-          this.$refs['journalingRewindItemForm'].clearValidate()
+          this.$refs['journalingRollingMillItemForm'].clearValidate()
         })
       },
       submit() {
-        this.$refs['journalingRewindItemForm'].validate((valid) => {
+        this.$refs['journalingRollingMillItemForm'].validate((valid) => {
           if (valid) {
             // const tempData = deepClone(this.temp)
-            let journalingRewindItem = deepClone(this.temp)
-            delete journalingRewindItem.shiftName
-            addJournalingRewindItem(journalingRewindItem).then((res) => {
-              let shift = this.shiftMap[journalingRewindItem.shiftId]
+            let journalingRollingMillItem = deepClone(this.temp)
+            delete journalingRollingMillItem.shiftName
+            addJournalingRollingMillItem(journalingRollingMillItem).then((res) => {
+              let shift = this.shiftMap[journalingRollingMillItem.shiftId]
               res.model.shiftName = shift.name
               this.list.unshift(res.model)
               this.total++
@@ -515,21 +498,21 @@
         // this.temp.password = ''
         // this.dialogFormVisible = true
         this.$nextTick(() => {
-          this.$refs['journalingRewindItemForm'].clearValidate()
+          this.$refs['journalingRollingMillItemForm'].clearValidate()
         })
       },
       updateData() {
-        this.$refs['journalingRewindItemForm'].validate((valid) => {
+        this.$refs['journalingRollingMillItemForm'].validate((valid) => {
           if (valid) {
-            let journalingRewindItem = deepClone(this.temp)
-            delete journalingRewindItem.shiftName
-            updateJournalingRewindItem(journalingRewindItem).then(() => {
-              let shift = this.shiftMap[journalingRewindItem.shiftId]
-              journalingRewindItem.shiftName = shift.name
+            let journalingRollingMillItem = deepClone(this.temp)
+            delete journalingRollingMillItem.shiftName
+            updateJournalingRollingMillItem(journalingRollingMillItem).then(() => {
+              let shift = this.shiftMap[journalingRollingMillItem.shiftId]
+              journalingRollingMillItem.shiftName = shift.name
               for (const v of this.list) {
-                if (v.id === journalingRewindItem.id) {
+                if (v.id === journalingRollingMillItem.id) {
                   const index = this.list.indexOf(v)
-                  this.list.splice(index, 1, journalingRewindItem)
+                  this.list.splice(index, 1, journalingRollingMillItem)
                   break
                 }
               }
@@ -546,12 +529,12 @@
         })
       },
       handleDelete(row) {
-        this.$confirm('此操作将永久删除该子订单, 是否继续?', '提示', {
+        this.$confirm('此操作将永久删除该轧机条目, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteJournalingRewindItem(row.id).then(() => {
+          deleteJournalingRollingMillItem(row.id).then(() => {
             this.$notify({
               title: '成功',
               message: '删除成功',
@@ -569,7 +552,7 @@
   }
 </script>
 <style lang="scss">
-  .journaling-rewind-item {
+  .journaling-rolling-mill-item {
 
   .el-table td, .el-table th {
     padding: 5px 0;
