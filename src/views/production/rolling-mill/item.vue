@@ -361,6 +361,10 @@
             { required: true, message: '总轧下率不能为空' },
             { type: 'number', message: '总轧下率必须为数字值' }
           ],
+          outputThickness: [
+            { required: true, message: '出料厚度不能为空' },
+            { type: 'number', message: '出料厚度必须为数字值' }
+          ],
           outputWeight: [
             { required: true, message: '出料重量不能为空' },
             { type: 'number', message: '出料重量必须为数字值' }

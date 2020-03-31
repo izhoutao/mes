@@ -37,7 +37,8 @@
         </el-form-item>
         <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
         <el-button v-waves class="filter-item" @click="resetForm('filterForm');handleFilter()">重置</el-button>
-        <el-button class="filter-item" style="margin-left: 10px;" type="success"
+        <el-button v-if="shiftLeaders.includes(listQuery.role)" class="filter-item" style="margin-left: 10px;"
+                   type="success"
                    icon="el-icon-edit" @click="handleAdd">
           添加
         </el-button>
@@ -160,7 +161,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" min-width="80">
+      <el-table-column v-if="shiftLeaders.includes(listQuery.role)" label="操作" align="center" min-width="80">
         <template slot-scope="scope">
           <i class="el-icon-edit" @click="handleUpdate(scope.row)"/>
           <i class="el-icon-delete" @click="handleDelete(scope.row,'true')"/>
@@ -223,6 +224,7 @@
 </template>
 
 <script>
+  import permission from '@/directive/permission/index.js' // 权限判断指令
   import { mapGetters } from 'vuex'
   import { deepClone, parseTime } from '@/utils'
 
@@ -250,7 +252,7 @@
   export default {
     name: 'productionShiftReport',
     components: { Pagination, ReportDetail },
-    directives: { waves },
+    directives: { waves, permission },
 
     data() {
       return {
@@ -300,6 +302,7 @@
         shiftMap: null,
         shiftRoles: [],
         shiftTypes: [],
+        shiftLeaders: ['rewindShiftLeader', 'rollingMillShiftLeader', 'annealShiftLeader', 'finishingTensionLevelerShiftLeader'],
         currentReport: undefined,
         selectedReport: {
           id: null,
@@ -361,9 +364,7 @@
     watch: {
       'listQuery.role': {
         handler: async function(val) {
-          const shiftLeaders = ['rewindShiftLeader', 'rollingMillShiftLeader',
-            'annealShiftLeader', 'finishingTensionLevelerShiftLeader']
-          const index = shiftLeaders.indexOf(val)
+          const index = this.shiftLeaders.indexOf(val)
           if (index != -1) {
             this.shiftTypes = []
             this.listQuery.type = index
@@ -480,6 +481,10 @@
           if (valid) {
             // const tempData = deepClone(this.temp)
             let report = deepClone(this.temp)
+            const index = this.shiftLeaders.indexOf(this.listQuery.role)
+            if (index != -1) {
+              report.type = index
+            }
             addJournalingProductionShiftReport(report).then((res) => {
               let shift = this.shiftMap[res.model.shiftId]
               res.model.shiftName = shift.name
@@ -505,11 +510,9 @@
           })
           return
         }
-        const shiftLeaders = ['rewindShiftLeader', 'rollingMillShiftLeader',
-          'annealShiftLeader', 'finishingTensionLevelerShiftLeader']
         const r = {
           id: this.selectedReport.id,
-          shiftLeader: shiftLeaders.includes(this.listQuery.role) ? this.id : null,
+          shiftLeader: this.shiftLeaders.includes(this.listQuery.role) ? this.id : null,
           supervisor: this.listQuery.role == 'supervisor' ? this.id : null,
           inspector: this.listQuery.role == 'inspector' ? this.id : null,
           type: this.listQuery.type
@@ -537,9 +540,9 @@
               break
             }
 
-/*            if(this.currentReport.id==this.selectedReport.id){
-              this.currentReport = this.selectedReport
-            }*/
+            /*            if(this.currentReport.id==this.selectedReport.id){
+                          this.currentReport = this.selectedReport
+                        }*/
           }
           this.$notify({
             title: '成功',
@@ -578,9 +581,9 @@
                   break
                 }
               }
- /*             if(report.id==this.selectedReport.id){
-                this.currentReport = report
-              }*/
+              /*             if(report.id==this.selectedReport.id){
+                             this.currentReport = report
+                           }*/
               this.dialogFormVisible = false
               this.$notify({
                 title: '成功',
@@ -593,6 +596,13 @@
         })
       },
       handleDelete(row) {
+        if (row.status > 1) {
+          this.$message({
+            message: this.translateStatus(row.status).text + '报表不能删除',
+            type: 'warning'
+          })
+          return
+        }
         this.$confirm('此操作将永久删除该报表, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',

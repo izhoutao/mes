@@ -101,7 +101,7 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="报表状态：" prop="shiftHandover">
-              <el-input :value="detail.status" :disabled="true"/>
+              <el-input :value="statuses[detail.status]" :disabled="true"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -152,6 +152,7 @@
     data() {
       return {
         activeName: 'first',
+        statuses: ['新建', '班长已审核', '主管已审核', '已呈阅审核'],
       }
     },
     methods: {
