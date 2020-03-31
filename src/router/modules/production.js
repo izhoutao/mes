@@ -47,7 +47,7 @@ const productionRouter = {
       path: 'finishingtensionleveleritem',
       name: 'finishingTensionLevelerItem',
       component: () => import('@/views/production/finishing-tension-leveler/item'),
-      meta: { title: '重卷报工', icon: 'dashboard' }
+      meta: { title: '精整拉矫报工', icon: 'dashboard' }
     },
     {
       path: 'productionshiftreport',

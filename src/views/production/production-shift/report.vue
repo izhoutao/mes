@@ -25,17 +25,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="" prop="role" v-if="shiftRoles==true">
-          <el-select v-model="listQuery.role" filterable placeholder="请选择自身角色" @change="handleFilter">
-            <el-option
-              v-for="(item,index) in shiftRoles"
-              :key="index"
-              :label="item.name"
-              :value="item.code">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="" prop="type" v-if="shiftTypes==true">
+        <el-form-item label="" prop="type" v-if="shiftTypes.length">
           <el-select v-model="listQuery.type" filterable placeholder="请选择生产班类型" @change="handleFilter">
             <el-option
               v-for="(item,index) in shiftTypes"
@@ -45,13 +35,29 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索
-        </el-button>
+        <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
         <el-button v-waves class="filter-item" @click="resetForm('filterForm');handleFilter()">重置</el-button>
         <el-button class="filter-item" style="margin-left: 10px;" type="success"
                    icon="el-icon-edit" @click="handleAdd">
           添加
         </el-button>
+        <el-form-item label="" prop="role" v-if="shiftRoles.length">
+          <!--          <el-radio-group v-model="listQuery.role">
+                      <el-radio v-for="(item,index) in shiftRoles"
+                                :key="index"
+                                :label="item.code"
+                      >{{item.name}}</el-radio>
+                    </el-radio-group>-->
+          <el-select v-model="listQuery.role" filterable placeholder="请选择自身角色" @change="handleFilter">
+            <el-option
+              v-for="(item,index) in shiftRoles"
+              :key="index"
+              :label="item.name"
+              :value="item.code">
+            </el-option>
+          </el-select>
+        </el-form-item>
+
         <el-button class="filter-item" style="margin-left: 10px;" type="warning"
                    icon="el-icon-data-line" @click="handleApprove">
           审核通过
@@ -192,11 +198,11 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="应到人数(kg)：" prop="expectedAttendanceNum">
-          <el-input v-model="temp.expectedAttendanceNum"/>
+        <el-form-item label="应到人数：" prop="expectedAttendanceNum">
+          <el-input v-model.num="temp.expectedAttendanceNum"/>
         </el-form-item>
         <el-form-item label="设备使用率(%)：" prop="capacityUtilization">
-          <el-input v-model="temp.capacityUtilization"/>
+          <el-input v-model.num="temp.capacityUtilization"/>
         </el-form-item>
         <el-form-item label="问题记录：" prop="mattersRecord">
           <el-input type="textarea" v-model="temp.mattersRecord"/>
@@ -211,7 +217,7 @@
       </div>
     </el-dialog>
     <report-detail v-if="currentReport" :detail="currentReport"
-                   :key="currentReport.id"/>
+                   :key="JSON.stringify(currentReport)"/>
 
   </div>
 </template>
@@ -239,6 +245,7 @@
     deleteJournalingProductionShiftReport
   } from '@/api/journalingproductionshiftreport'
   import { getShifts } from '@/api/shift'
+  import { login } from '@/api/user'
 
   export default {
     name: 'productionShiftReport',
@@ -278,8 +285,11 @@
           actualAttendance: '',
           actualAttendanceName: '',
           shiftLeader: null,
+          shiftLeaderName: null,
           supervisor: null,
+          supervisorName: null,
           inspector: null,
+          inspectorName: null,
           mattersRecord: null,
           shiftHandover: null
         },
@@ -307,8 +317,11 @@
           actualAttendance: '',
           actualAttendanceName: '',
           shiftLeader: null,
+          shiftLeaderName: null,
           supervisor: null,
+          supervisorName: null,
           inspector: null,
+          inspectorName: null,
           mattersRecord: null,
           shiftHandover: null
         },
@@ -321,11 +334,19 @@
           create: '创建'
         },
         rules: {
-          name: [
-            { required: true, trigger: 'blur', message: '请填写工艺名称' }
+          date: [
+            { required: true, trigger: 'blur', message: '请选择日期' }
           ],
-          code: [
-            { required: true, trigger: 'blur', message: '请填写工艺编码' }
+          shiftId: [
+            { required: true, trigger: 'blur', message: '请选择班别' }
+          ],
+          expectedAttendanceNum: [
+            { required: true, message: '应到人数不能为空' },
+            { type: 'number', message: '应到人数必须为数字值' }
+          ],
+          capacityUtilization: [
+            { required: true, message: '设备使用率不能为空' },
+            { type: 'number', message: '设备使用率必须为数字值' }
           ]
         }
       }
@@ -333,6 +354,7 @@
     computed: {
       ...mapGetters([
         'id',
+        'name',
         'roles'
       ])
     },
@@ -483,35 +505,41 @@
           })
           return
         }
+        const shiftLeaders = ['rewindShiftLeader', 'rollingMillShiftLeader',
+          'annealShiftLeader', 'finishingTensionLevelerShiftLeader']
         const r = {
           id: this.selectedReport.id,
-          shiftLeader: this.roles.includes('rewindShiftLeader')
-          || this.roles.includes('rollingMillShiftLeader')
-          || this.roles.includes('annealShiftLeader')
-          || this.roles.includes('finishingTensionLevelerShiftLeader')
-            ? this.id : null,
-          supervisor: this.roles.includes('supervisor') ? this.id : null,
-          inspector: this.roles.includes('inspector') ? this.id : null
+          shiftLeader: shiftLeaders.includes(this.listQuery.role) ? this.id : null,
+          supervisor: this.listQuery.role == 'supervisor' ? this.id : null,
+          inspector: this.listQuery.role == 'inspector' ? this.id : null,
+          type: this.listQuery.type
         }
         updateJournalingProductionShiftReport(r).then((res) => {
           for (const v of this.list) {
             if (v.id === r.id) {
               const index = this.list.indexOf(v)
               if (!this.selectedReport.shiftLeader && r.shiftLeader) {
-                this.selectedReport.shiftLeader = r.shiftLeader
+                this.selectedReport.shiftLeader = this.id
+                this.selectedReport.shiftLeaderName = this.name
                 this.selectedReport.status = 1
               }
-              if (!this.selectedReport.supervisor && rr.supervisor) {
-                this.selectedReport.supervisor = r.supervisor
+              if (!this.selectedReport.supervisor && r.supervisor) {
+                this.selectedReport.supervisor = this.id
+                this.selectedReport.supervisorName = this.name
                 this.selectedReport.status = 2
               }
               if (!this.selectedReport.inspector && r.inspector) {
-                this.selectedReport.inspector = r.inspector
+                this.selectedReport.inspector = this.id
+                this.selectedReport.inspectorName = this.name
                 this.selectedReport.status = 3
               }
               this.list.splice(index, 1, this.selectedReport)
               break
             }
+
+/*            if(this.currentReport.id==this.selectedReport.id){
+              this.currentReport = this.selectedReport
+            }*/
           }
           this.$notify({
             title: '成功',
@@ -550,6 +578,9 @@
                   break
                 }
               }
+ /*             if(report.id==this.selectedReport.id){
+                this.currentReport = report
+              }*/
               this.dialogFormVisible = false
               this.$notify({
                 title: '成功',

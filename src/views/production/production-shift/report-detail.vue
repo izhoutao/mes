@@ -85,18 +85,18 @@
         </el-row>
         <el-row>
           <el-col :span="6">
-            <el-form-item label="班长：" prop="shiftLeader">
-              <el-input :value="detail.shiftLeader" :disabled="true"/>
+            <el-form-item label="班长：" prop="shiftLeaderName">
+              <el-input :value="detail.shiftLeaderName" :disabled="true"/>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="主管：" prop="supervisor">
-              <el-input :value="detail.supervisor" :disabled="true"/>
+            <el-form-item label="主管：" prop="supervisorName">
+              <el-input :value="detail.supervisorName" :disabled="true"/>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="呈阅：" prop="inspector">
-              <el-input :value="detail.inspector" :disabled="true"/>
+            <el-form-item label="呈阅：" prop="inspectorName">
+              <el-input :value="detail.inspectorName" :disabled="true"/>
             </el-form-item>
           </el-col>
           <el-col :span="6">
