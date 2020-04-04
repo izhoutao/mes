@@ -75,10 +75,7 @@
       @select-all="handleSelectAll"
       @current-change="handleCurrentChange"
     >
-      <!--        <el-table-column label="序号" min-width="40px" align="center">
-                <template slot-scope="scope">
-                  {{ scope.$index }}
-                </template>
+      <!--        <el-table-column label="序号" min-width="40px" type="index" align="center">
               </el-table-column>-->
       <el-table-column
         type="selection"
@@ -217,7 +214,7 @@
         <el-button type="primary" size="small" @click="dialogStatus==='create'?submit():updateData()">确认</el-button>
       </div>
     </el-dialog>
-    <report-detail v-if="currentReport" :detail="currentReport"
+    <report-detail v-if="currentReport" :detail="currentReport" :activeName.sync="currentActiveTabName"
                    :key="JSON.stringify(currentReport)"/>
 
   </div>
@@ -329,7 +326,7 @@
           shiftHandover: null
         },
         selectedReportCopy: null,
-
+        currentActiveTabName: 'detail',
         dialogFormVisible: false,
         dialogStatus: '',
         textMap: {

@@ -38,11 +38,9 @@
       />
     </div>
 
-    <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%" height="250">
-      <el-table-column label="序号" width="60px" align="center" fixed>
-        <template slot-scope="scope">
-          {{ scope.$index }}
-        </template>
+    <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%"
+              height="250">
+      <el-table-column label="序号" width="60px" type="index" align="center" fixed>
       </el-table-column>
       <el-table-column label="来料编号" width="160px" align="center">
         <template slot-scope="scope">
@@ -54,11 +52,11 @@
           <span>{{ scope.row.productNumber }}</span>
         </template>
       </el-table-column>
-<!--      <el-table-column label="钢种" width="100px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.steelGrade }}</span>
-        </template>
-      </el-table-column>-->
+      <!--      <el-table-column label="钢种" width="100px" align="center">
+              <template slot-scope="scope">
+                <span>{{ scope.row.steelGrade }}</span>
+              </template>
+            </el-table-column>-->
       <el-table-column label="表面品级" width="100px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.surfaceFinish }}</span>
@@ -131,7 +129,7 @@
       </el-table-column>
       <el-table-column label="日期" width="100px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.date }}</span>
+          <span>{{ scope.row.time }}</span>
         </template>
       </el-table-column>
       <el-table-column label="备注" width="150px" align="center">
@@ -173,12 +171,14 @@
         <el-form-item label="钢卷编号：" prop="productNumber">
           <div class="product-number">
             <el-input v-model="temp.productNumber"/>
-            <el-button type="success" style="margin: 0 0 0 20px;" size="mini" @click="handleGetProductSerialNumber()">按规则生成钢卷编号</el-button>
+            <el-button type="success" style="margin: 0 0 0 20px;" size="mini" @click="handleGetProductSerialNumber()">
+              按规则生成钢卷编号
+            </el-button>
           </div>
         </el-form-item>
-<!--        <el-form-item label="钢种：" prop="steelGrade">
-          <el-input v-model="temp.steelGrade"/>
-        </el-form-item>-->
+        <!--        <el-form-item label="钢种：" prop="steelGrade">
+                  <el-input v-model="temp.steelGrade"/>
+                </el-form-item>-->
         <el-form-item label="表面品级：" prop="surfaceFinish">
           <el-input v-model="temp.surfaceFinish"/>
         </el-form-item>
@@ -225,10 +225,11 @@
         <el-form-item label="条码：" prop="barcode">
           <el-input v-model="temp.barcode"/>
         </el-form-item>
-        <el-form-item label="日期：" prop="date">
-          <el-date-picker v-model="temp.date" type="date" placeholder="请选择日期" style="width: 100%;"
-                          format="yyyy 年 MM 月 dd 日"
-                          value-format="yyyy-MM-dd"/>
+        <el-form-item label="时间：" prop="time">
+          <el-date-picker v-model="temp.time" type="datetime" placeholder="请选择时间" style="width: 100%;"
+                          format="yyyy-MM-dd HH:mm:ss"
+                          value-format="yyyy-MM-ddTHH:mm:ss"
+          />
         </el-form-item>
         <el-form-item label="描述：" prop="description">
           <el-input
@@ -281,7 +282,7 @@
     name: 'InboundOrderRawItem',
     components: { Pagination, Material },
     directives: { waves },
-    props: ['inboundOrderRawDetailId','materialName','receivedQuantity'],
+    props: ['inboundOrderRawDetailId', 'materialName', 'receivedQuantity'],
     data() {
       return {
         tableKey: 0,
@@ -315,7 +316,7 @@
           grade: undefined,
           inspector: undefined,
           barcode: undefined,
-          date: undefined,
+          time: undefined,
           description: undefined,
           createTime: undefined,
           updateTime: undefined
@@ -342,23 +343,23 @@
           productNumber: [
             { required: true, trigger: 'blur', message: '请填写钢卷编号' }
           ],
-/*          steelGrade: [
-            { required: true, trigger: 'blur', message: '请填写钢种' }
-          ],*/
+          /*          steelGrade: [
+                      { required: true, trigger: 'blur', message: '请填写钢种' }
+                    ],*/
           surfaceFinish: [
             { required: true, trigger: 'blur', message: '请填写表面品级' }
           ],
           width: [
             { required: true, trigger: 'blur', message: '请填写宽度' },
-            { type: 'number', message: '宽度必须为数字值'}
+            { type: 'number', message: '宽度必须为数字值' }
           ],
           thickness: [
             { required: true, trigger: 'blur', message: '请填写厚度' },
-            { type: 'number', message: '厚度必须为数字值'}
+            { type: 'number', message: '厚度必须为数字值' }
           ],
           length: [
             { required: true, trigger: 'blur', message: '请填写长度' },
-            { type: 'number', message: '长度必须为数字值'}
+            { type: 'number', message: '长度必须为数字值' }
           ],
           labelSpecification: [
             { required: true, trigger: 'blur', message: '请填写标签规格' }
@@ -368,19 +369,19 @@
           ],
           labelNetWeight: [
             { required: true, trigger: 'blur', message: '请填写标签净重' },
-            { type: 'number', message: '标签净重必须为数字值'}
+            { type: 'number', message: '标签净重必须为数字值' }
           ],
           labelGrossWeight: [
             { required: true, trigger: 'blur', message: '请填写标签毛重' },
-            { type: 'number', message: '标签毛重必须为数字值'}
+            { type: 'number', message: '标签毛重必须为数字值' }
           ],
           netWeight: [
             { required: true, trigger: 'blur', message: '请填写实磅净重' },
-            { type: 'number', message: '实磅净重必须为数字值'}
+            { type: 'number', message: '实磅净重必须为数字值' }
           ],
           grossWeight: [
             { required: true, trigger: 'blur', message: '请填写实磅毛重' },
-            { type: 'number', message: '实磅毛重必须为数字值'}
+            { type: 'number', message: '实磅毛重必须为数字值' }
           ],
           edge: [
             { required: true, trigger: 'blur', message: '请填写边部' }
@@ -394,8 +395,8 @@
           barcode: [
             { required: true, trigger: 'blur', message: '请填写条码' }
           ],
-          date: [
-            { required: true, trigger: 'blur', message: '请填写日期' },
+          time: [
+            { required: true, trigger: 'blur', message: '请填写时间' },
             { required: true, message: '请选择时间', trigger: 'change' }
           ]
         }
@@ -419,7 +420,7 @@
           text: this.statuses[status]
         }
       },
-      handleGetProductSerialNumber(){
+      handleGetProductSerialNumber() {
         getProductSerialNumbers(1).then(res => {
           console.log(res)
           this.temp.productNumber = res.model[0]

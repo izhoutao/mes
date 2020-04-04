@@ -22,7 +22,7 @@ const qualityRouter = {
     {
       path: 'ipqc',
       name: 'ipqc',
-      component: () => import('@/views/quality/ipqc/index'),
+      component: () => import('@/views/quality/ipqc1/index'),
       meta: { title: '制程检验', icon: 'dashboard' }
     }
   ]

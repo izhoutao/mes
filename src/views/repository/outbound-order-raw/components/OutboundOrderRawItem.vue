@@ -40,10 +40,7 @@
 
     <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%"
               height="250">
-      <el-table-column label="序号" width="60px" align="center" fixed>
-        <template slot-scope="scope">
-          {{ scope.$index }}
-        </template>
+      <el-table-column label="序号" width="60px" type="index" align="center" fixed>
       </el-table-column>
       <el-table-column label="来料编号" width="160px" align="center">
         <template slot-scope="scope">
@@ -130,9 +127,9 @@
           <span>{{ scope.row.barcode }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="日期" width="100px" align="center">
+      <el-table-column label="时间" width="100px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.date }}</span>
+          <span>{{ scope.row.time }}</span>
         </template>
       </el-table-column>
       <el-table-column label="备注" width="150px" align="center">
@@ -356,10 +353,11 @@
           </el-col>
 
         </el-row>-->
-        <el-form-item label="日期：" prop="date">
-          <el-date-picker v-model="temp.date" type="date" placeholder="请选择日期" style="width: 100%;"
-                          format="yyyy 年 MM 月 dd 日"
-                          value-format="yyyy-MM-dd"/>
+        <el-form-item label="日期：" prop="time">
+          <el-date-picker v-model="temp.time" type="datetime" placeholder="请选择时间" style="width: 100%;"
+                          format="yyyy-MM-dd HH:mm:ss"
+                          value-format="yyyy-MM-ddTHH:mm:ss"
+          />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -443,7 +441,7 @@
           grade: undefined,
           inspector: undefined,
           barcode: undefined,
-          date: undefined,
+          time: undefined,
           description: undefined,
           createTime: undefined,
           updateTime: undefined
@@ -524,7 +522,7 @@
           barcode: [
             { required: true, trigger: 'blur', message: '请填写条码' }
           ],
-          date: [
+          time: [
             { required: true, trigger: 'blur', message: '请填写日期' },
             { required: true, message: '请选择时间', trigger: 'change' }
           ]

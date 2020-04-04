@@ -17,10 +17,7 @@
     </div>
 
     <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row>
-      <el-table-column label="序号" min-width="20px" align="center">
-        <template slot-scope="scope">
-          {{ scope.$index }}
-        </template>
+      <el-table-column label="序号" min-width="20px" type="index" align="center">
       </el-table-column>
       <el-table-column label="打印机" min-width="70px" align="center">
         <template slot-scope="scope">

@@ -5,110 +5,68 @@
         <el-row>
           <el-col :span="7">
             <el-form-item label="产品名称：" prop="materialName">
-              <el-input :value="detail.materialName" :disabled="true"/>
+              <span>{{detail.materialName}} </span>
             </el-form-item>
           </el-col>
           <el-col :span="7">
             <el-form-item label="需求重量(kg)：" prop="num">
-              <el-input :value="detail.num" :disabled="true"/>
+              <span>{{detail.num}} </span>
             </el-form-item>
           </el-col>
           <el-col :span="5">
             <el-form-item label="完成重量(kg)：" prop="num">
-              <el-input :value="detail.outputNum" :disabled="true"/>
+              <span>{{detail.outputNum}} </span>
             </el-form-item>
           </el-col>
           <el-col :span="5">
             <el-form-item label="上线重量(kg)：" prop="num">
-              <el-input :value="detail.onLineNum" :disabled="true"/>
+              <span>{{detail.onLineNum}} </span>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="7">
             <el-form-item label="预计开始日期：" prop="schStartTime">
-              <el-date-picker
-                :value="detail.schStartTime"
-                type="datetime"
-                placeholder="选择日期时间"
-                default-time="00:00:00"
-                format="yyyy-MM-dd HH:mm:ss"
-                value-format="yyyy-MM-ddTHH:mm:ss"
-                :disabled="true"
-              />
+              <span>{{detail.schStartTime | parseTime('{y}-{m}-{d} {h}:{i}:{s}')}} </span>
             </el-form-item>
           </el-col>
           <el-col :span="7">
             <el-form-item label="预计结束日期：" prop="schCloseTime">
-              <el-date-picker
-                :value="detail.schCloseTime"
-                type="datetime"
-                placeholder="选择日期时间"
-                default-time="00:00:00"
-                format="yyyy-MM-dd HH:mm:ss"
-                value-format="yyyy-MM-ddTHH:mm:ss"
-                :disabled="true"
-              />
+              <span>{{detail.schCloseTime | parseTime('{y}-{m}-{d} {h}:{i}:{s}')}} </span>
             </el-form-item>
           </el-col>
 
           <el-col :span="5">
             <el-form-item label="工艺流程：" prop="workflowId">
-              <el-select :value="detail.workflowId" filterable placeholder="请选择" style="width:100%" :disabled="true">
-                <el-option
-                  v-for="item in workflows"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
+              <span>{{detail.workflowId | showName(workflows)}} </span>
             </el-form-item>
           </el-col>
 
           <el-col :span="5">
             <el-form-item label="产线：" prop="lineId">
-              <el-select :value="detail.lineId" filterable placeholder="请选择" style="width:100%" :disabled="true">
-                <el-option
-                  v-for="item in lines"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
+              <span>{{detail.lineId | showName(lines)}} </span>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="7">
             <el-form-item label="创建时间：" prop="updateTime">
-              <el-input
-                :value="detail.updateTime"
-                :disabled="true">
-              </el-input>
+              <span>{{detail.createTime | parseTime('{y}-{m}-{d} {h}:{i}:{s}')}} </span>
             </el-form-item>
           </el-col>
           <el-col :span="7">
             <el-form-item label="最后更新时间：" prop="updateTime">
-              <el-input
-                :value="detail.updateTime"
-                :disabled="true">
-              </el-input>
+              <span>{{detail.updateTime | parseTime('{y}-{m}-{d} {h}:{i}:{s}')}} </span>
             </el-form-item>
           </el-col>
           <el-col :span="5">
             <el-form-item label="创建人：" prop="createPerson">
-              <el-input
-                :value="detail.createPerson"
-                :disabled="true">
-              </el-input>
+              <span>{{detail.createPerson}} </span>
             </el-form-item>
           </el-col>
           <el-col :span="5">
             <el-form-item label="最后更新人：" prop="updatePerson">
-              <el-input
-                :value="detail.updatePerson"
-                :disabled="true">
-              </el-input>
+              <span>{{detail.updatePerson}} </span>
             </el-form-item>
           </el-col>
         </el-row>
@@ -131,6 +89,13 @@
         name: 'WorkOrderDetail',
         activeName: 'first',
         detailInfo: this.detail
+      }
+    },
+    filters: {
+      showName: function(id, list) {
+        var item = list.find(item => item.id === id)
+        if (!item) return ''
+        return item.name
       }
     },
     methods: {

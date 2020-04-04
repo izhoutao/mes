@@ -1,5 +1,5 @@
 <template>
-  <div class="iqc-defect">
+  <div class="qc-defect">
     <div class="filter-container">
       <el-form ref="filterForm" :model="listQuery" :inline="true">
         <el-button class="filter-item" style="margin: 16px 0px;" type="success"
@@ -37,7 +37,7 @@
       width="1000px"
     >
       <el-form
-        ref="iqcDefectForm"
+        ref="qcDefectForm"
         :rules="rules"
         :model="temp"
         label-position="right"
@@ -45,7 +45,7 @@
       >
         <el-row>
           <el-col :span="8">
-            <el-form-item label="缺陷代号：" prop="id">
+            <el-form-item label="缺陷：" prop="id">
               <el-cascader
                 v-model="defectActive"
                 :options="defects"
@@ -138,23 +138,25 @@
 
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination/index.vue'
-  import { getDefectGroups, getDefects } from '@/api/defect' // Secondary package based on el-pagination
+  import { getDefectGroups, getDefects } from '@/api/defect'
+  import { addQcDefect, deleteQcDefect, getQcDefects, updateQcDefect } from '@/api/qcdefect' // Secondary package based on el-pagination
 
   export default {
     name: 'QcDefect',
     components: { Pagination },
     directives: { waves },
-    props: ['defectList'],
+    props: ['ipqcId'],
     data() {
       return {
         tableKey: 0,
-        list: this.defectList,
+        list: [],
+        total: 0,
         listQuery: {
-          current: 1,
-          size: 10
+          ipqcId: this.ipqcId
         },
         temp: {
           id: '',
+          ipqcId: this.ipqcId,
           groupId: '',
           up: '',
           down: '',
@@ -176,7 +178,6 @@
         tempCopy: null,
         dialogFormVisible: false,
         dialogStatus: '',
-        showSpecification: true,
         textMap: {
           update: '编辑',
           create: '添加'
@@ -193,8 +194,10 @@
     },
     created() {
       this.tempCopy = deepClone(this.temp)
+      this.listLoading = true
       this.$nextTick(async() => {
         await this.getDefects({})
+        this.getList()
       })
     },
     watch: {
@@ -235,6 +238,15 @@
           return item
         })
       },
+
+      getList() {
+        this.listLoading = true
+        getQcDefects(this.listQuery).then(res => {
+          this.list = res.queryResult.list
+          this.total = res.queryResult.total
+          this.listLoading = false
+        })
+      },
       resetForm(formName) {
         if (this.$refs[formName] === undefined) {
           return false
@@ -244,23 +256,31 @@
         this.temp = deepClone(this.tempCopy)
       },
       handleAdd() {
-        this.resetForm('iqcDefectForm')
+        this.resetForm('qcDefectForm')
         this.dialogStatus = 'create'
         this.dialogFormVisible = true
         // this.rules.password[0].required = true
         this.defectActive = [this.temp.groupId, this.temp.id]
         this.$nextTick(() => {
-          this.$refs['iqcDefectForm'].clearValidate()
+          this.$refs['qcDefectForm'].clearValidate()
         })
       },
       submit() {
-        this.$refs['iqcDefectForm'].validate((valid) => {
+        this.$refs['qcDefectForm'].validate((valid) => {
           if (valid) {
             // const tempData = deepClone(this.temp)
-            let iqcDefect = deepClone(this.temp)
-            this.list.unshift(iqcDefect)
-            this.$emit('update:defectList', this.list)
-            this.dialogFormVisible = false
+            let qcDefect = deepClone(this.temp)
+            addQcDefect(qcDefect).then((res) => {
+              this.list.unshift(res.model)
+              this.total++
+              this.dialogFormVisible = false
+              this.$notify({
+                title: '成功',
+                message: '添加成功',
+                type: 'success',
+                duration: 2000
+              })
+            })
           }
         })
       },
@@ -273,37 +293,51 @@
         // this.temp.password = ''
         this.dialogFormVisible = true
         this.$nextTick(() => {
-          this.$refs['iqcDefectForm'].clearValidate()
+          this.$refs['qcDefectForm'].clearValidate()
         })
       },
       updateData() {
-        this.$refs['iqcDefectForm'].validate((valid) => {
+        this.$refs['qcDefectForm'].validate((valid) => {
           if (valid) {
-            let iqcDefect = deepClone(this.temp)
-            for (const v of this.list) {
-              if (v.id === iqcDefect.id) {
-                const index = this.list.indexOf(v)
-                this.list.splice(index, 1, iqcDefect)
-                break
+            let qcDefect = deepClone(this.temp)
+            updateQcDefect(qcDefect).then(() => {
+              for (const v of this.list) {
+                if (v.id === qcDefect.id) {
+                  const index = this.list.indexOf(v)
+                  this.list.splice(index, 1, qcDefect)
+                  break
+                }
               }
-            }
-            this.$emit('update:defectList', this.list)
-            this.dialogFormVisible = false
+              this.dialogFormVisible = false
+              this.$notify({
+                title: '成功',
+                message: '更新成功',
+                type: 'success',
+                duration: 2000
+              })
+            })
           }
         })
       },
       handleDelete(row) {
-        const index = this.list.indexOf(row)
-        this.list.splice(index, 1)
-        this.total--
-        this.$emit('update:defectList', this.list)
+        deleteQcDefect(row.id).then(() => {
+          this.$notify({
+            title: '成功',
+            message: '删除成功',
+            type: 'success',
+            duration: 2000
+          })
+          const index = this.list.indexOf(row)
+          this.list.splice(index, 1)
+          this.total--
+        })
       }
 
     }
   }
 </script>
 <style lang="scss">
-  .iqc-defect {
+  .qc-defect {
 
   .el-icon-edit.update, .el-icon-delete.delete {
     margin: 3px;

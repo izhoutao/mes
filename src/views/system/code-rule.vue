@@ -25,10 +25,7 @@
       </div>
 
       <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row>
-        <el-table-column label="序号" min-width="40px" align="center">
-          <template slot-scope="scope">
-            {{ scope.$index }}
-          </template>
+        <el-table-column label="序号" min-width="40px" type="index" align="center">
         </el-table-column>
         <el-table-column label="编码名称" min-width="80px" align="center">
           <template slot-scope="scope">
@@ -148,62 +145,59 @@
       </el-form>
 
       <el-card class="box-card" style="margin: 20px;">
-        <div slot="header" class="clearfix">
-          <div style="font-size: 20px;">{{textMap[dialogStatus]}}规则明细</div>
-          <el-button class="filter-item" style="margin-top: 10px;" type="success"
-                     icon="el-icon-edit" @click="handleAddCodeRule">
-            添加
-          </el-button>
-        </div>
-        <el-table :key="temp.id" :data="codeRuleList" border fit highlight-current-row>
-          <el-table-column label="参数序号" min-width="40px" align="center">
-            <template slot-scope="scope">
-              {{ scope.$index }}
-            </template>
-          </el-table-column>
-          <el-table-column label="参数类型" min-width="80px" align="center">
-            <template slot-scope="scope">
-              <el-select v-model="codeRuleList[scope.$index].paramType" filterable placeholder="请选择" style="width:100%">
-                <el-option
-                  v-for="item in paramTypes"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
-            </template>
-          </el-table-column>
-          <el-table-column label="参数值" min-width="80px" align="center">
-            <template slot-scope="scope">
-              <el-select v-if="codeRuleList[scope.$index].paramType=='1203207494105686017'" v-model="codeRuleList[scope.$index].paramValue"
-                         filterable
-                         placeholder="请选择"
-                         style="width:100%">
-                <el-option
-                  v-for="item in systemParams"
-                  :key="item.code"
-                  :label="item.name"
-                  :value="item.code">
-                  <span style="float: left">{{ item.code }}</span>
-                  <span style="float: right; color: #8492a6; ">{{ item.name }}</span>
-                </el-option>
-              </el-select>
-              <el-input v-else v-model="codeRuleList[scope.$index].paramValue"/>
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" align="center" min-width="80">
-            <template slot-scope="scope">
-              <el-button
-                icon="el-icon-delete"
-                size="mini"
-                type="danger"
-                @click="handleDeleteCodeRule(scope.$index)"
-              >删除
-              </el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-card>
+      <div slot="header" class="clearfix">
+        <div style="font-size: 20px;">{{textMap[dialogStatus]}}规则明细</div>
+        <el-button class="filter-item" style="margin-top: 10px;" type="success"
+                   icon="el-icon-edit" @click="handleAddCodeRule">
+          添加
+        </el-button>
+      </div>
+      <el-table :key="temp.id" :data="codeRuleList" border fit highlight-current-row>
+        <el-table-column label="参数序号" min-width="40px" type="index" align="center">
+        </el-table-column>
+        <el-table-column label="参数类型" min-width="80px" align="center">
+          <template slot-scope="scope">
+            <el-select v-model="codeRuleList[scope.$index].paramType" filterable placeholder="请选择" style="width:100%">
+              <el-option
+                v-for="item in paramTypes"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id">
+              </el-option>
+            </el-select>
+          </template>
+        </el-table-column>
+        <el-table-column label="参数值" min-width="80px" align="center">
+          <template slot-scope="scope">
+            <el-select v-if="codeRuleList[scope.$index].paramType=='1203207494105686017'" v-model="codeRuleList[scope.$index].paramValue"
+                       filterable
+                       placeholder="请选择"
+                       style="width:100%">
+              <el-option
+                v-for="item in systemParams"
+                :key="item.code"
+                :label="item.name"
+                :value="item.code">
+                <span style="float: left">{{ item.code }}</span>
+                <span style="float: right; color: #8492a6; ">{{ item.name }}</span>
+              </el-option>
+            </el-select>
+            <el-input v-else v-model="codeRuleList[scope.$index].paramValue"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" align="center" min-width="80">
+          <template slot-scope="scope">
+            <el-button
+              icon="el-icon-delete"
+              size="mini"
+              type="danger"
+              @click="handleDeleteCodeRule(scope.$index)"
+            >删除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
     </div>
 
   </div>

@@ -4,10 +4,7 @@
     <el-radio v-model="radio" label="1">详情列表</el-radio>
     <el-radio v-model="radio" label="2">钢卷列表</el-radio>
     <el-table  v-show="radio=='1'" :key="0" v-loading="listLoading" :data="detailList" border fit highlight-current-row  style="width: 100%;margin-top: 10px">
-      <el-table-column label="序号" min-width="40px" align="center">
-        <template slot-scope="scope">
-          {{ scope.$index }}
-        </template>
+      <el-table-column label="序号" min-width="40px" type="index" align="center">
       </el-table-column>
       <el-table-column label="料号" min-width="80px" align="center">
         <template slot-scope="scope">
@@ -31,10 +28,7 @@
       </el-table-column>
     </el-table>
     <el-table v-show="radio=='2'" :key="1" v-loading="listLoading" :data="itemList" border fit highlight-current-row style="width: 100%;margin-top: 10px">
-      <el-table-column label="序号" width="60px" align="center" fixed>
-        <template slot-scope="scope">
-          {{ scope.$index }}
-        </template>
+      <el-table-column label="序号" width="60px" type="index" align="center" fixed>
       </el-table-column>
       <el-table-column label="来料编号" width="160px" align="center">
         <template slot-scope="scope">

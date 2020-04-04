@@ -49,10 +49,7 @@
       highlight-current-row
       @current-change="handleCurrentChange"
     >
-      <el-table-column label="序号" min-width="40px" align="center">
-        <template slot-scope="scope">
-          {{ scope.$index }}
-        </template>
+      <el-table-column label="序号" min-width="40px" type="index" align="center">
       </el-table-column>
       <el-table-column label="检规编号" min-width="80px" align="center">
         <template slot-scope="scope">

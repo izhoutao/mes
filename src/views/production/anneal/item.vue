@@ -1,8 +1,6 @@
 <template>
   <div class="app-container journaling-anneal-item">
     <div>
-      <!--      <div style="font-size: 20px;">{{textMap[dialogStatus]}}报工</div>-->
-
       <el-form
         ref="journalingAnnealItemForm"
         :rules="rules"
@@ -172,10 +170,7 @@
           />
         </div>
         <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row>
-          <el-table-column label="序号" min-width="40px" align="center">
-            <template slot-scope="scope">
-              {{ scope.$index }}
-            </template>
+          <el-table-column label="序号" min-width="40px" type="index" align="center">
           </el-table-column>
           <el-table-column label="钢卷编号" min-width="80px" align="center">
             <template slot-scope="scope">

@@ -49,10 +49,7 @@
         </div>
         <!--表格渲染-->
         <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row>
-          <el-table-column label="序号" min-width="50px" align="center">
-            <template slot-scope="scope">
-              {{ scope.$index }}
-            </template>
+          <el-table-column label="序号" min-width="50px" type="index" align="center">
           </el-table-column>
           <el-table-column label="员工工号" min-width="100px" align="center">
             <template slot-scope="scope">
