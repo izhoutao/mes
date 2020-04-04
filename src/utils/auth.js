@@ -45,7 +45,7 @@ export function getUserInfoFromJwt(jwt) {
   activeUser.avatar = jwtDecodeVal.avatar || ''
   activeUser.department = jwtDecodeVal.department || ''
   activeUser.roles = jwtDecodeVal.roles || ''
-  activeUser.menus = jwtDecodeVal.menus || ''
+  activeUser.authorities = jwtDecodeVal.authorities || ''
   activeUser.uid = jwtDecodeVal.jti || ''
   activeUser.jwt = jwt
   return activeUser
