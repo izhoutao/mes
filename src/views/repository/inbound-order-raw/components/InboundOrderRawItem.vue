@@ -184,13 +184,13 @@
         </el-form-item>
 
         <el-form-item label="宽度(mm)：" prop="width">
-          <el-input v-model.number="temp.width"/>
+          <el-input v-model="temp.width"/>
         </el-form-item>
         <el-form-item label="厚度(mm)：" prop="thickness">
-          <el-input v-model.number="temp.thickness"/>
+          <el-input v-model="temp.thickness"  @input ="temp.thickness=temp.thickness.replace(/[^0-9.]/g,'')"/>
         </el-form-item>
         <el-form-item label="长度(mm)：" prop="length">
-          <el-input v-model.number="temp.length"/>
+          <el-input v-model="temp.length"/>
         </el-form-item>
         <el-form-item label="标签规格mm*mm：" prop="labelSpecification">
           <el-input v-model="temp.labelSpecification"/>
@@ -200,17 +200,17 @@
           <el-input v-model="temp.specification"/>
         </el-form-item>
         <el-form-item label="标签净重(kg)：" prop="labelNetWeight">
-          <el-input v-model.number="temp.labelNetWeight"/>
+          <el-input v-model="temp.labelNetWeight"/>
         </el-form-item>
         <el-form-item label="标签毛重(kg)：" prop="labelGrossWeight">
-          <el-input v-model.number="temp.labelGrossWeight"/>
+          <el-input v-model="temp.labelGrossWeight"/>
         </el-form-item>
         <el-form-item label="实磅净重(kg)：" prop="netWeight">
-          <el-input v-model.number="temp.netWeight"/>
+          <el-input v-model="temp.netWeight"/>
         </el-form-item>
 
         <el-form-item label="实磅毛重(kg)：" prop="grossWeight">
-          <el-input v-model.number="temp.grossWeight"/>
+          <el-input v-model="temp.grossWeight"/>
         </el-form-item>
         <el-form-item label="边部：" prop="edge">
           <el-input v-model="temp.edge"/>
@@ -351,15 +351,12 @@
           ],
           width: [
             { required: true, trigger: 'blur', message: '请填写宽度' },
-            { type: 'float', message: '宽度必须为数字值' }
           ],
           thickness: [
             { required: true, trigger: 'blur', message: '请填写厚度' },
-            { type: 'float', message: '厚度必须为数字值' }
           ],
           length: [
             { required: true, trigger: 'blur', message: '请填写长度' },
-            { type: 'float', message: '长度必须为数字值' }
           ],
           labelSpecification: [
             { required: true, trigger: 'blur', message: '请填写标签规格' }
@@ -369,19 +366,15 @@
           ],
           labelNetWeight: [
             { required: true, trigger: 'blur', message: '请填写标签净重' },
-            { type: 'float', message: '标签净重必须为数字值' }
           ],
           labelGrossWeight: [
             { required: true, trigger: 'blur', message: '请填写标签毛重' },
-            { type: 'float', message: '标签毛重必须为数字值' }
           ],
           netWeight: [
             { required: true, trigger: 'blur', message: '请填写实磅净重' },
-            { type: 'float', message: '实磅净重必须为数字值' }
           ],
           grossWeight: [
             { required: true, trigger: 'blur', message: '请填写实磅毛重' },
-            { type: 'float', message: '实磅毛重必须为数字值' }
           ],
           edge: [
             { required: true, trigger: 'blur', message: '请填写边部' }

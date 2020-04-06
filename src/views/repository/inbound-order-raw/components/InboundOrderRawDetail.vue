@@ -115,7 +115,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="单价：" prop="unitPrice">
-              <el-input v-model.number="temp.unitPrice"/>
+              <el-input v-model="temp.unitPrice"/>
             </el-form-item>
           </el-col>
         </el-row>

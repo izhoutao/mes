@@ -103,7 +103,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="检验频率：" prop="frequency">
-              <el-input v-model.number="temp.frequency"/>
+              <el-input v-model="temp.frequency"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -122,7 +122,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="检验规格：" prop="specification" v-show="showSpecification">
-              <el-input v-model.number="temp.specification"/>
+              <el-input v-model="temp.specification"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -134,12 +134,12 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="规格下限：" prop="minValue" v-show="showSpecification">
-              <el-input v-model.number="temp.minValue"/>
+              <el-input v-model="temp.minValue"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="规格上限：" prop="maxValue" v-show="showSpecification">
-              <el-input v-model.number="temp.maxValue"/>
+              <el-input v-model="temp.maxValue"/>
             </el-form-item>
           </el-col>
         </el-row>

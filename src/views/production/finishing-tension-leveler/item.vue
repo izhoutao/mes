@@ -53,17 +53,17 @@
         <el-row :gutter="40">
           <el-col :span="8">
             <el-form-item label="进料宽度(mm)：" prop="inputWidth">
-              <el-input v-model.number="temp.inputWidth"/>
+              <el-input v-model="temp.inputWidth"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="进料厚度(mm)：" prop="inputThickness">
-              <el-input v-model.number="temp.inputThickness"/>
+              <el-input v-model="temp.inputThickness"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="进料重量(kg)：" prop="inputWeight">
-              <el-input v-model.number="temp.inputWeight"/>
+              <el-input v-model="temp.inputWeight"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -78,51 +78,51 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="入口张力(KN)：" prop="paramInletTesion">
-              <el-input v-model.number="temp.paramInletTesion"/>
+              <el-input v-model="temp.paramInletTesion"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="总轧制力(T)：" prop="paramTotalRollingForce">
-              <el-input v-model.number="temp.paramTotalRollingForce"/>
+              <el-input v-model="temp.paramTotalRollingForce"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="出口张力(KN)：" prop="paramOutletTesion">
-              <el-input v-model.number="temp.paramOutletTesion"/>
+              <el-input v-model="temp.paramOutletTesion"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="延伸率(%)：" prop="paramPercentageElongation">
-              <el-input v-model.number="temp.paramPercentageElongation"/>
+              <el-input v-model="temp.paramPercentageElongation"/>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="40">
           <el-col :span="8">
             <el-form-item label="出料厚度(mm)：" prop="outputThickness">
-              <el-input v-model.number="temp.outputThickness"/>
+              <el-input v-model="temp.outputThickness"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="出料长度(mm)：" prop="outputLength">
-              <el-input v-model.number="temp.outputLength"/>
+              <el-input v-model="temp.outputLength"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="出料重量(kg)：" prop="outputWeight">
-              <el-input v-model.number="temp.outputWeight"/>
+              <el-input v-model="temp.outputWeight"/>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="40">
           <el-col :span="8">
             <el-form-item label="套筒重量(kg)：" prop="outputSleeveWeight">
-              <el-input v-model.number="temp.outputSleeveWeight"/>
+              <el-input v-model="temp.outputSleeveWeight"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="出料速度(m/min)：" prop="outputSpeed">
-              <el-input v-model.number="temp.outputSpeed"/>
+              <el-input v-model="temp.outputSpeed"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -430,54 +430,42 @@
           ],
           inputWidth: [
             { required: true, message: '进料宽度不能为空' },
-            { type: 'float', message: '进料宽度必须为数字值' }
           ],
           inputThickness: [
             { required: true, message: '进料厚度不能为空' },
-            { type: 'float', message: '进料厚度必须为数字值' }
           ],
           inputWeight: [
             { required: true, message: '进料重量不能为空' },
-            { type: 'float', message: '进料重量必须为数字值' }
           ],
           paramProductionMode: [
             { required: true, message: '请选择生产方式' }
           ],
           paramInletTesion: [
             { required: true, message: '入口张力不能为空' },
-            { type: 'float', message: '入口张力必须为数字值' }
           ],
           paramTotalRollingForce: [
             { required: true, message: '总轧制力不能为空' },
-            { type: 'float', message: '总轧制力必须为数字值' }
           ],
           paramOutletTesion: [
             { required: true, message: '出口张力不能为空' },
-            { type: 'float', message: '出口张力必须为数字值' }
           ],
           paramPercentageElongation: [
             { required: true, message: '延伸率不能为空' },
-            { type: 'float', message: '延伸率必须为数字值' }
           ],
           outputThickness: [
             { required: true, message: '出料厚度不能为空' },
-            { type: 'float', message: '出料厚度必须为数字值' }
           ],
           outputLength: [
             { required: true, message: '出料长度不能为空' },
-            { type: 'float', message: '出料长度必须为数字值' }
           ],
           outputWeight: [
             { required: true, message: '出料重量不能为空' },
-            { type: 'float', message: '出料重量必须为数字值' }
           ],
           outputSleeveWeight: [
             { required: true, message: '套筒重量不能为空' },
-            { type: 'float', message: '套筒重量必须为数字值' }
           ],
           outputSpeed: [
             { required: true, message: '出料速度不能为空' },
-            { type: 'float', message: '出料速度必须为数字值' }
           ],
           beginTime: [
             { required: true, message: '上机时间不能为空' }

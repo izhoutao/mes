@@ -94,7 +94,7 @@
       </el-table-column>
       <el-table-column label="类型" min-width="80px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.type }}</span>
+          <span>{{ ['重卷', '轧机', '退火炉', '精整拉矫'][scope.row.type] }}</span>
         </template>
       </el-table-column>
       <el-table-column label="生产钢卷数" min-width="80px" align="center">
@@ -200,7 +200,7 @@
           <el-input v-model.number="temp.expectedAttendanceNum"/>
         </el-form-item>
         <el-form-item label="设备使用率(%)：" prop="capacityUtilization">
-          <el-input v-model.number="temp.capacityUtilization"/>
+          <el-input v-model="temp.capacityUtilization"/>
         </el-form-item>
         <el-form-item label="问题记录：" prop="mattersRecord">
           <el-input type="textarea" v-model="temp.mattersRecord"/>
@@ -346,7 +346,6 @@
           ],
           capacityUtilization: [
             { required: true, message: '设备使用率不能为空' },
-            { type: 'float', message: '设备使用率必须为数字值' }
           ]
         }
       }

@@ -57,12 +57,12 @@
         <el-row :gutter="40">
           <el-col :span="8">
             <el-form-item label="进料厚度(mm)：" prop="inputThickness">
-              <el-input v-model.number="temp.inputThickness"/>
+              <el-input v-model="temp.inputThickness"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="进料重量(kg)：" prop="inputWeight">
-              <el-input v-model.number="temp.inputWeight"/>
+              <el-input v-model="temp.inputWeight"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
@@ -76,41 +76,41 @@
         <el-row :gutter="40">
           <el-col :span="8">
             <el-form-item label="轧延参数-总轧下率(%)：" prop="paramTotalReductionRate">
-              <el-input v-model.number="temp.paramTotalReductionRate"/>
+              <el-input v-model="temp.paramTotalReductionRate"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="出料厚度(mm)：" prop="outputThickness">
-              <el-input v-model.number="temp.outputThickness"/>
+              <el-input v-model="temp.outputThickness"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="出料长度(mm)：" prop="outputLength">
-              <el-input v-model.number="temp.outputLength"/>
+              <el-input v-model="temp.outputLength"/>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="40">
           <el-col :span="8">
             <el-form-item label="出料重量(kg)：" prop="outputWeight">
-              <el-input v-model.number="temp.outputWeight"/>
+              <el-input v-model="temp.outputWeight"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="辊号：" prop="rollerNumber">
-              <el-input v-model.number="temp.rollerNumber"/>
+              <el-input v-model="temp.rollerNumber"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="辊类别：" prop="rollerType">
-              <el-input v-model.number="temp.rollerType"/>
+              <el-input v-model="temp.rollerType"/>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="8">
             <el-form-item label="辊更换原因：" prop="outputThickness">
-              <el-input v-model.number="temp.rollerReplaceReason"/>
+              <el-input v-model="temp.rollerReplaceReason"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -344,31 +344,25 @@
           ],
           inputThickness: [
             { required: true, message: '进料厚度不能为空' },
-            { type: 'float', message: '进料厚度必须为数字值' }
           ],
           inputWeight: [
             { required: true, message: '进料重量不能为空' },
-            { type: 'float', message: '进料重量必须为数字值' }
           ],
           paramTotalRollingPass: [
             { required: true, message: '总道次数不能为空' },
-            { type: 'float', message: '总道次数必须为数字值' }
+            { type: 'number', message: '总道次数必须为数字值' }
           ],
           paramTotalReductionRate: [
             { required: true, message: '总轧下率不能为空' },
-            { type: 'float', message: '总轧下率必须为数字值' }
           ],
           outputThickness: [
             { required: true, message: '出料厚度不能为空' },
-            { type: 'float', message: '出料厚度必须为数字值' }
           ],
           outputWeight: [
             { required: true, message: '出料重量不能为空' },
-            { type: 'float', message: '出料重量必须为数字值' }
           ],
           outputLength: [
             { required: true, message: '出料长度不能为空' },
-            { type: 'float', message: '出料长度必须为数字值' }
           ],
           rollerNumber: [
             { required: true, message: '辊号不能为空' }

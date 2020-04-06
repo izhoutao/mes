@@ -52,17 +52,17 @@
         <el-row :gutter="40">
           <el-col :span="8">
             <el-form-item label="进料宽度(mm)：" prop="inputWidth">
-              <el-input v-model.number="temp.inputWidth"/>
+              <el-input v-model="temp.inputWidth"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="进料厚度(mm)：" prop="inputThickness">
-              <el-input v-model.number="temp.inputThickness"/>
+              <el-input v-model="temp.inputThickness"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="进料重量(kg)：" prop="inputWeight">
-              <el-input v-model.number="temp.inputWeight"/>
+              <el-input v-model="temp.inputWeight"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -75,12 +75,12 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="操作TV：" prop="operationTv">
-              <el-input v-model.number="temp.operationTv"/>
+              <el-input v-model="temp.operationTv"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="操作速度：" prop="operationSpeed">
-              <el-input v-model.number="temp.operationSpeed"/>
+              <el-input v-model="temp.operationSpeed"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -113,7 +113,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="出料重量(kg)：" prop="outputWeight">
-              <el-input v-model.number="temp.outputWeight"/>
+              <el-input v-model="temp.outputWeight"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -345,15 +345,12 @@
           ],
           inputWidth: [
             { required: true, message: '进料宽度不能为空' },
-            { type: 'float', message: '进料宽度必须为数字值' }
           ],
           inputThickness: [
             { required: true, message: '进料厚度不能为空' },
-            { type: 'float', message: '进料厚度必须为数字值' }
           ],
           inputWeight: [
             { required: true, message: '进料重量不能为空' },
-            { type: 'float', message: '进料重量必须为数字值' }
           ],
           operationTemperatures: [
             { required: true, message: '操作各区温度（逗号分隔）不能为空' }

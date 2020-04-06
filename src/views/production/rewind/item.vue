@@ -57,17 +57,17 @@
         <el-row :gutter="40">
           <el-col :span="8">
             <el-form-item label="进料厚度(mm)：" prop="inputThickness">
-              <el-input v-model.number="temp.inputThickness"/>
+              <el-input v-model="temp.inputThickness"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="进料重量(kg)：" prop="inputWeight">
-              <el-input v-model.number="temp.inputWeight"/>
+              <el-input v-model="temp.inputWeight"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="生产速度(m/min)：" prop="processVelocity">
-              <el-input v-model.number="temp.processVelocity"/>
+              <el-input v-model="temp.processVelocity"/>
             </el-form-item>
           </el-col>
 
@@ -76,12 +76,12 @@
         <el-row :gutter="40">
           <el-col :span="8">
             <el-form-item label="焊机电流：" prop="welderCurrent">
-              <el-input v-model.number="temp.welderCurrent"/>
+              <el-input v-model="temp.welderCurrent"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="焊机速度：" prop="welderVelocity">
-              <el-input v-model.number="temp.welderVelocity"/>
+              <el-input v-model="temp.welderVelocity"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
@@ -114,12 +114,12 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="出料重量(kg)：" prop="outputWeight">
-              <el-input v-model.number="temp.outputWeight"/>
+              <el-input v-model="temp.outputWeight"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="出料长度(m)：" prop="outputLength">
-              <el-input v-model.number="temp.outputLength"/>
+              <el-input v-model="temp.outputLength"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
@@ -357,23 +357,18 @@
           ],
           inputThickness: [
             { required: true, message: '进料厚度不能为空' },
-            { type: 'float', message: '进料厚度必须为数字值' }
           ],
           inputWeight: [
             { required: true, message: '进料重量不能为空' },
-            { type: 'float', message: '进料重量必须为数字值' }
           ],
           processVelocity: [
             { required: true, message: '生产速度不能为空' },
-            { type: 'float', message: '生产速度必须为数字值' }
           ],
           welderCurrent: [
             { required: true, message: '焊机电流不能为空' },
-            { type: 'float', message: '焊机电流必须为数字值' }
           ],
           welderVelocity: [
             { required: true, message: '焊机速度不能为空' },
-            { type: 'float', message: '焊机速度必须为数字值' }
           ],
           beginTime: [
             { required: true, message: '上机时间不能为空' }
@@ -383,11 +378,9 @@
           ],
           outputWeight: [
             { required: true, message: '出料重量不能为空' },
-            { type: 'float', message: '出料重量必须为数字值' }
           ],
           outputLength: [
             { required: true, message: '出料长度不能为空' },
-            { type: 'float', message: '出料长度必须为数字值' }
           ],
           lossReason: [
             { required: true, message: '损耗原因不能为空' }
