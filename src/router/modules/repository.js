@@ -13,12 +13,12 @@ const repositoryRouter = {
     icon: 'lock'
   },
   children: [
-    {
-      path: 'inboundorder',
-      name: 'inbound',
-      component: () => import('@/views/repository/inbound-order/index'),
-      meta: { title: '入库单管理', icon: 'dashboard' }
-    },
+    /*    {
+          path: 'inboundorder',
+          name: 'inbound',
+          component: () => import('@/views/repository/inbound-order/index'),
+          meta: { title: '入库单管理', icon: 'dashboard' }
+        },*/
     {
       path: 'inboundorderraw',
       name: 'inboundRaw',
@@ -30,13 +30,13 @@ const repositoryRouter = {
       name: 'outboundRaw',
       component: () => import('@/views/repository/outbound-order-raw/index'),
       meta: { title: '工单发料出库', icon: 'dashboard' }
-    },
-    {
-      path: 'outboundorder',
-      name: 'outbound',
-      component: () => import('@/views/repository/outbound-order/index'),
-      meta: { title: '出库单管理', icon: 'dashboard' }
     }
+    /*    {
+          path: 'outboundorder',
+          name: 'outbound',
+          component: () => import('@/views/repository/outbound-order/index'),
+          meta: { title: '出库单管理', icon: 'dashboard' }
+        }*/
   ]
 }
 

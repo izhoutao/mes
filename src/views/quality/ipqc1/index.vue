@@ -37,14 +37,16 @@
             :picker-options="pickerOptions">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="" prop="inspectorResult">
-          <el-select v-model="listQuery.inspectorConfirm" clearable filterable placeholder="请选择确认情况" @change="handleFilter">
+        <el-form-item label="" prop="inspectorConfirm">
+          <el-select v-model="listQuery.inspectorConfirm" clearable filterable placeholder="请选择确认情况"
+                     @change="handleFilter">
             <el-option :key="0" label="已确认" :value="0"></el-option>
             <el-option :key="1" label="未确认" :value="1"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="" prop="inspectorResult">
-          <el-select v-model="listQuery.inspectorResult" clearable filterable placeholder="请选择状态" @change="handleFilter">
+          <el-select v-model="listQuery.inspectorResult" clearable filterable placeholder="请选择状态"
+                     @change="handleFilter">
             <el-option key="OK" label="合格" value="OK"></el-option>
             <el-option key="NG" label="暂留" value="NG"></el-option>
           </el-select>
@@ -60,6 +62,7 @@
       <!--状态数据-->
       <el-col :span="7">
         <el-table
+          ref="ipqcTable"
           :key="tableKey"
           v-loading="listLoading"
           :data="list"
@@ -109,8 +112,10 @@
           label-position="right"
           label-width="150px"
         >
-          <el-button type="primary" size="small" @click="dialogStatus==='create'?submit():updateData()">保存</el-button>
-          <el-button type="primary" size="small" @click="dialogStatus==='create'?submit():updateData()">提交</el-button>
+          <div v-if="temp.productNumber">
+            <el-button type="primary" size="small" @click="temp.id?updateData():submit()">保存</el-button>
+            <el-button type="primary" size="small" @click="temp.id?updateData():submit()">提交</el-button>
+          </div>
 
           <el-tabs value="basic">
             <el-tab-pane label="基本信息" name="basic">
@@ -307,43 +312,43 @@
           </el-tabs>
           <el-tabs value="defect">
             <el-tab-pane label="缺陷信息" name="defect">
-              <qc-defect :key="temp.id" :ipqcId = "temp.id"/>
+              <qc-defect :key="temp.id" :ipqcId="temp.id"/>
             </el-tab-pane>
           </el-tabs>
           <el-tabs value="determine">
             <el-tab-pane label="判定" name="determine">
-<!--              <el-row>
-                <el-col :span="8">
-                  <el-form-item label="品检员姓名：" prop="inspectorName">
-                    <el-input v-model="temp.inspectorName"/>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="8">
-                  <el-form-item label="品检结论：" prop="inspectorResult">
-                    <el-select v-model="temp.inspectorResult" clearable filterable placeholder="状态">
-                      <el-option key="OK" label="OK" value="OK"></el-option>
-                      <el-option key="NG" label="NG" value="NG"></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-              <el-row>
-                <el-col :span="8">
-                  <el-form-item label="复判员姓名：" prop="checkerName">
-                    <el-input v-model="temp.checkerName"/>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="8">
-                  <el-form-item label="复判结论：" prop="checkerResult">
-                    <el-select v-model="temp.checkerResult" clearable filterable placeholder="状态">
-                      <el-option key="OK" label="OK" value="OK"></el-option>
-                      <el-option key="NG" label="NG" value="NG"></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-              </el-row>-->
+              <!--              <el-row>
+                              <el-col :span="8">
+                                <el-form-item label="品检员姓名：" prop="inspectorName">
+                                  <el-input v-model="temp.inspectorName"/>
+                                </el-form-item>
+                              </el-col>
+                              <el-col :span="8">
+                                <el-form-item label="品检结论：" prop="inspectorResult">
+                                  <el-select v-model="temp.inspectorResult" clearable filterable placeholder="状态">
+                                    <el-option key="OK" label="OK" value="OK"></el-option>
+                                    <el-option key="NG" label="NG" value="NG"></el-option>
+                                  </el-select>
+                                </el-form-item>
+                              </el-col>
+                            </el-row>
+                            <el-row>
+                              <el-col :span="8">
+                                <el-form-item label="复判员姓名：" prop="checkerName">
+                                  <el-input v-model="temp.checkerName"/>
+                                </el-form-item>
+                              </el-col>
+                              <el-col :span="8">
+                                <el-form-item label="复判结论：" prop="checkerResult">
+                                  <el-select v-model="temp.checkerResult" clearable filterable placeholder="状态">
+                                    <el-option key="OK" label="OK" value="OK"></el-option>
+                                    <el-option key="NG" label="NG" value="NG"></el-option>
+                                  </el-select>
+                                </el-form-item>
+                              </el-col>
+                            </el-row>-->
 
-              <el-radio-group v-model="temp.checkerResult">
+              <el-radio-group v-model="temp.inspectorResult">
                 <el-radio label="OK">合格</el-radio>
                 <el-radio label="NG">暂留</el-radio>
               </el-radio-group>
@@ -362,6 +367,7 @@
 
   import { getIpqcs, addIpqc, updateIpqc, deleteIpqc } from '@/api/ipqc.js'
 
+  import { MessageBox } from 'element-ui'
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination/index.vue'
   import QcDefect from './qc-defect' // Secondary package based on el-pagination
@@ -383,6 +389,25 @@
         }
         // deep: true
       }
+      /*      'temp': {
+              handler: async function(newVal, oldVal) {
+                let s1 = JSON.stringify(oldVal)
+                let s2 =  JSON.stringify(newVal)
+                console.log(s1)
+                console.log(s2)
+                if (oldVal && newVal
+                  && oldVal.operation == newVal.operation
+                  && oldVal.productNumber == newVal.productNumber
+                  && oldVal.date == newVal.date
+                ) {
+
+                  if (JSON.stringify(oldVal) != JSON.stringify(newVal)) {
+                    this.modified = true
+                  }
+                }
+              },
+              deep: true
+            }*/
     },
     data() {
       return {
@@ -401,7 +426,7 @@
           /*orders: ['code desc']*/
         },
         temp: {
-          id: undefined,
+          id: null,
           operation: '',
           productNumber: '',
           inspectorResult: '',
@@ -477,11 +502,7 @@
             }
           }]
         },
-        dialogStatus: '',
-        textMap: {
-          update: '编辑',
-          create: '添加'
-        },
+        modified: false,
         rules: {
           name: [
             { required: true, trigger: 'blur', message: '请填写工艺名称' }
@@ -493,6 +514,8 @@
       }
     },
     created() {
+      const date = new Date()
+      this.listQuery.dateRange = [new Date(date.getTime() - 3600 * 1000 * 24 * 30), date]
       this.tempCopy = deepClone(this.temp)
       this.listLoading = true
       this.$nextTick(async() => {
@@ -513,8 +536,25 @@
           })
         })
       },
-      handleCurrentChange(val) {
-        val && (this.temp = val)
+      handleCurrentChange(currentRow, oldCurrentRow) {
+        /*        if (this.modified) {
+                  MessageBox.confirm('当前页面信息发生变更, 是否保存?？', '提示', {
+                    confirmButtonText: '保存',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                  }).then(() => {
+                    this.temp.id ? submit() : updateData()
+                    return
+                  })
+                }*/
+        this.$nextTick(() => {
+          this.$refs['ipqcForm'].clearValidate()
+        })
+        if (currentRow) {
+          this.temp = deepClone(currentRow)
+        } else {
+          this.temp = deepClone(this.tempCopy)
+        }
       },
       handleAddMeasurementItem(index) {
         this.temp.measurement.splice(index + 1, 0, deepClone(this.measurementItem))
@@ -537,7 +577,10 @@
       getList() {
         this.listLoading = true
         getIpqcs(this.listQuery).then(res => {
-          this.list = res.queryResult.list
+          this.list = res.queryResult.list.map(item => {
+            item.measurement = JSON.parse(item.measurement)
+            return item
+          })
           this.total = res.queryResult.total
           this.resetForm('ipqcForm')
           this.listLoading = false
@@ -559,87 +602,87 @@
 
         this.temp = deepClone(this.tempCopy)
       },
-      handleAdd() {
-        this.resetForm('ipqcForm')
-        this.dialogStatus = 'create'
-        this.dialogFormVisible = true
-        // this.rules.password[0].required = true
-        this.$nextTick(() => {
-          this.$refs['ipqcForm'].clearValidate()
-        })
-      },
       submit() {
         this.$refs['ipqcForm'].validate((valid) => {
           if (valid) {
             // const tempData = deepClone(this.temp)
             let ipqc = deepClone(this.temp)
+            ipqc.measurement = JSON.stringify(ipqc.measurement.filter(
+              item => item.thickness && item.width &&
+                item.length && item.ts48 && item.bs48
+            ))
             addIpqc(ipqc).then((res) => {
-              this.list.unshift(res.model)
-              this.total++
-              this.dialogFormVisible = false
+              for (const v of this.list) {
+                if (
+                  v.operation === res.model.operation &&
+                  v.productNumber === res.model.productNumber &&
+                  v.date === res.model.date
+                ) {
+                  const index = this.list.indexOf(v)
+                  res.model.measurement = JSON.parse(res.model.measurement)
+                  this.list.splice(index, 1, res.model)
+                  this.$refs.ipqcTable.setCurrentRow(res.model)
+                  break
+                }
+              }
+              this.modified = false
               this.$notify({
                 title: '成功',
-                message: '创建成功',
+                message: '保存成功',
                 type: 'success',
                 duration: 2000
               })
             })
           }
-        })
-      },
-      handleUpdate(row) {
-        this.dialogStatus = 'update'
-        // this.rules.password[0].required = false
-        this.temp = deepClone(row) // copy obj
-        // this.temp.password = ''
-        this.dialogFormVisible = true
-        this.$nextTick(() => {
-          this.$refs['ipqcForm'].clearValidate()
         })
       },
       updateData() {
         this.$refs['ipqcForm'].validate((valid) => {
           if (valid) {
             let ipqc = deepClone(this.temp)
+            ipqc.measurement = JSON.stringify(ipqc.measurement.filter(
+              item => item.thickness && item.width &&
+                item.length && item.ts48 && item.bs48
+            ))
             updateIpqc(ipqc).then(() => {
               for (const v of this.list) {
                 if (v.id === ipqc.id) {
                   const index = this.list.indexOf(v)
-                  this.list.splice(index, 1, ipqc)
+                  this.list.splice(index, 1, this.temp)
+                  this.$refs.ipqcTable.setCurrentRow(this.temp)
                   break
                 }
               }
-              this.dialogFormVisible = false
+              this.modified = false
               this.$notify({
                 title: '成功',
-                message: '更新成功',
+                message: '保存成功',
                 type: 'success',
                 duration: 2000
               })
             })
           }
         })
-      },
-      handleDelete(row) {
-        this.$confirm('此操作将永久删除该工艺, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          deleteIpqc(row.id).then(() => {
-            this.$notify({
-              title: '成功',
-              message: '删除成功',
-              type: 'success',
-              duration: 2000
-            })
-            const index = this.list.indexOf(row)
-            this.list.splice(index, 1)
-            this.total--
-          })
-        })
       }
-
+      /*      handleDelete(row) {
+              this.$confirm('此操作将删除该质检单, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+              }).then(() => {
+                deleteIpqc(row.id).then(() => {
+                  this.$notify({
+                    title: '成功',
+                    message: '删除成功',
+                    type: 'success',
+                    duration: 2000
+                  })
+                  const index = this.list.indexOf(row)
+                  this.list.splice(index, 1)
+                  this.total--
+                })
+              })
+            }*/
     }
   }
 </script>

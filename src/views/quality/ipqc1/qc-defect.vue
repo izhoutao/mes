@@ -2,27 +2,87 @@
   <div class="qc-defect">
     <div class="filter-container">
       <el-form ref="filterForm" :model="listQuery" :inline="true">
-        <el-button class="filter-item" style="margin: 16px 0px;" type="success"
-                   icon="el-icon-edit" @click="handleAdd">
+        <el-button class="filter-item" size="medium" style="padding:8px 16px;margin: 0px 0px 8px;" type="success"
+                   icon="el-icon-circle-plus-outline" @click="handleAdd">
           添加
         </el-button>
       </el-form>
     </div>
 
     <el-table :key="tableKey" :data="list" border fit highlight-current-row>
-      <el-table-column label="序号" min-width="40px" type="index" align="center">
+      <el-table-column label="序号" min-width="40px" type="index" align="center" fixed>
       </el-table-column>
-      <el-table-column label="缺陷名称" min-width="80px" align="center">
+      <el-table-column label="缺陷名称" min-width="80px" align="center" fixed>
         <template slot-scope="scope">
-          <span>{{ scope.row.name }}</span>
+          <span>{{ defectMap[scope.row.defectId].name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="缺陷组名称" min-width="80px" align="center">
+      <!--      <el-table-column label="缺陷组名称" min-width="100px" align="center">
+              <template slot-scope="scope">
+                <span>{{ scope.row.defectGroupName }}</span>
+              </template>
+            </el-table-column>-->
+      <el-table-column label="上面" min-width="80px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.groupName }}</span>
+          <span>{{ scope.row.up }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" min-width="80">
+      <el-table-column label="下面" min-width="80px" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.down }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="宽度|位置" min-width="80px" align="center" :render-header="renderHeader">
+        <template slot-scope="scope">
+          <span>{{ scope.row.widthPosition }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="起始位置|(m)" min-width="80px" align="center" :render-header="renderHeader">
+        <template slot-scope="scope">
+          <span>{{ scope.row.startPosition }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="结束位置|(m)" min-width="80px" align="center" :render-header="renderHeader">
+        <template slot-scope="scope">
+          <span>{{ scope.row.endPosition }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="缺陷长度|(m)" min-width="80px" align="center" :render-header="renderHeader">
+        <template slot-scope="scope">
+          <span>{{ scope.row.defectLength }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="程度" min-width="80px" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.degree }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="类别|波高" min-width="80px" align="center" :render-header="renderHeader">
+        <template slot-scope="scope">
+          <span>{{ scope.row.waveHeightCategory }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="周期|mm" min-width="80px" align="center" :render-header="renderHeader">
+        <template slot-scope="scope">
+          <span>{{ scope.row.period }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="频率" min-width="80px" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.frequency }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="直径|(mm)" min-width="80px" align="center" :render-header="renderHeader">
+        <template slot-scope="scope">
+          <span>{{ scope.row.diameter }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="距边|(mm)" min-width="80px" align="center" :render-header="renderHeader">
+        <template slot-scope="scope">
+          <span>{{ scope.row.margin }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" min-width="80" fixed="right">
         <template slot-scope="scope">
           <i class="el-icon-edit update" @click="handleUpdate(scope.row)"/>
           <i class="el-icon-delete delete" @click="handleDelete(scope.row,'true')"/>
@@ -45,7 +105,7 @@
       >
         <el-row>
           <el-col :span="8">
-            <el-form-item label="缺陷：" prop="id">
+            <el-form-item label="缺陷：" prop="defectId">
               <el-cascader
                 v-model="defectActive"
                 :options="defects"
@@ -152,12 +212,13 @@
         list: [],
         total: 0,
         listQuery: {
-          ipqcId: this.ipqcId
+          ipqcId: ''
         },
         temp: {
           id: '',
-          ipqcId: this.ipqcId,
-          groupId: '',
+          ipqcId: '',
+          defectId: '',
+          defectGroupId: '',
           up: '',
           down: '',
           widthPosition: '',
@@ -193,24 +254,35 @@
       }
     },
     created() {
-      this.tempCopy = deepClone(this.temp)
-      this.listLoading = true
-      this.$nextTick(async() => {
-        await this.getDefects({})
-        this.getList()
-      })
+      if(this.ipqcId){
+        this.listQuery.ipqcId = this.ipqcId
+        this.temp.ipqcId = this.ipqcId
+        this.tempCopy = deepClone(this.temp)
+        this.listLoading = true
+        this.$nextTick(async() => {
+          await this.getDefects({})
+          this.getList()
+        })
+      }
     },
     watch: {
       defectActive: function(val) {
         if (val && val[0] && val[1]) {
-          this.temp.groupId = val[0]
-          this.temp.groupName = this.defectGroupMap[val[0]].name
-          this.temp.id = val[1]
-          this.temp.name = this.defectMap[val[1]].name
+          this.temp.defectGroupId = val[0]
+          this.temp.defectGroupName = this.defectGroupMap[val[0]].name
+          this.temp.defectId = val[1]
+          this.temp.defectName = this.defectMap[val[1]].name
         }
       }
     },
     methods: {
+      renderHeader(h, { column, $index }) {
+        return h('span', {}, [
+          h('span', {}, column.label.split('|')[0]),
+          h('br'),
+          h('span', {}, column.label.split('|')[1])
+        ])
+      },
       async getDefects() {
         let res = await getDefectGroups({})
         let defectGroups = res.queryResult.list
@@ -256,11 +328,18 @@
         this.temp = deepClone(this.tempCopy)
       },
       handleAdd() {
+        if (!this.ipqcId) {
+          this.$message({
+            message: '请先保存检验单',
+            type: 'warning'
+          })
+          return
+        }
         this.resetForm('qcDefectForm')
         this.dialogStatus = 'create'
         this.dialogFormVisible = true
         // this.rules.password[0].required = true
-        this.defectActive = [this.temp.groupId, this.temp.id]
+        this.defectActive = [this.temp.defectGroupId, this.temp.defectId]
         this.$nextTick(() => {
           this.$refs['qcDefectForm'].clearValidate()
         })
@@ -288,8 +367,7 @@
         this.dialogStatus = 'update'
         // this.rules.password[0].required = false
         this.temp = deepClone(row) // copy obj
-        this.defectActive = [this.temp.groupId, this.temp.id]
-
+        this.defectActive = [this.temp.defectGroupId, this.temp.defectId]
         // this.temp.password = ''
         this.dialogFormVisible = true
         this.$nextTick(() => {
@@ -338,6 +416,11 @@
 </script>
 <style lang="scss">
   .qc-defect {
+
+  .el-icon-circle-plus-outline {
+    /*margin: 3px;*/
+    font-size: 16px !important;
+  }
 
   .el-icon-edit.update, .el-icon-delete.delete {
     margin: 3px;

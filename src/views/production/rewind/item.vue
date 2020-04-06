@@ -436,7 +436,7 @@
       getPendingRawItems(query) {
         if (query !== '') {
           this.loading = true
-          getOutboundOrderRawItems({ current_operation_label: '重卷' }).then(res => {
+          getOutboundOrderRawItems({ next_operation_label: '重卷', next_operation_status: 0  }).then(res => {
             this.loading = false
             this.pendingRawItems = res.queryResult.list.map(item => item.productNumber).filter(item => {
               return item.toLowerCase()

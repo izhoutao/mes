@@ -58,8 +58,8 @@
             <el-form ref="form" label-width="50px">
               <el-form-item label="名称">
                 <el-select v-model="nodeLabel" clearable placeholder="请选择" @change="changeNodeLabel">
-                  <el-option label="失败" value="FAIL"></el-option>
-                  <el-option label="返回" value="RETURN"></el-option>
+                  <el-option label="通过" value="OK"></el-option>
+                  <el-option label="暂留" value="NG"></el-option>
                 </el-select>
               </el-form-item>
             </el-form>
@@ -233,11 +233,13 @@
               // targets[i].index = arr.length - 1
               source.next.push({
                 index: arr.length - 1,
+                label: target.label,
                 condition: conditions[i]
               })
             } else {
               source.next.push({
                 index,
+                label: arr[index].label,
                 condition: conditions[i]
               })
             }
@@ -251,11 +253,13 @@
               // targets[i].index = arr.length - 1
               source.next.push({
                 index: arr.length - 1,
+                label: target.label,
                 condition: conditions[i]
               })
             } else {
               source.next.push({
                 index,
+                label: arr[index].label,
                 condition: conditions[i]
               })
             }
