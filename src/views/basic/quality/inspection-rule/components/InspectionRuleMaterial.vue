@@ -135,7 +135,7 @@
           ],
           quantity: [
             { required: true, message: '入库数量不能为空'},
-            { type: 'number', message: '入库数量必须为数字值'}
+            { type: 'float', message: '入库数量必须为数字值'}
           ],
         }
       }

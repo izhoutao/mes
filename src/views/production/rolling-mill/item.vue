@@ -344,31 +344,31 @@
           ],
           inputThickness: [
             { required: true, message: '进料厚度不能为空' },
-            { type: 'number', message: '进料厚度必须为数字值' }
+            { type: 'float', message: '进料厚度必须为数字值' }
           ],
           inputWeight: [
             { required: true, message: '进料重量不能为空' },
-            { type: 'number', message: '进料重量必须为数字值' }
+            { type: 'float', message: '进料重量必须为数字值' }
           ],
           paramTotalRollingPass: [
             { required: true, message: '总道次数不能为空' },
-            { type: 'number', message: '总道次数必须为数字值' }
+            { type: 'float', message: '总道次数必须为数字值' }
           ],
           paramTotalReductionRate: [
             { required: true, message: '总轧下率不能为空' },
-            { type: 'number', message: '总轧下率必须为数字值' }
+            { type: 'float', message: '总轧下率必须为数字值' }
           ],
           outputThickness: [
             { required: true, message: '出料厚度不能为空' },
-            { type: 'number', message: '出料厚度必须为数字值' }
+            { type: 'float', message: '出料厚度必须为数字值' }
           ],
           outputWeight: [
             { required: true, message: '出料重量不能为空' },
-            { type: 'number', message: '出料重量必须为数字值' }
+            { type: 'float', message: '出料重量必须为数字值' }
           ],
           outputLength: [
             { required: true, message: '出料长度不能为空' },
-            { type: 'number', message: '出料长度必须为数字值' }
+            { type: 'float', message: '出料长度必须为数字值' }
           ],
           rollerNumber: [
             { required: true, message: '辊号不能为空' }

@@ -197,10 +197,10 @@
           </el-select>
         </el-form-item>
         <el-form-item label="应到人数：" prop="expectedAttendanceNum">
-          <el-input v-model.num="temp.expectedAttendanceNum"/>
+          <el-input v-model.number="temp.expectedAttendanceNum"/>
         </el-form-item>
         <el-form-item label="设备使用率(%)：" prop="capacityUtilization">
-          <el-input v-model.num="temp.capacityUtilization"/>
+          <el-input v-model.number="temp.capacityUtilization"/>
         </el-form-item>
         <el-form-item label="问题记录：" prop="mattersRecord">
           <el-input type="textarea" v-model="temp.mattersRecord"/>
@@ -346,7 +346,7 @@
           ],
           capacityUtilization: [
             { required: true, message: '设备使用率不能为空' },
-            { type: 'number', message: '设备使用率必须为数字值' }
+            { type: 'float', message: '设备使用率必须为数字值' }
           ]
         }
       }

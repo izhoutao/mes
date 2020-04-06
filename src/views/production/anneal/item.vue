@@ -345,15 +345,15 @@
           ],
           inputWidth: [
             { required: true, message: '进料宽度不能为空' },
-            { type: 'number', message: '进料宽度必须为数字值' }
+            { type: 'float', message: '进料宽度必须为数字值' }
           ],
           inputThickness: [
             { required: true, message: '进料厚度不能为空' },
-            { type: 'number', message: '进料厚度必须为数字值' }
+            { type: 'float', message: '进料厚度必须为数字值' }
           ],
           inputWeight: [
             { required: true, message: '进料重量不能为空' },
-            { type: 'number', message: '进料重量必须为数字值' }
+            { type: 'float', message: '进料重量必须为数字值' }
           ],
           operationTemperatures: [
             { required: true, message: '操作各区温度（逗号分隔）不能为空' }
@@ -373,7 +373,7 @@
           ],
           outputWeight: [
             { required: true, message: '出料重量不能为空' },
-            { type: 'number', message: '出料重量必须为数字值' }
+            { type: 'float', message: '出料重量必须为数字值' }
           ]
         }
       }

@@ -478,15 +478,15 @@
           ],
           width: [
             { required: true, trigger: 'blur', message: '请填写宽度' },
-            { type: 'number', message: '宽度必须为数字值' }
+            { type: 'float', message: '宽度必须为数字值' }
           ],
           thickness: [
             { required: true, trigger: 'blur', message: '请填写厚度' },
-            { type: 'number', message: '厚度必须为数字值' }
+            { type: 'float', message: '厚度必须为数字值' }
           ],
           length: [
             { required: true, trigger: 'blur', message: '请填写长度' },
-            { type: 'number', message: '长度必须为数字值' }
+            { type: 'float', message: '长度必须为数字值' }
           ],
           labelSpecification: [
             { required: true, trigger: 'blur', message: '请填写标签规格' }
@@ -496,19 +496,19 @@
           ],
           labelNetWeight: [
             { required: true, trigger: 'blur', message: '请填写标签净重' },
-            { type: 'number', message: '标签净重必须为数字值' }
+            { type: 'float', message: '标签净重必须为数字值' }
           ],
           labelGrossWeight: [
             { required: true, trigger: 'blur', message: '请填写标签毛重' },
-            { type: 'number', message: '标签毛重必须为数字值' }
+            { type: 'float', message: '标签毛重必须为数字值' }
           ],
           netWeight: [
             { required: true, trigger: 'blur', message: '请填写实磅净重' },
-            { type: 'number', message: '实磅净重必须为数字值' }
+            { type: 'float', message: '实磅净重必须为数字值' }
           ],
           grossWeight: [
             { required: true, trigger: 'blur', message: '请填写实磅毛重' },
-            { type: 'number', message: '实磅毛重必须为数字值' }
+            { type: 'float', message: '实磅毛重必须为数字值' }
           ],
           edge: [
             { required: true, trigger: 'blur', message: '请填写边部' }

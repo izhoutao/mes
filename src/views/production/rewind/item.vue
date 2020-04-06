@@ -357,23 +357,23 @@
           ],
           inputThickness: [
             { required: true, message: '进料厚度不能为空' },
-            { type: 'number', message: '进料厚度必须为数字值' }
+            { type: 'float', message: '进料厚度必须为数字值' }
           ],
           inputWeight: [
             { required: true, message: '进料重量不能为空' },
-            { type: 'number', message: '进料重量必须为数字值' }
+            { type: 'float', message: '进料重量必须为数字值' }
           ],
           processVelocity: [
             { required: true, message: '生产速度不能为空' },
-            { type: 'number', message: '生产速度必须为数字值' }
+            { type: 'float', message: '生产速度必须为数字值' }
           ],
           welderCurrent: [
             { required: true, message: '焊机电流不能为空' },
-            { type: 'number', message: '焊机电流必须为数字值' }
+            { type: 'float', message: '焊机电流必须为数字值' }
           ],
           welderVelocity: [
             { required: true, message: '焊机速度不能为空' },
-            { type: 'number', message: '焊机速度必须为数字值' }
+            { type: 'float', message: '焊机速度必须为数字值' }
           ],
           beginTime: [
             { required: true, message: '上机时间不能为空' }
@@ -383,11 +383,11 @@
           ],
           outputWeight: [
             { required: true, message: '出料重量不能为空' },
-            { type: 'number', message: '出料重量必须为数字值' }
+            { type: 'float', message: '出料重量必须为数字值' }
           ],
           outputLength: [
             { required: true, message: '出料长度不能为空' },
-            { type: 'number', message: '出料长度必须为数字值' }
+            { type: 'float', message: '出料长度必须为数字值' }
           ],
           lossReason: [
             { required: true, message: '损耗原因不能为空' }

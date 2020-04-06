@@ -126,7 +126,7 @@
           <div style="font-size: 20px;">原料入库项</div>
         </div>
         <inbound-order-raw-item :inboundOrderRawDetailId="temp.id" :receivedQuantity.sync="temp.receivedQuantity"
-                                :materailName="temp.materialName" :key="temp.id"/>
+                                :materialName="temp.materialName" :key="temp.id"/>
       </el-card>
 
     </div>

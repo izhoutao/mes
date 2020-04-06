@@ -430,54 +430,54 @@
           ],
           inputWidth: [
             { required: true, message: '进料宽度不能为空' },
-            { type: 'number', message: '进料宽度必须为数字值' }
+            { type: 'float', message: '进料宽度必须为数字值' }
           ],
           inputThickness: [
             { required: true, message: '进料厚度不能为空' },
-            { type: 'number', message: '进料厚度必须为数字值' }
+            { type: 'float', message: '进料厚度必须为数字值' }
           ],
           inputWeight: [
             { required: true, message: '进料重量不能为空' },
-            { type: 'number', message: '进料重量必须为数字值' }
+            { type: 'float', message: '进料重量必须为数字值' }
           ],
           paramProductionMode: [
             { required: true, message: '请选择生产方式' }
           ],
           paramInletTesion: [
             { required: true, message: '入口张力不能为空' },
-            { type: 'number', message: '入口张力必须为数字值' }
+            { type: 'float', message: '入口张力必须为数字值' }
           ],
           paramTotalRollingForce: [
             { required: true, message: '总轧制力不能为空' },
-            { type: 'number', message: '总轧制力必须为数字值' }
+            { type: 'float', message: '总轧制力必须为数字值' }
           ],
           paramOutletTesion: [
             { required: true, message: '出口张力不能为空' },
-            { type: 'number', message: '出口张力必须为数字值' }
+            { type: 'float', message: '出口张力必须为数字值' }
           ],
           paramPercentageElongation: [
             { required: true, message: '延伸率不能为空' },
-            { type: 'number', message: '延伸率必须为数字值' }
+            { type: 'float', message: '延伸率必须为数字值' }
           ],
           outputThickness: [
             { required: true, message: '出料厚度不能为空' },
-            { type: 'number', message: '出料厚度必须为数字值' }
+            { type: 'float', message: '出料厚度必须为数字值' }
           ],
           outputLength: [
             { required: true, message: '出料长度不能为空' },
-            { type: 'number', message: '出料长度必须为数字值' }
+            { type: 'float', message: '出料长度必须为数字值' }
           ],
           outputWeight: [
             { required: true, message: '出料重量不能为空' },
-            { type: 'number', message: '出料重量必须为数字值' }
+            { type: 'float', message: '出料重量必须为数字值' }
           ],
           outputSleeveWeight: [
             { required: true, message: '套筒重量不能为空' },
-            { type: 'number', message: '套筒重量必须为数字值' }
+            { type: 'float', message: '套筒重量必须为数字值' }
           ],
           outputSpeed: [
             { required: true, message: '出料速度不能为空' },
-            { type: 'number', message: '出料速度必须为数字值' }
+            { type: 'float', message: '出料速度必须为数字值' }
           ],
           beginTime: [
             { required: true, message: '上机时间不能为空' }
