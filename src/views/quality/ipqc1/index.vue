@@ -40,8 +40,8 @@
         <el-form-item label="" prop="inspectorConfirm">
           <el-select v-model="listQuery.inspectorConfirm" clearable filterable placeholder="请选择确认情况"
                      @change="handleFilter">
-            <el-option :key="0" label="已确认" :value="0"></el-option>
-            <el-option :key="1" label="未确认" :value="1"></el-option>
+            <el-option :key="0" label="未确认" :value="0"></el-option>
+            <el-option :key="1" label="已确认" :value="1"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="" prop="inspectorResult">
@@ -68,7 +68,7 @@
           :data="list"
           @current-change="handleCurrentChange"
           border fit highlight-current-row>
-          <el-table-column label="工序" min-width="30px" align="center">
+          <el-table-column label="工序" min-width="40px" align="center">
             <template slot-scope="scope">
               <span>{{ scope.row.operation }}</span>
             </template>
@@ -85,7 +85,7 @@
           </el-table-column>
           <el-table-column label="确认" min-width="30px" align="center">
             <template slot-scope="scope">
-              <span>{{ scope.row.inspectorConfirm?'Y':'N' }}</span>
+              <span>{{ scope.row.status?'Y':'N' }}</span>
             </template>
           </el-table-column>
         </el-table>
@@ -113,8 +113,9 @@
           label-width="150px"
         >
           <div v-if="temp.productNumber">
-            <el-button type="primary" size="small" @click="temp.id?updateData():submit()">保存</el-button>
-            <el-button type="primary" size="small" @click="temp.id?updateData():submit()">提交</el-button>
+            <el-button type="primary" size="small" @click="handleSave">保存
+            </el-button>
+            <el-button type="primary" size="small" @click="handleApprove">提交</el-button>
           </div>
 
           <el-tabs value="basic">
@@ -461,7 +462,8 @@
             length: null,
             ts48: null,
             bs48: null
-          }]
+          }],
+          status: null
         },
         tempCopy: null,
         shifts: [],
@@ -601,6 +603,14 @@
         this.$refs[formName].resetFields()
 
         this.temp = deepClone(this.tempCopy)
+      },
+      handleSave() {
+        this.temp.status = 0
+        this.temp.id?this.updateData():this.submit()
+      },
+      handleApprove() {
+        this.temp.status = 1
+        this.temp.id?this.updateData():this.submit()
       },
       submit() {
         this.$refs['ipqcForm'].validate((valid) => {

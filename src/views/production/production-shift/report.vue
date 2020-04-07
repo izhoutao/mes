@@ -508,6 +508,8 @@
         }
         const r = {
           id: this.selectedReport.id,
+          date:this.selectedReport.date,
+          shiftId:this.selectedReport.shiftId,
           shiftLeader: this.shiftLeaders.includes(this.listQuery.role) ? this.id : null,
           supervisor: this.listQuery.role == 'supervisor' ? this.id : null,
           inspector: this.listQuery.role == 'inspector' ? this.id : null,

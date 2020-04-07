@@ -370,7 +370,6 @@
           ],
           outputWeight: [
             { required: true, message: '出料重量不能为空' },
-            { type: 'float', message: '出料重量必须为数字值' }
           ]
         }
       }
