@@ -626,7 +626,8 @@
                 if (
                   v.operation === res.model.operation &&
                   v.productNumber === res.model.productNumber &&
-                  v.date === res.model.date
+                  v.date === res.model.date &&
+                  v.shiftId === res.model.shiftId
                 ) {
                   const index = this.list.indexOf(v)
                   res.model.measurement = JSON.parse(res.model.measurement)
