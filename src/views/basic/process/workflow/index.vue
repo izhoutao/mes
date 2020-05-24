@@ -38,7 +38,7 @@
     },
     components: { WorkflowList, BaseFlowEditor },
     created() {
-      getOperations({}).then(res => {
+      getOperations({orders: ['sequence_number asc']}).then(res => {
         this.labels = res.queryResult.list.map(item => item.name)
       })
     }

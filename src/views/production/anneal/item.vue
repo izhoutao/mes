@@ -69,7 +69,7 @@
 
         <el-row :gutter="40">
           <el-col :span="8">
-            <el-form-item label="操作各区温度（逗号分隔）：" prop="operationTemperatures">
+            <el-form-item label="操作各区温度：" prop="operationTemperatures">
               <el-input v-model="temp.operationTemperatures"/>
             </el-form-item>
           </el-col>
@@ -353,7 +353,7 @@
             { required: true, message: '进料重量不能为空' },
           ],
           operationTemperatures: [
-            { required: true, message: '操作各区温度（逗号分隔）不能为空' }
+            { required: true, message: '操作各区温度不能为空' }
           ],
           operationTv: [
             { required: true, message: '操作TV不能为空' }
@@ -415,7 +415,7 @@
       getPendingRawItems(query) {
         if (query !== '') {
           this.loading = true
-          getOutboundOrderRawItems({ next_operation_label: '退火', next_operation_status: 0 }).then(res => {
+          getOutboundOrderRawItems({ next_operation_label: '退火炉', next_operation_status: 0 }).then(res => {
             this.loading = false
             this.pendingRawItems = res.queryResult.list.map(item => item.productNumber).filter(item => {
               return item.toLowerCase()

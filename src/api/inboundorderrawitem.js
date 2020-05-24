@@ -7,9 +7,9 @@ export function getInboundOrderRawItems(data) {
     data
   })
 }
-export function getProductSerialNumbers(num) {
+export function getProductSerialNumbers(codeRule, num) {
   return request({
-    url: `/basic/inboundorderrawitem/psn/${num}`,
+    url: `/basic/inboundorderrawitem/psn/${codeRule}/${num}`,
     method: 'get'
   })
 }

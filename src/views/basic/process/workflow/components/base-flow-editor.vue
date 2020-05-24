@@ -111,7 +111,8 @@
         labels_data: this.labels,
         temp: 'base-flow-editor',
         listQuery: {
-          name: ''
+          name: '',
+          orders: ['sequence_number asc']
         },
         edgeLabel: undefined
       }

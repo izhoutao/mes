@@ -393,7 +393,7 @@
       this.$nextTick(async() => {
         await Promise.all([
           this.getLines({}),
-          this.getOperations({}),
+          this.getOperations({orders: ['sequence_number asc']}),
           this.getShifts({}),
           this.getMaterialTypes({}),
           this.getCustomers({}),

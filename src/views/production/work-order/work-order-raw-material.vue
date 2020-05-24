@@ -30,7 +30,7 @@
     <el-table v-show="radio=='2'" :key="1" v-loading="listLoading" :data="itemList" border fit highlight-current-row style="width: 100%;margin-top: 10px">
       <el-table-column label="序号" width="60px" type="index" align="center" fixed>
       </el-table-column>
-      <el-table-column label="来料编号" width="160px" align="center">
+      <el-table-column label="原料编号" width="160px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.materialNumber }}</span>
         </template>

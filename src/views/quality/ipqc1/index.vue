@@ -60,7 +60,7 @@
     </div>
     <el-row :gutter="20">
       <!--状态数据-->
-      <el-col :span="7">
+      <el-col :span="6">
         <el-table
           ref="ipqcTable"
           :key="tableKey"
@@ -68,22 +68,22 @@
           :data="list"
           @current-change="handleCurrentChange"
           border fit highlight-current-row>
-          <el-table-column label="工序" min-width="40px" align="center">
+          <el-table-column label="工序" min-width="30px" align="center">
             <template slot-scope="scope">
               <span>{{ scope.row.operation }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="钢卷编号" min-width="80px" align="center">
+          <el-table-column label="钢卷编号" min-width="85px" align="center">
             <template slot-scope="scope">
               <span>{{ scope.row.productNumber }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="状态" min-width="30px" align="center">
+          <el-table-column label="状态" min-width="25px" align="center">
             <template slot-scope="scope">
               <span>{{ scope.row.inspectorResult }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="确认" min-width="30px" align="center">
+          <el-table-column label="确认" min-width="25px" align="center">
             <template slot-scope="scope">
               <span>{{ scope.row.status?'Y':'N' }}</span>
             </template>
@@ -102,7 +102,7 @@
         </el-pagination>
       </el-col>
       <!--检验数据-->
-      <el-col :span="17">
+      <el-col :span="18">
         <!--表单-->
         <el-form
           ref="ipqcForm"
@@ -110,253 +110,230 @@
           :model="temp"
           size="small"
           label-position="right"
-          label-width="150px"
+          label-width="120px"
         >
           <div v-if="temp.productNumber">
             <el-button type="primary" size="small" @click="handleSave">保存
             </el-button>
             <el-button type="primary" size="small" @click="handleApprove">提交</el-button>
           </div>
+          <el-row :gutter="5">
+            <el-col :span="21">
+              <el-tabs value="basic">
+                <el-tab-pane label="基本信息" name="basic">
+                  <el-row>
+                    <el-col :span="8">
+                      <el-form-item label="日期：" prop="date">
+                        <el-date-picker v-model="temp.date" type="date" placeholder="请选择日期" style="width: 100%;"
+                                        format="yyyy 年 MM 月 dd 日"
+                                        value-format="yyyy-MM-dd"/>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                      <el-form-item label="产地：" prop="hotRollOrigin">
+                        <el-input v-model="temp.hotRollOrigin"/>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                      <el-form-item label="产线：" prop="operation">
+                        <el-input v-model="temp.operation"/>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="8">
+                      <el-form-item label="下制程：" prop="nextOperation">
+                        <el-input v-model="temp.nextOperation"/>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                      <el-form-item label="班别：" prop="shiftId">
+                        <el-select v-model="temp.shiftId" style="width:100%">
+                          <el-option
+                            v-for="item in shifts"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.id">
+                          </el-option>
+                        </el-select>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                      <el-form-item label="钢种：" prop="steelGrade">
+                        <el-input v-model="temp.steelGrade"/>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="8">
+                      <el-form-item label="表面品级：" prop="surfaceFinish">
+                        <el-select v-model="temp.surfaceFinish">
+                          <el-option
+                            v-for="item in surfaceFinishes.list"
+                            :key="item"
+                            :label="item"
+                            :value="item"
+                          >
+                          </el-option>
+                        </el-select>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                      <el-form-item label="用途：" prop="uses">
+                        <el-input v-model="temp.uses"/>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                      <el-form-item label="客户：" prop="customerId">
+                        <el-select v-model="temp.customerId" style="width:100%">
+                          <el-option
+                            v-for="item in customers"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.id">
+                          </el-option>
+                        </el-select>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="8">
+                      <el-form-item label="钢卷编号：" prop="productNumber">
+                        <el-input v-model="temp.productNumber"/>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                      <el-form-item label="原料编号：" prop="materialNumber">
+                        <el-input v-model="temp.materialNumber"/>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                </el-tab-pane>
+              </el-tabs>
+              <el-tabs value="record">
+                <el-tab-pane label="检验记录" name="record">
+                  <el-row>
+                    <el-col :span="8">
+                      <el-form-item label="等级：" prop="grade">
+                        <el-select v-model="temp.grade">
+                          <el-option label="1" value="1"/>
+                          <el-option label="A" value="A"/>
+                          <el-option label="2" value="2"/>
+                          <el-option label="3" value="3"/>
+                          <el-option label="C" value="C"/>
+                        </el-select>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                      <el-form-item label="有害缺陷率(%)：" prop="harmfulDefectPercent">
+                        <el-input v-model="temp.harmfulDefectPercent"/>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                      <el-form-item label="等级评分：" prop="gradeScore">
+                        <el-input v-model="temp.gradeScore"/>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="8">
+                      <el-form-item label="退火TV：" prop="annealTv">
+                        <el-input v-model="temp.annealTv"/>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                      <el-form-item label="退火硬度：" prop="annealHardness">
+                        <el-input v-model="temp.annealHardness"/>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                      <el-form-item label="轧/平道次：" prop="rollingPass">
+                        <el-input v-model="temp.rollingPass"/>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="8">
+                      <el-form-item label="建议使用表面：" prop="recommendedSurface">
+                        <el-select v-model="temp.recommendedSurface">
+                          <el-option label="上面" value="上面"/>
+                          <el-option label="下面" value="下面"/>
+                        </el-select>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                      <el-form-item label="开卷方式：" prop="unwindMethod">
+                        <el-input v-model="temp.unwindMethod"/>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row :gutter="3">
+                    <el-col :span="10">
+                      <qc-measurement v-bind:measurement.sync="temp.measurement" :key="temp.id"/>
+                    </el-col>
+                    <el-col :span="14">
+                      <qc-defect v-bind:defectList.sync="temp.defectList" :key="JSON.stringify(temp.defectList)"/>
+                    </el-col>
+                  </el-row>
 
-          <el-tabs value="basic">
-            <el-tab-pane label="基本信息" name="basic">
-              <el-row>
-                <el-col :span="8">
-                  <el-form-item label="检验日期：" prop="inspectDate">
-                    <el-date-picker v-model="temp.inspectDate" type="date" placeholder="请选择日期" style="width: 100%;"
-                                    format="yyyy 年 MM 月 dd 日"
-                                    value-format="yyyy-MM-dd"/>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="8">
-                  <el-form-item label="产地：" prop="hotRollOrigin">
-                    <el-input v-model="temp.hotRollOrigin"/>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="8">
-                  <el-form-item label="产线：" prop="operation">
-                    <el-input v-model="temp.operation"/>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-              <el-row>
-                <el-col :span="8">
-                  <el-form-item label="下制程：" prop="nextOperation">
-                    <el-input v-model="temp.nextOperation"/>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="8">
-                  <el-form-item label="班别：" prop="shiftId">
-                    <el-select v-model="temp.shiftId" style="width:100%">
-                      <el-option
-                        v-for="item in shifts"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item.id">
-                      </el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="8">
-                  <el-form-item label="钢种：" prop="steelGrade">
-                    <el-input v-model="temp.steelGrade"/>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-              <el-row>
-                <el-col :span="8">
-                  <el-form-item label="表面品级：" prop="surfaceFinish">
-                    <el-input v-model="temp.surfaceFinish"/>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="8">
-                  <el-form-item label="用途：" prop="uses">
-                    <el-input v-model="temp.uses"/>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="8">
-                  <el-form-item label="客户：" prop="customerId">
-                    <el-select v-model="temp.customerId" style="width:100%">
-                      <el-option
-                        v-for="item in customers"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item.id">
-                      </el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-              <el-row>
-                <el-col :span="8">
-                  <el-form-item label="钢卷编号：" prop="productNumber">
-                    <el-input v-model="temp.productNumber"/>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="8">
-                  <el-form-item label="原料编号：" prop="materialNumber">
-                    <el-input v-model="temp.materialNumber"/>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-            </el-tab-pane>
-          </el-tabs>
-          <el-tabs value="record">
-            <el-tab-pane label="检验记录" name="record">
-              <el-row>
-                <el-col :span="8">
-                  <el-form-item label="等级：" prop="grade">
-                    <el-input v-model="temp.grade"/>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="8">
-                  <el-form-item label="有害缺陷率(%)：" prop="harmfulDefectPercent">
-                    <el-input v-model="temp.harmfulDefectPercent"/>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="8">
-                  <el-form-item label="等级评分：" prop="gradeScore">
-                    <el-input v-model="temp.gradeScore"/>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-              <el-row>
-                <el-col :span="8">
-                  <el-form-item label="退火TV：" prop="annealTv">
-                    <el-input v-model="temp.annealTv"/>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="8">
-                  <el-form-item label="退火硬度：" prop="annealHardness">
-                    <el-input v-model="temp.annealHardness"/>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="8">
-                  <el-form-item label="轧/平道次：" prop="rollingPass">
-                    <el-input v-model="temp.rollingPass"/>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-              <el-row>
-                <el-col :span="8">
-                  <el-form-item label="建议使用表面：" prop="recommendedSurface">
-                    <el-input v-model="temp.recommendedSurface"/>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="8">
-                  <el-form-item label="开卷方式：" prop="unwindMethod">
-                    <el-input v-model="temp.unwindMethod"/>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-              <el-form-item label="测量：" prop="recommendedSurface">
-                <el-table :key="new Date().toString()" :data="temp.measurement" border fit highlight-current-row>
-                  <el-table-column label="序" min-width="40px" type="index" align="center">
-                  </el-table-column>
-                  <el-table-column label="厚" min-width="40px" align="center">
-                    <template slot-scope="scope">
-                      <el-input v-model="temp.measurement[scope.$index].thickness"/>
-                    </template>
-                  </el-table-column>
-                  <el-table-column label="宽" min-width="40px" align="center">
-                    <template slot-scope="scope">
-                      <el-input v-model="temp.measurement[scope.$index].width"/>
-                    </template>
-                  </el-table-column>
-                  <el-table-column label="长" min-width="40px" align="center">
-                    <template slot-scope="scope">
-                      <el-input v-model="temp.measurement[scope.$index].length"/>
-                    </template>
-                  </el-table-column>
-                  <el-table-column label="T-S48" min-width="40px" align="center">
-                    <template slot-scope="scope">
-                      <el-input v-model="temp.measurement[scope.$index].ts48"/>
-                    </template>
-                  </el-table-column>
-                  <el-table-column label="B-S48" min-width="40px" align="center">
-                    <template slot-scope="scope">
-                      <el-input v-model="temp.measurement[scope.$index].bs48"/>
-                    </template>
-                  </el-table-column>
-                  <el-table-column label="操作" align="center" min-width="40">
-                    <template slot-scope="scope">
-                      <i class="el-icon-circle-plus" @click="handleAddMeasurementItem(scope.$index)"/>
-                      <i class="el-icon-delete" @click="handleDeleteMeasurementItem(scope.$index)"/>
-                    </template>
-                  </el-table-column>
-                </el-table>
+
+                  <el-row>
+                    <el-col :span="24">
+                      <el-form-item label="备注：" prop="note" class="note">
+                        <el-input type="textarea" :rows="6" v-model="temp.note"/>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                </el-tab-pane>
+              </el-tabs>
+
+              <el-tabs value="determine">
+                <el-tab-pane label="判定" name="determine">
+                  <!--              <el-row>
+                                  <el-col :span="8">
+                                    <el-form-item label="品检员姓名：" prop="inspectorName">
+                                      <el-input v-model="temp.inspectorName"/>
+                                    </el-form-item>
+                                  </el-col>
+                                  <el-col :span="8">
+                                    <el-form-item label="品检结论：" prop="inspectorResult">
+                                      <el-select v-model="temp.inspectorResult" clearable filterable placeholder="状态">
+                                        <el-option key="OK" label="OK" value="OK"></el-option>
+                                        <el-option key="NG" label="NG" value="NG"></el-option>
+                                      </el-select>
+                                    </el-form-item>
+                                  </el-col>
+                                </el-row>
+                                <el-row>
+                                  <el-col :span="8">
+                                    <el-form-item label="复判员姓名：" prop="checkerName">
+                                      <el-input v-model="temp.checkerName"/>
+                                    </el-form-item>
+                                  </el-col>
+                                  <el-col :span="8">
+                                    <el-form-item label="复判结论：" prop="checkerResult">
+                                      <el-select v-model="temp.checkerResult" clearable filterable placeholder="状态">
+                                        <el-option key="OK" label="OK" value="OK"></el-option>
+                                        <el-option key="NG" label="NG" value="NG"></el-option>
+                                      </el-select>
+                                    </el-form-item>
+                                  </el-col>
+                                </el-row>-->
+                  <el-radio-group v-model="temp.inspectorResult">
+                    <el-radio label="OK">合格</el-radio>
+                    <el-radio label="NG">暂留</el-radio>
+                  </el-radio-group>
+
+                </el-tab-pane>
+              </el-tabs>
+            </el-col>
+
+            <el-col :span="3">
+              <el-form-item label="交接事项：" prop="handoverMatters" class="handoverMatters">
+                <el-input type="textarea" :rows="20" v-model="temp.handoverMatters"/>
               </el-form-item>
-              <el-row>
-                <el-col :span="24">
-                  <el-form-item label="交接事项：" prop="handoverMatters">
-                    <el-input type="textarea" :rows="2" v-model="temp.handoverMatters"/>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-              <el-row>
-                <el-col :span="24">
-                  <el-form-item label="备注：" prop="note">
-                    <el-input type="textarea" :rows="2" v-model="temp.note"/>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-
-              <!--              <el-row>
-                              <el-col :span="8">
-                                <el-form-item label="测量值：" prop="measurement">
-                                  <el-input v-model="temp.measurement"/>
-                                </el-form-item>
-                              </el-col>
-                            </el-row>-->
-
-            </el-tab-pane>
-          </el-tabs>
-          <el-tabs value="defect">
-            <el-tab-pane label="缺陷信息" name="defect">
-              <qc-defect :key="temp.id" :ipqcId="temp.id"/>
-            </el-tab-pane>
-          </el-tabs>
-          <el-tabs value="determine">
-            <el-tab-pane label="判定" name="determine">
-              <!--              <el-row>
-                              <el-col :span="8">
-                                <el-form-item label="品检员姓名：" prop="inspectorName">
-                                  <el-input v-model="temp.inspectorName"/>
-                                </el-form-item>
-                              </el-col>
-                              <el-col :span="8">
-                                <el-form-item label="品检结论：" prop="inspectorResult">
-                                  <el-select v-model="temp.inspectorResult" clearable filterable placeholder="状态">
-                                    <el-option key="OK" label="OK" value="OK"></el-option>
-                                    <el-option key="NG" label="NG" value="NG"></el-option>
-                                  </el-select>
-                                </el-form-item>
-                              </el-col>
-                            </el-row>
-                            <el-row>
-                              <el-col :span="8">
-                                <el-form-item label="复判员姓名：" prop="checkerName">
-                                  <el-input v-model="temp.checkerName"/>
-                                </el-form-item>
-                              </el-col>
-                              <el-col :span="8">
-                                <el-form-item label="复判结论：" prop="checkerResult">
-                                  <el-select v-model="temp.checkerResult" clearable filterable placeholder="状态">
-                                    <el-option key="OK" label="OK" value="OK"></el-option>
-                                    <el-option key="NG" label="NG" value="NG"></el-option>
-                                  </el-select>
-                                </el-form-item>
-                              </el-col>
-                            </el-row>-->
-
-              <el-radio-group v-model="temp.inspectorResult">
-                <el-radio label="OK">合格</el-radio>
-                <el-radio label="NG">暂留</el-radio>
-              </el-radio-group>
-
-            </el-tab-pane>
-          </el-tabs>
-
+            </el-col>
+          </el-row>
         </el-form>
       </el-col>
     </el-row>
@@ -371,23 +348,55 @@
   import { MessageBox } from 'element-ui'
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination/index.vue'
-  import QcDefect from './qc-defect' // Secondary package based on el-pagination
+  import QcDefect from './qc-defect'
+  import QcMeasurement from './qc-measurement'
 
   import { getCustomers } from '@/api/customer'
   import { getOperations } from '@/api/operation'
-  import { getShifts } from '@/api/shift' // Secondary package based on el-pagination
+  import { getShifts } from '@/api/shift'
+  import { getQcDefects } from '@/api/qcdefect' // Secondary package based on el-pagination
 
   export default {
     name: 'ipqc',
-    components: { Pagination, QcDefect },
+    components: { Pagination, QcDefect, QcMeasurement },
     directives: { waves },
     watch: {
-      'temp.measurement': {
+      'temp': {
         handler: async function(val) {
-          if (!val || val.length == 0) {
-            this.temp.measurement = [deepClone(this.measurementItem)]
+          switch (val.operation) {
+            case '重卷':
+              this.surfaceFinishes = { default: '', list: ['2BA', 'BA', 'NO.1', '硬板G'] }
+              break
+            case '轧机':
+              this.surfaceFinishes = { default: '硬板G', list: ['2BA', 'BA', 'NO.1', '硬板G'] }
+              break
+            case '退火炉':
+              this.surfaceFinishes = { default: '2BA', list: ['2BA', 'BA', 'NO.1', '硬板G'] }
+              break
+            case '精整拉矫':
+              this.surfaceFinishes = { default: '2BA', list: ['2BA', 'BA', 'NO.1', '硬板G'] }
+              break
+            default:
           }
-        }
+          if (!val.surfaceFinish) {
+            val.surfaceFinish = this.surfaceFinishes.default
+          }
+          if (!this.temp.measurement) {
+            this.temp.measurement = []
+          }
+          for (let i = this.temp.measurement.length; i < 10; i++) {
+            this.temp.measurement.push(deepClone(this.measurementItem))
+          }
+          this.temp.defectList = []
+          if (val.id) {
+            let res = await getQcDefects({ ipqcId: val.id })
+            this.temp.defectList = res.queryResult.list
+          }
+          for (let i = this.temp.defectList.length ? this.temp.defectList.length : 0; i < 20; i++) {
+            this.temp.defectList.push(deepClone(this.defectItem))
+          }
+        },
+        immediate: true
         // deep: true
       }
       /*      'temp': {
@@ -456,26 +465,38 @@
           inspectorResult: '',
           checkerName: '',
           checkerResult: '',
-          measurement: [{
-            thickness: null,
-            width: null,
-            length: null,
-            ts48: null,
-            bs48: null
-          }],
+          measurement: [],
+          defectList: [],
           status: null
         },
         tempCopy: null,
         shifts: [],
         customers: [],
         operations: [],
-        inspectorResults: [],
+        surfaceFinishes: [],
         measurementItem: {
           thickness: null,
           width: null,
           length: null,
           ts48: null,
           bs48: null
+        },
+        defectItem: {
+          id: '',
+          ipqcId: '',
+          defectCode: '',
+          up: '',
+          down: '',
+          widthPosition: '',
+          startPosition: '',
+          endPosition: '',
+          defectLength: '',
+          degree: '',
+          waveHeightCategory: '',
+          period: '',
+          frequency: '',
+          diameter: '',
+          margin: ''
         },
         pickerOptions: {
           shortcuts: [{
@@ -517,7 +538,7 @@
     },
     created() {
       const date = new Date()
-      this.listQuery.dateRange = [new Date(date.getTime() - 3600 * 1000 * 24 * 30), date]
+      this.listQuery.dateRange = [new Date(date.getTime() - 3600 * 1000 * 24 * 30 * 3), date]
       this.tempCopy = deepClone(this.temp)
       this.listLoading = true
       this.$nextTick(async() => {
@@ -573,7 +594,7 @@
         this.customers = res.queryResult.list
       },
       async getOperations() {
-        let res = await getOperations({})
+        let res = await getOperations({ orders: ['sequence_number asc'] })
         this.operations = res.queryResult.list
       },
       getList() {
@@ -605,12 +626,14 @@
         this.temp = deepClone(this.tempCopy)
       },
       handleSave() {
+        const status = this.temp.status
         this.temp.status = 0
-        this.temp.id?this.updateData():this.submit()
+        this.temp.id ? this.updateData() : this.submit()
+        this.temp.status = status
       },
       handleApprove() {
         this.temp.status = 1
-        this.temp.id?this.updateData():this.submit()
+        this.temp.id ? this.updateData() : this.submit()
       },
       submit() {
         this.$refs['ipqcForm'].validate((valid) => {
@@ -621,6 +644,9 @@
               item => item.thickness && item.width &&
                 item.length && item.ts48 && item.bs48
             ))
+            ipqc.defectList = ipqc.defectList.filter(
+              item => item.defectCode
+            )
             addIpqc(ipqc).then((res) => {
               for (const v of this.list) {
                 if (
@@ -655,6 +681,10 @@
               item => item.thickness && item.width &&
                 item.length && item.ts48 && item.bs48
             ))
+            ipqc.defectList = ipqc.defectList.filter(
+              item => item.defectCode
+            )
+
             updateIpqc(ipqc).then(() => {
               for (const v of this.list) {
                 if (v.id === ipqc.id) {
@@ -703,6 +733,30 @@
   .el-icon-circle-plus, .el-icon-delete {
     margin: 5px;
     font-size: 22px !important;
+  }
+
+  .handoverMatters {
+    display: flex;
+    /*默认的主轴是row,这里需要以列的方式进行排列*/
+    flex-direction: column;
+    /*设置子元素的主轴方向上的排列方式*/
+    justify-content: left;
+
+  /*align-items: center;*/
+
+  .el-form-item__label {
+    text-align: left;
+  }
+
+  .el-form-item__content {
+    /*display: block !important;*/
+    margin: 0px !important;
+  }
+
+  }
+
+  .note {
+    margin-top: 15px;
   }
 
   }

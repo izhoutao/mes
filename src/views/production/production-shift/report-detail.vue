@@ -1,7 +1,7 @@
 <template>
   <el-tabs :value="activeName" @tab-click="handleClick">
     <el-tab-pane label="生产班详情" name="detail">
-      <el-form label-width="140px" label-position="left">
+      <el-form label-width="140px" label-position="left" class="report-detail-container">
         <el-row>
           <el-col :span="4">
             <el-form-item label="日期：" prop="date">
@@ -135,7 +135,7 @@
   export default {
     name: 'ReportDetail',
     components: { ReportDetailItem },
-    props: ['detail','activeName'],
+    props: ['detail', 'activeName'],
     data() {
       return {
         statuses: ['新建', '班长已审核', '主管已审核', '已呈阅审核']
@@ -149,3 +149,16 @@
     }
   }
 </script>
+<style lang="scss">
+  .report-detail-container {
+
+  .el-form-item {
+    margin: 0px 5px;
+  }
+
+  .el-col {
+    border: 1px solid #EBEEF5;
+  }
+
+  }
+</style>

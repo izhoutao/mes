@@ -42,21 +42,16 @@
               height="250">
       <el-table-column label="序号" width="60px" type="index" align="center" fixed>
       </el-table-column>
-      <el-table-column label="来料编号" width="160px" align="center">
+      <el-table-column label="原料编号" width="160px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.materialNumber }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="钢卷编号" width="160px" align="center">
+      <el-table-column label="我司编号" width="160px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.productNumber }}</span>
         </template>
       </el-table-column>
-      <!--      <el-table-column label="钢种" width="100px" align="center">
-              <template slot-scope="scope">
-                <span>{{ scope.row.steelGrade }}</span>
-              </template>
-            </el-table-column>-->
       <el-table-column label="表面品级" width="100px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.surfaceFinish }}</span>
@@ -155,7 +150,7 @@
     </el-table>
 
     <el-dialog :close-on-click-modal="false" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible"
-               width="1000px">
+               width="1200px">
       <el-form
         ref="inboundOrderRawItemForm"
         :rules="rules"
@@ -164,81 +159,145 @@
         label-position="right"
         label-width="150px"
       >
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="原料编号：" prop="materialNumber">
+              <el-input v-model="temp.materialNumber"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="16">
+            <el-form-item label="我司编号：" prop="productNumber">
+              <el-row>
+                <el-col :span="9.5">
+                  <el-input v-model="temp.productNumber"/>
+                </el-col>
+                <el-col :span="6">
+                  <el-button type="success" style="margin: 0 0 0 20px;" size="mini"
+                             @click="handleGetProductSerialNumber()">
+                    生成编号
+                  </el-button>
+                </el-col>
+                <el-col :span="8">
+                  <el-select v-model="codeRule" clearable filterable placeholder="编码规则" size="mini">
+                    <el-option
+                      v-for="item in codeRules"
+                      :key="item.id"
+                      :label="item.rule"
+                      :value="item.name">
+                    </el-option>
+                  </el-select>
+                </el-col>
+              </el-row>
 
-        <el-form-item label="来料编号：" prop="materialNumber">
-          <el-input v-model="temp.materialNumber"/>
-        </el-form-item>
-        <el-form-item label="钢卷编号：" prop="productNumber">
-          <div class="product-number">
-            <el-input v-model="temp.productNumber"/>
-            <el-button type="success" style="margin: 0 0 0 20px;" size="mini" @click="handleGetProductSerialNumber()">
-              按规则生成钢卷编号
-            </el-button>
-          </div>
-        </el-form-item>
-        <!--        <el-form-item label="钢种：" prop="steelGrade">
-                  <el-input v-model="temp.steelGrade"/>
-                </el-form-item>-->
-        <el-form-item label="表面品级：" prop="surfaceFinish">
-          <el-input v-model="temp.surfaceFinish"/>
-        </el-form-item>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="表面品级：" prop="surfaceFinish">
+              <el-input v-model="temp.surfaceFinish"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="宽度(mm)：" prop="width">
+              <el-input v-model="temp.width"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="厚度(mm)：" prop="thickness">
+              <el-input v-model="temp.thickness" @input="temp.thickness=temp.thickness.replace(/[^0-9.]/g,'')"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
 
-        <el-form-item label="宽度(mm)：" prop="width">
-          <el-input v-model="temp.width"/>
-        </el-form-item>
-        <el-form-item label="厚度(mm)：" prop="thickness">
-          <el-input v-model="temp.thickness"  @input ="temp.thickness=temp.thickness.replace(/[^0-9.]/g,'')"/>
-        </el-form-item>
-        <el-form-item label="长度(mm)：" prop="length">
-          <el-input v-model="temp.length"/>
-        </el-form-item>
-        <el-form-item label="标签规格mm*mm：" prop="labelSpecification">
-          <el-input v-model="temp.labelSpecification"/>
-        </el-form-item>
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="长度(mm)：" prop="length">
+              <el-input v-model="temp.length"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="标签规格mm*mm：" prop="labelSpecification">
+              <el-input v-model="temp.labelSpecification"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="实际规格mm*mm：" prop="specification">
+              <el-input v-model="temp.specification"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="标签净重(kg)：" prop="labelNetWeight">
+              <el-input v-model="temp.labelNetWeight"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="标签毛重(kg)：" prop="labelGrossWeight">
+              <el-input v-model="temp.labelGrossWeight"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="实磅净重(kg)：" prop="netWeight">
+              <el-input v-model="temp.netWeight"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="实磅毛重(kg)：" prop="grossWeight">
+              <el-input v-model="temp.grossWeight"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="边部：" prop="edge">
+              <el-input v-model="temp.edge"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="等级：" prop="grade">
+              <el-input v-model="temp.grade"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
 
-        <el-form-item label="实际规格mm*mm：" prop="specification">
-          <el-input v-model="temp.specification"/>
-        </el-form-item>
-        <el-form-item label="标签净重(kg)：" prop="labelNetWeight">
-          <el-input v-model="temp.labelNetWeight"/>
-        </el-form-item>
-        <el-form-item label="标签毛重(kg)：" prop="labelGrossWeight">
-          <el-input v-model="temp.labelGrossWeight"/>
-        </el-form-item>
-        <el-form-item label="实磅净重(kg)：" prop="netWeight">
-          <el-input v-model="temp.netWeight"/>
-        </el-form-item>
 
-        <el-form-item label="实磅毛重(kg)：" prop="grossWeight">
-          <el-input v-model="temp.grossWeight"/>
-        </el-form-item>
-        <el-form-item label="边部：" prop="edge">
-          <el-input v-model="temp.edge"/>
-        </el-form-item>
-        <el-form-item label="等级：" prop="grade">
-          <el-input v-model="temp.grade"/>
-        </el-form-item>
-        <el-form-item label="检验员：" prop="inspector">
-          <el-input v-model="temp.inspector"/>
-        </el-form-item>
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="检验员：" prop="inspector">
+              <el-input v-model="temp.inspector"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="条码：" prop="barcode">
+              <el-input v-model="temp.barcode"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="时间：" prop="time">
+              <el-date-picker v-model="temp.time" type="datetime" placeholder="请选择时间" style="width: 100%;"
+                              format="yyyy-MM-dd HH:mm:ss"
+                              value-format="yyyy-MM-ddTHH:mm:ss"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
 
-        <el-form-item label="条码：" prop="barcode">
-          <el-input v-model="temp.barcode"/>
-        </el-form-item>
-        <el-form-item label="时间：" prop="time">
-          <el-date-picker v-model="temp.time" type="datetime" placeholder="请选择时间" style="width: 100%;"
-                          format="yyyy-MM-dd HH:mm:ss"
-                          value-format="yyyy-MM-ddTHH:mm:ss"
-          />
-        </el-form-item>
-        <el-form-item label="描述：" prop="description">
-          <el-input
-            v-model="temp.description"
-            :autosize="{ minRows: 2, maxRows: 4}"
-            type="textarea"
-            placeholder="描述"
-          />
-        </el-form-item>
+
+
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="描述：" prop="description">
+              <el-input
+                v-model="temp.description"
+                :autosize="{ minRows: 2, maxRows: 4}"
+                type="textarea"
+                placeholder="描述"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
 
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -273,6 +332,8 @@
     deleteInboundOrderRawItem,
     getProductSerialNumbers
   } from '@/api/inboundorderrawitem.js'
+
+  import { getCodeRules } from '@/api/coderule'
 
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
@@ -328,6 +389,8 @@
         tagTypes: ['success', 'info', 'warning', 'danger'],
         selectedMaterial: undefined,
 
+        codeRules: [],
+        codeRule: '',
         dialogFormVisible: false,
         dialogStatus: '',
 
@@ -350,13 +413,13 @@
             { required: true, trigger: 'blur', message: '请填写表面品级' }
           ],
           width: [
-            { required: true, trigger: 'blur', message: '请填写宽度' },
+            { required: true, trigger: 'blur', message: '请填写宽度' }
           ],
           thickness: [
-            { required: true, trigger: 'blur', message: '请填写厚度' },
+            { required: true, trigger: 'blur', message: '请填写厚度' }
           ],
           length: [
-            { required: true, trigger: 'blur', message: '请填写长度' },
+            { required: true, trigger: 'blur', message: '请填写长度' }
           ],
           labelSpecification: [
             { required: true, trigger: 'blur', message: '请填写标签规格' }
@@ -365,16 +428,16 @@
             { required: true, trigger: 'blur', message: '请填写实际规格' }
           ],
           labelNetWeight: [
-            { required: true, trigger: 'blur', message: '请填写标签净重' },
+            { required: true, trigger: 'blur', message: '请填写标签净重' }
           ],
           labelGrossWeight: [
-            { required: true, trigger: 'blur', message: '请填写标签毛重' },
+            { required: true, trigger: 'blur', message: '请填写标签毛重' }
           ],
           netWeight: [
-            { required: true, trigger: 'blur', message: '请填写实磅净重' },
+            { required: true, trigger: 'blur', message: '请填写实磅净重' }
           ],
           grossWeight: [
-            { required: true, trigger: 'blur', message: '请填写实磅毛重' },
+            { required: true, trigger: 'blur', message: '请填写实磅毛重' }
           ],
           edge: [
             { required: true, trigger: 'blur', message: '请填写边部' }
@@ -397,7 +460,11 @@
     },
     created() {
       this.tempCopy = deepClone(this.temp)
-      this.getList()
+      this.$nextTick(async() => {
+        await this.getCodeRules()
+        // this.codeRule = this.codeRules[0].rule
+        this.getList()
+      })
     },
     methods: {
       renderHeader(h, { column, $index }) {
@@ -414,8 +481,7 @@
         }
       },
       handleGetProductSerialNumber() {
-        getProductSerialNumbers(1).then(res => {
-          console.log(res)
+        getProductSerialNumbers(this.codeRule, 1).then(res => {
           this.temp.productNumber = res.model[0]
         })
       },
@@ -434,6 +500,13 @@
           this.total = res.queryResult.total
           this.$emit('update:receivedQuantity', this.total)
           this.listLoading = false
+        })
+      },
+      getCodeRules() {
+        getCodeRules({}).then(res => {
+          this.codeRules = res.queryResult.list.filter(item => {
+            return item.name.startsWith('PRODUCT_NUMBER')
+          })
         })
       },
       handleFilter() {

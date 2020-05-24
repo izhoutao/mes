@@ -226,7 +226,7 @@
         }))
       },
       async getOperations() {
-        let res = await getOperations({})
+        let res = await getOperations({orders: ['sequence_number asc']})
         this.operations = res.queryResult.list
         this.operationMap = _.fromPairs(this.operations.map(operation => {
           return [operation.id, operation]

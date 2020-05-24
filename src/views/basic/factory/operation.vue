@@ -72,6 +72,9 @@
         label-position="right"
         label-width="150px"
       >
+        <el-form-item label="工序序号：" prop="sequenceNumber">
+          <el-input v-model="temp.sequenceNumber"/>
+        </el-form-item>
         <el-form-item label="工序编码：" prop="code">
           <el-input v-model="temp.code"/>
         </el-form-item>
@@ -112,28 +115,36 @@
         listQuery: {
           current: 1,
           size: 10,
-          name: undefined
+          name: undefined,
+          orders: ['sequence_number asc']
         },
         temp: {
           id: undefined,
           name: '',
           code: '',
-          description: ''
+          description: '',
+          sequenceNumber: ''
         },
         tempCopy: null,
-        dialogFormVisible: false,
-        dialogStatus: '',
-        textMap: {
-          update: '编辑',
-          create: '添加'
-        },
+        dialogFormVisible:
+          false,
+        dialogStatus:
+          '',
+        textMap:
+          {
+            update: '编辑',
+            create:
+              '添加'
+          }
+        ,
         rules: {
           name: [
             { required: true, trigger: 'blur', message: '请填写工艺名称' }
           ],
-          code: [
-            { required: true, trigger: 'blur', message: '请填写工艺编码' }
-          ],
+          code:
+            [
+              { required: true, trigger: 'blur', message: '请填写工艺编码' }
+            ]
         }
       }
     },
