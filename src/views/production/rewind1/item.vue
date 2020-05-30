@@ -12,14 +12,14 @@
       >
 
         <el-row :gutter="40">
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item label="日期：" prop="date">
               <el-date-picker v-model="temp.date" type="date" placeholder="请选择日期" style="width: 100%;"
                               format="yyyy 年 MM 月 dd 日"
                               value-format="yyyy-MM-dd"/>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item label="班别：" prop="shiftId">
               <el-select v-model="temp.shiftId" filterable placeholder="请选择" style="width:100%">
                 <el-option
@@ -31,13 +31,11 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item label="钢卷编号：" prop="productNumber">
               <el-select
                 v-model="temp.productNumber"
                 filterable
-                allow-create
-                default-first-option
                 remote
                 reserve-keyword
                 placeholder="请输入钢卷号"
@@ -45,16 +43,36 @@
                 :loading="loading">
                 <el-option
                   v-for="item in pendingRawItems"
-                  :key="item"
-                  :label="item"
-                  :value="item">
+                  :key="item.productNumber"
+                  :label="item.productNumber"
+                  :value="item.productNumber">
                 </el-option>
               </el-select>
 
             </el-form-item>
 
           </el-col>
+          <el-col :span="6">
+            <el-form-item label="原料编号：" prop="materialNumber">
+              <el-select
+                v-model="temp.materialNumber"
+                filterable
+                remote
+                reserve-keyword
+                placeholder="请输入原料编号"
+                :remote-method="getPendingRawItems"
+                :loading="loading">
+                <el-option
+                  v-for="item in pendingRawItems"
+                  :key="item.materialNumber"
+                  :label="item.materialNumber"
+                  :value="item.materialNumber">
+                </el-option>
+              </el-select>
 
+            </el-form-item>
+
+          </el-col>
         </el-row>
         <el-row :gutter="40">
           <el-col :span="8">
@@ -312,15 +330,16 @@
           //journalingEndTime: parseTime(new Date(new Date(new Date().toLocaleDateString()).getTime() + 24 * 60 * 60 * 1000 - 1), '{y}-{m}-{d}T{h}:{i}:{s}')
           journalingBeginTime: undefined,
           journalingEndTime: undefined,
-          createPerson: '',
+          createPerson: ''
           // shiftId: '',
           // date: parseTime(new Date(),'{y}-{m}-{d} {h}:{i}:{s}')
         },
         temp: {
           id: undefined,
           productNumber: '',
-/*          steelGrade: '',
-          hotRollOrigin: '',*/
+          materialNumber:'',
+          /*          steelGrade: '',
+                    hotRollOrigin: '',*/
           inputThickness: '',
           inputWeight: '',
           processVelocity: '',
@@ -332,7 +351,7 @@
           outputLength: '',
           lossReason: '',
           shiftId: '',
-          date: parseTime(new Date(),'{y}-{m}-{d}T{h}:{i}:{s}')
+          date: parseTime(new Date(), '{y}-{m}-{d}T{h}:{i}:{s}')
         },
         tempCopy: null,
         pendingRawItems: [],
@@ -343,10 +362,10 @@
         // dialogFormVisible: false,
         dialogStatus: 'create',
 
-/*        textMap: {
-          update: '编辑',
-          create: '添加'
-        },*/
+        /*        textMap: {
+                  update: '编辑',
+                  create: '添加'
+                },*/
         rules: {
           date: [
             { required: true, trigger: 'blur', message: '请选择日期' }
@@ -358,19 +377,19 @@
             { required: true, message: '钢卷编号不能为空' }
           ],
           inputThickness: [
-            { required: true, message: '进料厚度不能为空' },
+            { required: true, message: '进料厚度不能为空' }
           ],
           inputWeight: [
-            { required: true, message: '进料重量不能为空' },
+            { required: true, message: '进料重量不能为空' }
           ],
           processVelocity: [
-            { required: true, message: '生产速度不能为空' },
+            { required: true, message: '生产速度不能为空' }
           ],
           welderCurrent: [
-            { required: true, message: '焊机电流不能为空' },
+            { required: true, message: '焊机电流不能为空' }
           ],
           welderVelocity: [
-            { required: true, message: '焊机速度不能为空' },
+            { required: true, message: '焊机速度不能为空' }
           ],
           beginTime: [
             { required: true, message: '上机时间不能为空' }
@@ -379,10 +398,10 @@
             { required: true, message: '下机时间不能为空' }
           ],
           outputWeight: [
-            { required: true, message: '出料重量不能为空' },
+            { required: true, message: '出料重量不能为空' }
           ],
           outputLength: [
-            { required: true, message: '出料长度不能为空' },
+            { required: true, message: '出料长度不能为空' }
           ],
           lossReason: [
             { required: true, message: '损耗原因不能为空' }
@@ -431,12 +450,18 @@
       getPendingRawItems(query) {
         if (query !== '') {
           this.loading = true
-          getOutboundOrderRawItems({ next_operation_label: '重卷', next_operation_status: 0 }).then(res => {
+          getOutboundOrderRawItems({ next_operation_label: '重卷' }).then(res => {
             this.loading = false
-            this.pendingRawItems = res.queryResult.list.map(item => item.productNumber).filter(item => {
+            this.pendingRawItems = res.queryResult.list.map(item => {
+              return {
+                productNumbers: item.productNumber,
+                materialNumbers: item.materialNumber
+              }
+            }).filter(item => {
               return item.toLowerCase()
                 .indexOf(query.toLowerCase()) > -1
             })
+
           })
         } else {
           this.pendingRawItems = []

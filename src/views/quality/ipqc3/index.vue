@@ -272,10 +272,9 @@
                       <qc-measurement v-bind:measurement.sync="temp.measurement" :key="temp.id"/>
                     </el-col>
                     <el-col :span="14">
-                      <qc-defect v-bind:defectList.sync="temp.defectList" :key="JSON.stringify(temp.defectList)"/>
+                      <qc-defect v-bind:defectList.sync="temp.defectList" :key="temp.id"/>
                     </el-col>
                   </el-row>
-
 
                   <el-row>
                     <el-col :span="24">
@@ -343,9 +342,7 @@
 <script>
   import { deepClone } from '@/utils'
 
-  import { getIpqcs, addIpqc, updateIpqc, deleteIpqc } from '@/api/ipqc.js'
-
-  import { MessageBox } from 'element-ui'
+  import { addIpqc, getIpqcs, updateIpqc } from '@/api/ipqc.js'
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination/index.vue'
   import QcDefect from './qc-defect'
@@ -354,7 +351,9 @@
   import { getCustomers } from '@/api/customer'
   import { getOperations } from '@/api/operation'
   import { getShifts } from '@/api/shift'
-  import { getQcDefects } from '@/api/qcdefect' // Secondary package based on el-pagination
+  import { getInboundOrderRawItems } from '@/api/inboundorderrawitem'
+  import { getOutboundOrderRawItems } from '@/api/outboundorderrawitem'
+  import { getInboundOrderRaws } from '@/api/inboundorderraw' // Secondary package based on el-pagination
 
   export default {
     name: 'ipqc_query',
@@ -387,19 +386,22 @@
           for (let i = this.temp.measurement.length; i < 10; i++) {
             this.temp.measurement.push(deepClone(this.measurementItem))
           }
-          this.temp.defectList = []
-          if (val.id) {
-            let res = await getQcDefects({ ipqcId: val.id })
-            this.temp.defectList = res.queryResult.list
+          if (!this.temp.defectList) {
+            this.temp.defectList = []
           }
-          for (let i = this.temp.defectList.length ? this.temp.defectList.length : 0; i < 20; i++) {
+          /*          //console.log(val.id)
+                    if (val.id) {
+                      let res = await getQcDefects({ ipqcId: val.id })
+                      this.temp.defectList = res.queryResult.list
+                    }*/
+          for (let i = this.temp.defectList.length; i < 20; i++) {
             this.temp.defectList.push(deepClone(this.defectItem))
           }
+          //console.log(this.temp.defectList)
         },
         immediate: true
         // deep: true
       }
-
     },
     data() {
       return {
@@ -557,6 +559,45 @@
         })
         if (currentRow) {
           this.temp = deepClone(currentRow)
+          if (!this.temp.id) {
+            Promise.all([
+              getInboundOrderRawItems({
+                materialNumber: this.temp.materialNumber,
+                productNumber: this.temp.productNumber
+              }).then(res => {
+                if (res.queryResult.total) {
+                  const inboundOrderRawItem = res.queryResult.list[0]
+                  this.temp.steelGrade = inboundOrderRawItem.steelGrade
+                  this.temp.surfaceFinish = inboundOrderRawItem.surfaceFinish
+                  getInboundOrderRaws({
+                    inboundOrderRawId: inboundOrderRawItem.inboundOrderRawId
+                  }).then(res => {
+                    if (res.queryResult.total) {
+                      const inboundOrderRaw = res.queryResult.list[0]
+                      this.temp.hotRollOrigin = inboundOrderRaw.hotRollOrigin
+                    }
+                  })
+                }
+              }),
+              getOutboundOrderRawItems({
+                materialNumber: this.temp.materialNumber,
+                productNumber: this.temp.productNumber
+              }).then(res => {
+                if (res.queryResult.total) {
+                  const outboundOrderRawItem = res.queryResult.list[0]
+                  const operationHistory = JSON.parse(outboundOrderRawItem.operationHistory)
+                  const index = operationHistory.findIndex(item => item.itemId == this.temp.itemId)
+                  if (index != -1) {
+                    if (index != (operationHistory.length - 1)) {
+                      this.temp.nextOperation = operationHistory[index + 1].operationName
+                    } else if (index == (operationHistory.length - 1)) {
+                      this.temp.nextOperation = outboundOrderRawItem.nextOperationLabel
+                    }
+                  }
+                }
+              })
+            ])
+          }
         } else {
           this.temp = deepClone(this.tempCopy)
         }
@@ -584,6 +625,7 @@
         getIpqcs(this.listQuery).then(res => {
           this.list = res.queryResult.list.map(item => {
             item.measurement = JSON.parse(item.measurement)
+            item.defectList = JSON.parse(item.defectList)
             return item
           })
           this.total = res.queryResult.total
@@ -626,9 +668,9 @@
               item => item.thickness && item.width &&
                 item.length && item.ts48 && item.bs48
             ))
-            ipqc.defectList = ipqc.defectList.filter(
+            ipqc.defectList = JSON.stringify(ipqc.defectList.filter(
               item => item.defectCode
-            )
+            ))
             addIpqc(ipqc).then((res) => {
               for (const v of this.list) {
                 if (
@@ -639,6 +681,7 @@
                 ) {
                   const index = this.list.indexOf(v)
                   res.model.measurement = JSON.parse(res.model.measurement)
+                  res.model.defectList = JSON.parse(res.model.defectList)
                   this.list.splice(index, 1, res.model)
                   this.$refs.ipqcTable.setCurrentRow(res.model)
                   break
@@ -663,9 +706,9 @@
               item => item.thickness && item.width &&
                 item.length && item.ts48 && item.bs48
             ))
-            ipqc.defectList = ipqc.defectList.filter(
+            ipqc.defectList = JSON.stringify(ipqc.defectList.filter(
               item => item.defectCode
-            )
+            ))
 
             updateIpqc(ipqc).then(() => {
               for (const v of this.list) {

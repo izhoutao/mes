@@ -93,7 +93,6 @@
             </el-table-column>-->
     </el-table>
 
-
   </div>
 </template>
 
@@ -107,11 +106,10 @@
     name: 'QcDefect',
     components: { Pagination },
     directives: { waves },
-    // props: ['ipqcId'],
     props: ['defectList'],
     watch: {
       'list': {
-        handler: async function(val) {
+        handler: function(val) {
           this.$emit('update:defectList', val)
         },
         deep: true

@@ -11,15 +11,15 @@
         label-width="150px"
       >
 
-        <el-row :gutter="40">
-          <el-col :span="8">
+        <el-row>
+          <el-col :span="6">
             <el-form-item label="日期：" prop="date">
               <el-date-picker v-model="temp.date" type="date" placeholder="请选择日期" style="width: 100%;"
                               format="yyyy 年 MM 月 dd 日"
                               value-format="yyyy-MM-dd"/>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item label="班别：" prop="shiftId">
               <el-select v-model="temp.shiftId" filterable placeholder="请选择" style="width:100%">
                 <el-option
@@ -31,18 +31,40 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item label="钢卷编号：" prop="productNumber">
               <el-select
                 v-model="temp.productNumber"
                 filterable
-                allow-create
-                default-first-option
                 remote
                 reserve-keyword
                 placeholder="请输入钢卷号"
-                :remote-method="getPendingRawItems"
-                :loading="loading">
+                :remote-method="getPendingRawItemsByNumberType('productNumber')"
+                :loading="loading"
+                @change="handleProductNumberChange">
+                <el-option
+                  v-for="item in pendingRawItems"
+                  :key="item"
+                  :label="item"
+                  :value="item">
+                </el-option>
+              </el-select>
+
+            </el-form-item>
+
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="原料编号：" prop="materialNumber">
+              <el-select
+                v-model="temp.materialNumber"
+                filterable
+                remote
+                reserve-keyword
+                placeholder="请输入原料编号"
+                :remote-method="getPendingRawItemsByNumberType('materialNumber')"
+                :loading="loading"
+                @change="handleMaterialNumberChange"
+              >
                 <el-option
                   v-for="item in pendingRawItems"
                   :key="item"
@@ -56,37 +78,37 @@
           </el-col>
 
         </el-row>
-        <el-row :gutter="40">
-          <el-col :span="8">
+        <el-row>
+          <el-col :span="6">
             <el-form-item label="进料厚度(mm)：" prop="inputThickness">
               <el-input v-model="temp.inputThickness"/>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item label="进料重量(kg)：" prop="inputWeight">
               <el-input v-model="temp.inputWeight"/>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item label="生产速度(m/min)：" prop="processVelocity">
               <el-input v-model="temp.processVelocity"/>
             </el-form-item>
           </el-col>
-
-        </el-row>
-
-        <el-row :gutter="40">
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item label="焊机电流：" prop="welderCurrent">
               <el-input v-model="temp.welderCurrent"/>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+        </el-row>
+
+        <el-row>
+
+          <el-col :span="6">
             <el-form-item label="焊机速度：" prop="welderVelocity">
               <el-input v-model="temp.welderVelocity"/>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item label="上机时间：" prop="beginTime">
               <el-date-picker
                 v-model="temp.beginTime"
@@ -99,9 +121,7 @@
               </el-date-picker>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row :gutter="40">
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item label="下机时间：" prop="endTime">
               <el-date-picker
                 v-model="temp.endTime"
@@ -114,17 +134,19 @@
               </el-date-picker>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item label="出料重量(kg)：" prop="outputWeight">
               <el-input v-model="temp.outputWeight"/>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+        </el-row>
+        <el-row>
+          <el-col :span="6">
             <el-form-item label="出料长度(m)：" prop="outputLength">
               <el-input v-model="temp.outputLength"/>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item label="损耗原因：" prop="lossReason">
               <el-input v-model="temp.lossReason"/>
             </el-form-item>
@@ -313,14 +335,16 @@
           journalingBeginTime: undefined,
           journalingEndTime: undefined,
           createPerson: '',
+          orders: ['date desc','update_time desc']
           // shiftId: '',
           // date: parseTime(new Date(),'{y}-{m}-{d} {h}:{i}:{s}')
         },
         temp: {
           id: undefined,
           productNumber: '',
-/*          steelGrade: '',
-          hotRollOrigin: '',*/
+          materialNumber: '',
+          /*          steelGrade: '',
+                    hotRollOrigin: '',*/
           inputThickness: '',
           inputWeight: '',
           processVelocity: '',
@@ -332,7 +356,7 @@
           outputLength: '',
           lossReason: '',
           shiftId: '',
-          date: parseTime(new Date(),'{y}-{m}-{d}T{h}:{i}:{s}')
+          date: parseTime(new Date(), '{y}-{m}-{d}T{h}:{i}:{s}')
         },
         tempCopy: null,
         pendingRawItems: [],
@@ -343,10 +367,10 @@
         // dialogFormVisible: false,
         dialogStatus: 'create',
 
-/*        textMap: {
-          update: '编辑',
-          create: '添加'
-        },*/
+        /*        textMap: {
+                  update: '编辑',
+                  create: '添加'
+                },*/
         rules: {
           date: [
             { required: true, trigger: 'blur', message: '请选择日期' }
@@ -358,19 +382,19 @@
             { required: true, message: '钢卷编号不能为空' }
           ],
           inputThickness: [
-            { required: true, message: '进料厚度不能为空' },
+            { required: true, message: '进料厚度不能为空' }
           ],
           inputWeight: [
-            { required: true, message: '进料重量不能为空' },
+            { required: true, message: '进料重量不能为空' }
           ],
           processVelocity: [
-            { required: true, message: '生产速度不能为空' },
+            { required: true, message: '生产速度不能为空' }
           ],
           welderCurrent: [
-            { required: true, message: '焊机电流不能为空' },
+            { required: true, message: '焊机电流不能为空' }
           ],
           welderVelocity: [
-            { required: true, message: '焊机速度不能为空' },
+            { required: true, message: '焊机速度不能为空' }
           ],
           beginTime: [
             { required: true, message: '上机时间不能为空' }
@@ -379,10 +403,10 @@
             { required: true, message: '下机时间不能为空' }
           ],
           outputWeight: [
-            { required: true, message: '出料重量不能为空' },
+            { required: true, message: '出料重量不能为空' }
           ],
           outputLength: [
-            { required: true, message: '出料长度不能为空' },
+            { required: true, message: '出料长度不能为空' }
           ],
           lossReason: [
             { required: true, message: '损耗原因不能为空' }
@@ -428,20 +452,48 @@
           return [shift.id, shift]
         }))
       },
-      getPendingRawItems(query) {
-        if (query !== '') {
-          this.loading = true
-          getOutboundOrderRawItems({ next_operation_label: '重卷', next_operation_status: 0  }).then(res => {
-            this.loading = false
-            this.pendingRawItems = res.queryResult.list.map(item => item.productNumber).filter(item => {
-              return item.toLowerCase()
-                .indexOf(query.toLowerCase()) > -1
+
+      getPendingRawItemsByNumberType(type) {
+        return query => {
+          if (query !== '') {
+            this.loading = true
+            getOutboundOrderRawItems({ next_operation_label: '重卷' }).then(res => {
+              this.loading = false
+              this.pendingRawItems = res.queryResult.list.map(item => item[type]).filter(item => {
+                return item.toLowerCase()
+                  .indexOf(query.toLowerCase()) > -1
+              })
             })
-          })
-        } else {
-          this.pendingRawItems = []
+          } else {
+            this.pendingRawItems = []
+          }
         }
       },
+
+      handleProductNumberChange(val) {
+        if (val) {
+          getOutboundOrderRawItems({ next_operation_label: '重卷', product_number: val }).then(res => {
+            if (res.queryResult.list.length == 1) {
+              this.temp.materialNumber = res.queryResult.list[0].materialNumber
+            } else {
+              this.temp.materialNumber = ''
+            }
+          })
+        }
+      },
+
+      handleMaterialNumberChange(val) {
+        if (val) {
+          getOutboundOrderRawItems({ next_operation_label: '重卷', material_number: val }).then(res => {
+            if (res.queryResult.list.length == 1) {
+              this.temp.productNumber = res.queryResult.list[0].productNumber
+            } else {
+              this.temp.productNumber = ''
+            }
+          })
+        }
+      },
+
       getList() {
         this.listLoading = true
         getJournalingRewindItems(this.listQuery).then(res => {
