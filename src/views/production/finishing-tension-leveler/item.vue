@@ -405,7 +405,7 @@
           journalingBeginTime: undefined,
           journalingEndTime: undefined,
           createPerson: '',
-          orders: ['date desc','update_time desc']
+          orders: ['date desc', 'update_time desc']
           // shiftId: '',
           // date: parseTime(new Date(),'{y}-{m}-{d} {h}:{i}:{s}')
         },
@@ -457,43 +457,43 @@
             { required: true, message: '钢卷编号不能为空' }
           ],
           inputWidth: [
-            { required: true, message: '进料宽度不能为空' },
+            { required: true, message: '进料宽度不能为空' }
           ],
           inputThickness: [
-            { required: true, message: '进料厚度不能为空' },
+            { required: true, message: '进料厚度不能为空' }
           ],
           inputWeight: [
-            { required: true, message: '进料重量不能为空' },
+            { required: true, message: '进料重量不能为空' }
           ],
           paramProductionMode: [
             { required: true, message: '请选择生产方式' }
           ],
           paramInletTesion: [
-            { required: true, message: '入口张力不能为空' },
+            { required: true, message: '入口张力不能为空' }
           ],
           paramTotalRollingForce: [
-            { required: true, message: '总轧制力不能为空' },
+            { required: true, message: '总轧制力不能为空' }
           ],
           paramOutletTesion: [
-            { required: true, message: '出口张力不能为空' },
+            { required: true, message: '出口张力不能为空' }
           ],
           paramPercentageElongation: [
-            { required: true, message: '延伸率不能为空' },
+            { required: true, message: '延伸率不能为空' }
           ],
           outputThickness: [
-            { required: true, message: '出料厚度不能为空' },
+            { required: true, message: '出料厚度不能为空' }
           ],
           outputLength: [
-            { required: true, message: '出料长度不能为空' },
+            { required: true, message: '出料长度不能为空' }
           ],
           outputWeight: [
-            { required: true, message: '出料重量不能为空' },
+            { required: true, message: '出料重量不能为空' }
           ],
           outputSleeveWeight: [
-            { required: true, message: '套筒重量不能为空' },
+            { required: true, message: '套筒重量不能为空' }
           ],
           outputSpeed: [
-            { required: true, message: '出料速度不能为空' },
+            { required: true, message: '出料速度不能为空' }
           ],
           beginTime: [
             { required: true, message: '上机时间不能为空' }
@@ -520,7 +520,10 @@
           if (shift.beginTime <= shift.endTime) {
             return timeStr >= shift.beginTime && timeStr <= shift.endTime
           } else {
-            return timeStr >= shift.beginTime && timeStr <= Number(shift.endTime.slice(0, 2)) + 24 + shift.endTime.slice(2)
+            return (timeStr >= shift.beginTime
+              && timeStr <= '24:00:00')
+              || (timeStr >= '00:00:00'
+                && timeStr <= shift.endTime)
           }
         })[0].shiftId
         this.getList()

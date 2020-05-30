@@ -358,7 +358,7 @@
         },
         temp: {
           id: undefined,
-          inboundOrderRawRawId: '',
+          inboundOrderRawId: '',
           inboundOrderRawDetailId: this.inboundOrderRawDetailId,
           materialNumber: undefined,
           productNumber: '',

@@ -326,7 +326,7 @@
           journalingBeginTime: undefined,
           journalingEndTime: undefined,
           createPerson: '',
-          orders: ['date desc','update_time desc']
+          orders: ['date desc', 'update_time desc']
           // shiftId: '',
           // date: parseTime(new Date(),'{y}-{m}-{d} {h}:{i}:{s}')
         },
@@ -372,13 +372,13 @@
             { required: true, message: '钢卷编号不能为空' }
           ],
           inputWidth: [
-            { required: true, message: '进料宽度不能为空' },
+            { required: true, message: '进料宽度不能为空' }
           ],
           inputThickness: [
-            { required: true, message: '进料厚度不能为空' },
+            { required: true, message: '进料厚度不能为空' }
           ],
           inputWeight: [
-            { required: true, message: '进料重量不能为空' },
+            { required: true, message: '进料重量不能为空' }
           ],
           operationTemperatures: [
             { required: true, message: '操作各区温度不能为空' }
@@ -397,7 +397,7 @@
             { required: true, message: '下机时间不能为空' }
           ],
           outputWeight: [
-            { required: true, message: '出料重量不能为空' },
+            { required: true, message: '出料重量不能为空' }
           ]
         }
       }
@@ -418,7 +418,10 @@
           if (shift.beginTime <= shift.endTime) {
             return timeStr >= shift.beginTime && timeStr <= shift.endTime
           } else {
-            return timeStr >= shift.beginTime && timeStr <= Number(shift.endTime.slice(0, 2)) + 24 + shift.endTime.slice(2)
+            return (timeStr >= shift.beginTime
+              && timeStr <= '24:00:00')
+              || (timeStr >= '00:00:00'
+                && timeStr <= shift.endTime)
           }
         })[0].shiftId
         this.getList()

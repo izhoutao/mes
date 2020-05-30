@@ -30,7 +30,13 @@ const repositoryRouter = {
       name: 'outboundRaw',
       component: () => import('@/views/repository/outbound-order-raw/index'),
       meta: { title: '工单发料出库', icon: 'dashboard' }
-    }
+    },
+    {
+      path: 'inboundorderproduct',
+      name: 'inboundRaw',
+      component: () => import('@/views/repository/inbound-order-product/index'),
+      meta: { title: '成品入库', icon: 'dashboard' }
+    },
     /*    {
           path: 'outboundorder',
           name: 'outbound',

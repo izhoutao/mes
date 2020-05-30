@@ -337,7 +337,7 @@
         temp: {
           id: undefined,
           productNumber: '',
-          materialNumber:'',
+          materialNumber: '',
           /*          steelGrade: '',
                     hotRollOrigin: '',*/
           inputThickness: '',
@@ -425,7 +425,10 @@
           if (shift.beginTime <= shift.endTime) {
             return timeStr >= shift.beginTime && timeStr <= shift.endTime
           } else {
-            return timeStr >= shift.beginTime && timeStr <= Number(shift.endTime.slice(0, 2)) + 24 + shift.endTime.slice(2)
+            return (timeStr >= shift.beginTime
+              && timeStr <= '24:00:00')
+              || (timeStr >= '00:00:00'
+                && timeStr <= shift.endTime)
           }
         })[0].shiftId
         this.getList()
