@@ -20,10 +20,22 @@ const qualityRouter = {
       meta: { title: '进料检验', icon: 'dashboard' }
     },
     {
-      path: 'ipqc',
-      name: 'ipqc',
+      path: 'ipqc_maint',
+      name: 'ipqc_maint',
       component: () => import('@/views/quality/ipqc1/index'),
-      meta: { title: '制程检验', icon: 'dashboard' }
+      meta: { title: '质检资料维护', icon: 'dashboard' }
+    },
+    {
+      path: 'ipqc_check',
+      name: 'ipqc_check',
+      component: () => import('@/views/quality/ipqc2/index'),
+      meta: { title: '质检资料复判', icon: 'dashboard' }
+    },
+    {
+      path: 'ipqc_query',
+      name: 'ipqc_query',
+      component: () => import('@/views/quality/ipqc3/index'),
+      meta: { title: '质检资料维查询', icon: 'dashboard' }
     }
   ]
 }

@@ -1,7 +1,7 @@
 <template>
   <el-tabs :value="activeName" @tab-click="handleClick">
     <el-tab-pane label="生产班详情" name="detail">
-      <el-form label-width="140px" label-position="left" class="report-detail-container">
+      <el-form label-width="125px" label-position="right" class="report-detail-container">
         <el-row>
           <el-col :span="4">
             <el-form-item label="日期：" prop="date">
@@ -158,6 +158,12 @@
 
   .el-col {
     border: 1px solid #EBEEF5;
+    .el-form-item__label{
+      border-right: 1px solid #EBEEF5;
+    }
+    .el-form-item__content{
+      text-align: center;
+    }
   }
 
   }

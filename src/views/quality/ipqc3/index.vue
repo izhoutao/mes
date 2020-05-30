@@ -357,7 +357,7 @@
   import { getQcDefects } from '@/api/qcdefect' // Secondary package based on el-pagination
 
   export default {
-    name: 'ipqc_maint',
+    name: 'ipqc_query',
     components: { Pagination, QcDefect, QcMeasurement },
     directives: { waves },
     watch: {
@@ -399,6 +399,7 @@
         immediate: true
         // deep: true
       }
+
     },
     data() {
       return {

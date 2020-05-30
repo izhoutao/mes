@@ -37,7 +37,7 @@
             :picker-options="pickerOptions">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="" prop="inspectorConfirm">
+        <!--        <el-form-item label="" prop="inspectorConfirm">
           <el-select v-model="listQuery.inspectorConfirm" clearable filterable placeholder="请选择确认情况"
                      @change="handleFilter">
             <el-option :key="0" label="未确认" :value="0"></el-option>
@@ -50,7 +50,7 @@
             <el-option key="OK" label="合格" value="OK"></el-option>
             <el-option key="NG" label="暂留" value="NG"></el-option>
           </el-select>
-        </el-form-item>
+        </el-form-item>-->
         <el-button v-waves class="filter-item" size="small" type="primary" icon="el-icon-search" @click="handleFilter">
           搜索
         </el-button>
@@ -357,7 +357,7 @@
   import { getQcDefects } from '@/api/qcdefect' // Secondary package based on el-pagination
 
   export default {
-    name: 'ipqc_maint',
+    name: 'ipqc_check',
     components: { Pagination, QcDefect, QcMeasurement },
     directives: { waves },
     watch: {
@@ -412,8 +412,8 @@
           productNumber: undefined,
           operation: undefined,
           dateRange: undefined,
-          inspectorResult: undefined,
-          inspectorConfirm: undefined
+          inspectorResult: 'NG',
+          inspectorConfirm: 1
           /*orders: ['code desc']*/
         },
         temp: {
@@ -613,7 +613,7 @@
         this.temp.status = status
       },
       handleApprove() {
-        this.temp.status = 1
+        this.temp.status = 2
         this.temp.id ? this.updateData() : this.submit()
       },
       submit() {

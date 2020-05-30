@@ -8,7 +8,7 @@
         :rules="rules"
         :model="temp"
         label-position="right"
-        label-width="150px"
+        label-width="200px"
       >
 
         <el-row :gutter="40">
@@ -36,6 +36,8 @@
               <el-select
                 v-model="temp.productNumber"
                 filterable
+                allow-create
+                default-first-option
                 remote
                 reserve-keyword
                 placeholder="请输入钢卷号"

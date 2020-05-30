@@ -36,6 +36,8 @@
               <el-select
                 v-model="temp.productNumber"
                 filterable
+                allow-create
+                default-first-option
                 remote
                 reserve-keyword
                 placeholder="请输入钢卷号"

@@ -46,7 +46,6 @@
 </script>
 <style lang="scss">
   .app-container.workflow {
-
   .el-card__body {
     padding: 0px
   }
