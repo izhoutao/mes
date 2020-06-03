@@ -1,86 +1,91 @@
 <template>
   <div class="qc-defect">
-<!--    <div class="filter-container">
-      <el-form ref="filterForm" :inline="true">
-        <el-button class="filter-item" size="medium" style="padding:8px 16px;margin: 0px 0px 8px;" type="success"
-                   icon="el-icon-circle-plus-outline" @click="handleAdd">
-          添加
-        </el-button>
-        <el-button class="filter-item" size="medium" style="padding:8px 16px;margin: 0px 0px 8px;" type="success"
-                   icon="el-icon-circle-plus-outline" @click="handleCopy">
-          复制缺陷
-        </el-button>
-        <el-button class="filter-item" size="medium" style="padding:8px 16px;margin: 0px 0px 8px;" type="success"
-                   icon="el-icon-circle-plus-outline" @click="handlePaste">
-          粘贴缺陷
-        </el-button>
+    <!--    <div class="filter-container">
+          <el-form ref="filterForm" :inline="true">
+            <el-button class="filter-item" size="medium" style="padding:8px 16px;margin: 0px 0px 8px;" type="success"
+                       icon="el-icon-circle-plus-outline" @click="handleAdd">
+              添加
+            </el-button>
+            <el-button class="filter-item" size="medium" style="padding:8px 16px;margin: 0px 0px 8px;" type="success"
+                       icon="el-icon-circle-plus-outline" @click="handleCopy">
+              复制缺陷
+            </el-button>
+            <el-button class="filter-item" size="medium" style="padding:8px 16px;margin: 0px 0px 8px;" type="success"
+                       icon="el-icon-circle-plus-outline" @click="handlePaste">
+              粘贴缺陷
+            </el-button>
 
-      </el-form>
-    </div>-->
-    <el-table :data="list" border fit highlight-current-row height="330">
-      <el-table-column label="序" min-width="40px" type="index" align="center" fixed>
+          </el-form>
+        </div>-->
+    <el-table :data="list" border fit highlight-current-row height="250"
+              @selection-change="handleSelectionChange"
+              ref="multipleTable"
+    >
+      <el-table-column
+        type="selection"
+        width="30">
       </el-table-column>
-      <el-table-column label="缺陷码" min-width="80px" align="center">
+      <el-table-column label="缺陷码" min-width="35px" align="center">
         <template slot-scope="scope">
           <el-input v-model="scope.row.defectCode"/>
         </template>
       </el-table-column>
-      <el-table-column label="上面" min-width="80px" align="center">
+      <el-table-column label="上面" min-width="35px" align="center">
         <template slot-scope="scope">
           <el-input v-model="scope.row.up"/>
         </template>
       </el-table-column>
-      <el-table-column label="下面" min-width="80px" align="center">
+      <el-table-column label="下面" min-width="35px" align="center">
         <template slot-scope="scope">
           <el-input v-model="scope.row.down"/>
         </template>
       </el-table-column>
-      <el-table-column label="宽度|位置" min-width="80px" align="center" :render-header="renderHeader">
+      <el-table-column label="宽度位置" min-width="40px" align="center">
         <template slot-scope="scope">
           <el-input v-model="scope.row.widthPosition"/>
         </template>
       </el-table-column>
-      <el-table-column label="起始位置|(m)" min-width="80px" align="center" :render-header="renderHeader">
+      <el-table-column label="起始位置(m)" min-width="50px" align="center">
         <template slot-scope="scope">
           <el-input v-model="scope.row.startPosition"/>
         </template>
       </el-table-column>
-      <el-table-column label="结束位置|(m)" min-width="80px" align="center" :render-header="renderHeader">
+      <el-table-column label="结束位置(m)" min-width="50px" align="center">
         <template slot-scope="scope">
           <el-input v-model="scope.row.endPosition"/>
         </template>
       </el-table-column>
-      <el-table-column label="缺陷长度|(m)" min-width="80px" align="center" :render-header="renderHeader">
+      <el-table-column label="缺陷长度(m)" min-width="50px" align="center">
         <template slot-scope="scope">
           <el-input v-model="scope.row.defectLength"/>
         </template>
       </el-table-column>
-      <el-table-column label="程度" min-width="80px" align="center">
+      <el-table-column label="程度" min-width="35px" align="center">
         <template slot-scope="scope">
           <el-input v-model="scope.row.degree"/>
         </template>
       </el-table-column>
-      <el-table-column label="类别|波高" min-width="80px" align="center" :render-header="renderHeader">
+      <el-table-column label="类别波高" min-width="40px" align="center">
         <template slot-scope="scope">
           <el-input v-model="scope.row.waveHeightCategory"/>
         </template>
       </el-table-column>
-      <el-table-column label="周期|mm" min-width="80px" align="center" :render-header="renderHeader">
+      <el-table-column label="周期(mm)" min-width="50px" align="center">
         <template slot-scope="scope">
           <el-input v-model="scope.row.period"/>
         </template>
       </el-table-column>
-      <el-table-column label="频率" min-width="80px" align="center">
+      <el-table-column label="频率" min-width="35px" align="center">
         <template slot-scope="scope">
           <el-input v-model="scope.row.frequency"/>
         </template>
       </el-table-column>
-      <el-table-column label="直径|(mm)" min-width="80px" align="center" :render-header="renderHeader">
+      <el-table-column label="直径(mm)" min-width="50px" align="center">
         <template slot-scope="scope">
           <el-input v-model="scope.row.diameter"/>
         </template>
       </el-table-column>
-      <el-table-column label="距边|(mm)" min-width="80px" align="center" :render-header="renderHeader">
+      <el-table-column label="距边(mm)" min-width="50px" align="center">
         <template slot-scope="scope">
           <el-input v-model="scope.row.margin"/>
         </template>
@@ -119,9 +124,10 @@
       return {
         tableKey: 0,
         list: [],
+        selectedDefects: [],
         temp: {
-          id: '',
-          ipqcId: '',
+/*          id: '',
+          ipqcId: '',*/
           defectCode: '',
           up: '',
           down: '',
@@ -136,7 +142,7 @@
           diameter: '',
           margin: ''
         },
-        tempCopy: null,
+        tempCopy: null
 
       }
     },
@@ -145,14 +151,23 @@
       this.list = this.defectList
     },
     methods: {
-      renderHeader(h, { column, $index }) {
-        return h('span', {}, [
-          h('span', {}, column.label.split('|')[0]),
-          h('br'),
-          h('span', {}, column.label.split('|')[1])
-        ])
+      /*      renderHeader(h, { column, $index }) {
+              return h('span', {}, [
+                h('span', {}, column.label.split('|')[0]),
+                h('br'),
+                h('span', {}, column.label.split('|')[1])
+              ])
+            },*/
+      toggleSelection(rows) {
+        if (rows) {
+          rows.forEach(row => {
+            this.$refs.multipleTable.toggleRowSelection(row)
+          })
+        }
       },
-
+      handleSelectionChange(val) {
+        this.selectedDefects = val
+      },
       handleAdd() {
 
       },
@@ -167,6 +182,8 @@
 </script>
 <style lang="scss">
   .qc-defect {
+
+  /*zoom: 0.9;*/
 
   .el-icon-circle-plus-outline {
     /*margin: 3px;*/
@@ -188,12 +205,25 @@
   }
 
   }
+  .el-input__inner {
+    height: 26px;
+    border-radius: 0px;
+  }
 
+  .el-table {
+    font-size: 12px;
+  }
+
+  th {
+    padding: 0px;
+    text-align: center;
+  }
 
   .el-table__row {
 
   td {
     padding: 0px;
+    text-align: center;
 
   .cell {
     padding: 0px;
@@ -201,9 +231,9 @@
 
   }
   &
-  .current-row input {
+  .current-row .el-input__inner {
     background: #E0EEEE;
-    border-radius: 0px;
+    /*border-radius: 0px;*/
   }
 
   input {

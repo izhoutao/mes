@@ -31,8 +31,7 @@
       </el-form>
     </div>
 
-    <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%"
-              height="250">
+    <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%">
       <el-table-column label="序号" width="60px" type="index" align="center" fixed>
       </el-table-column>
       <el-table-column label="原料编号" width="160px" align="center">

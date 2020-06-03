@@ -30,46 +30,23 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="钢卷编号：" prop="productNumber">
-              <el-select
+              <el-autocomplete
                 v-model="temp.productNumber"
-                filterable
-                remote
-                reserve-keyword
+                :fetch-suggestions="getPendingItemsByNumberType('productNumber')"
                 placeholder="请输入钢卷号"
-                :remote-method="getPendingRawItemsByNumberType('productNumber')"
-                :loading="loading"
-                @change="handleProductNumberChange">
-                <el-option
-                  v-for="item in pendingRawItems"
-                  :key="item"
-                  :label="item"
-                  :value="item">
-                </el-option>
-              </el-select>
-
+                @select="item => handleNumberChange(item,'materialNumber')"
+              ></el-autocomplete>
             </el-form-item>
 
           </el-col>
           <el-col :span="6">
             <el-form-item label="原料编号：" prop="materialNumber">
-              <el-select
+              <el-autocomplete
                 v-model="temp.materialNumber"
-                filterable
-                remote
-                reserve-keyword
+                :fetch-suggestions="getPendingItemsByNumberType('materialNumber')"
                 placeholder="请输入原料编号"
-                :remote-method="getPendingRawItemsByNumberType('materialNumber')"
-                :loading="loading"
-                @change="handleMaterialNumberChange"
-              >
-                <el-option
-                  v-for="item in pendingRawItems"
-                  :key="item"
-                  :label="item"
-                  :value="item">
-                </el-option>
-              </el-select>
-
+                @select="item => handleNumberChange(item,'productNumber')"
+              ></el-autocomplete>
             </el-form-item>
 
           </el-col>
@@ -349,8 +326,6 @@
           date: parseTime(new Date(), '{y}-{m}-{d}T{h}:{i}:{s}')
         },
         tempCopy: null,
-        pendingRawItems: [],
-        loading: false,
         shifts: [],
         shiftMap: null,
 
@@ -370,6 +345,9 @@
           ],
           productNumber: [
             { required: true, message: '钢卷编号不能为空' }
+          ],
+          materialNumber: [
+            { required: true, message: '原料编号不能为空' }
           ],
           inputWidth: [
             { required: true, message: '进料宽度不能为空' }
@@ -443,44 +421,27 @@
           return [shift.id, shift]
         }))
       },
-      getPendingRawItemsByNumberType(type) {
-        return query => {
-          if (query !== '') {
-            this.loading = true
-            getOutboundOrderRawItems({ next_operation_label: '退火炉' }).then(res => {
-              this.loading = false
-              this.pendingRawItems = res.queryResult.list.map(item => item[type]).filter(item => {
-                return item.toLowerCase()
-                  .indexOf(query.toLowerCase()) > -1
-              })
-            })
-          } else {
-            this.pendingRawItems = []
-          }
-        }
-      },
 
-      handleProductNumberChange(val) {
-        if (val) {
-          getOutboundOrderRawItems({ next_operation_label: '退火炉', product_number: val }).then(res => {
-            if (res.queryResult.list.length == 1) {
-              this.temp.materialNumber = res.queryResult.list[0].materialNumber
-            } else {
-              this.temp.materialNumber = ''
-            }
+      getPendingItemsByNumberType(type) {
+        return (queryString, cb) => {
+          getOutboundOrderRawItems({ next_operation_label: '退火炉' }).then(res => {
+            let pendingItems = res.queryResult.list.map(item => {
+              return { ...item, value: item[type] }
+            }).filter(this.createStateFilter(queryString))
+            cb(pendingItems)
           })
         }
       },
-
-      handleMaterialNumberChange(val) {
-        if (val) {
-          getOutboundOrderRawItems({ next_operation_label: '退火炉', material_number: val }).then(res => {
-            if (res.queryResult.list.length == 1) {
-              this.temp.productNumber = res.queryResult.list[0].productNumber
-            } else {
-              this.temp.productNumber = ''
-            }
-          })
+      createStateFilter(queryString) {
+        return (state) => {
+          return (state.value.toLowerCase().indexOf(queryString.toLowerCase()) > -1)
+        }
+      },
+      handleNumberChange(item, type) {
+        if (item) {
+          this.temp[type] = item[type]
+        } else {
+          this.temp[type] = ''
         }
       },
 
@@ -529,7 +490,6 @@
               res.model.shiftName = shift.name
               this.list.unshift(res.model)
               this.total++
-              this.pendingRawItems = []
               // this.dialogFormVisible = false
               this.handleAdd()
               this.$notify({

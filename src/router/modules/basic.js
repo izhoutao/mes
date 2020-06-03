@@ -139,8 +139,8 @@ const basicRouter = {
           meta: { title: '仓库管理', icon: 'dashboard' }
         }
       ]
-    },
-    {
+    }
+    /*{
       path: 'quality',
       component: () => import('@/views/basic'), // Parent router-view
       name: 'qualitymodel',
@@ -159,7 +159,7 @@ const basicRouter = {
         }
 
       ]
-    }
+    }*/
   ]
 }
 

@@ -13,7 +13,7 @@ import systemRouter from './modules/system'
 import qualityRouter from '@/router/modules/quality'
 import orderRouter from '@/router/modules/order'
 import productionRouter from '@/router/modules/production'
-import apsRouter from '@/router/modules/aps'
+// import apsRouter from '@/router/modules/aps'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -103,7 +103,7 @@ export const asyncRoutes = [
   productionRouter,
   qualityRouter,
   repositoryRouter,
-  apsRouter,
+  // apsRouter,
   systemRouter,
   {
     path: 'help',
