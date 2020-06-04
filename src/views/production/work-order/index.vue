@@ -117,24 +117,25 @@
         :model="temp"
         label-position="right"
         label-width="110px"
+        size="mini"
       >
         <el-row>
-          <el-col :span="7">
+          <el-col :span="6">
             <el-form-item label="产品名称：" prop="materialName">
               <el-input v-model="temp.materialName" @click.native="handleSelectMaterial"/>
             </el-form-item>
           </el-col>
-          <el-col :span="7">
+          <el-col :span="6">
             <el-form-item label="需求重量(kg)：" prop="num">
               <el-input v-model="temp.num"/>
             </el-form-item>
           </el-col>
-          <el-col :span="5">
+          <el-col :span="6">
             <el-form-item label="完成重量(kg)：" prop="num">
               <el-input :value="temp.outputNum" :disabled="true"/>
             </el-form-item>
           </el-col>
-          <el-col :span="5">
+          <el-col :span="6">
             <el-form-item label="上线重量(kg)：" prop="num">
               <el-input :value="temp.onLineNum" :disabled="true"/>
             </el-form-item>
@@ -193,7 +194,36 @@
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="7">
+          <el-col :span="6">
+            <el-form-item label="目标宽度：" prop="targetWidth">
+              <el-input v-model="temp.targetWidth"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="宽度容差：" prop="toleranceWidth">
+              <el-input v-model="temp.toleranceWidth"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="目标厚度：" prop="targetThickness">
+              <el-input v-model="temp.targetThickness"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="厚度容差：" prop="toleranceThickness">
+              <el-input v-model="temp.toleranceThickness"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col>
+            <el-form-item label="生产要求：" prop="requirements">
+              <el-input type="textarea" :rows="6" v-model="temp.requirements"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="6">
             <el-form-item label="创建时间：" prop="updateTime">
               <el-input
                 :value="temp.updateTime"
@@ -201,7 +231,7 @@
               </el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="7">
+          <el-col :span="6">
             <el-form-item label="最后更新时间：" prop="updateTime">
               <el-input
                 :value="temp.updateTime"
@@ -209,7 +239,7 @@
               </el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="5">
+          <el-col :span="6">
             <el-form-item label="创建人：" prop="createPerson">
               <el-input
                 :value="temp.createPerson"
@@ -217,7 +247,7 @@
               </el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="5">
+          <el-col :span="6">
             <el-form-item label="最后更新人：" prop="updatePerson">
               <el-input
                 :value="temp.updatePerson"
@@ -326,7 +356,8 @@
 
 
     </el-dialog>-->
-    <work-order-detail v-if="currentWorkOrder&&!dialogFormVisible" :detail="currentWorkOrder" :workflows="workflows" :lines="lines"
+    <work-order-detail v-if="currentWorkOrder&&!dialogFormVisible" :detail="currentWorkOrder" :workflows="workflows"
+                       :lines="lines"
                        :key="currentWorkOrder.id"/>
 
   </div>
@@ -384,7 +415,11 @@
           workflowId: undefined,
           lineId: undefined,
           // status: undefined,
-          description: '',
+          minWidth: undefined,
+          maxWidth: undefined,
+          minThickness: undefined,
+          maxThickness: undefined,
+          requirements: '',
           createPerson: undefined,
           updateTime: undefined,
           updatePerson: undefined,

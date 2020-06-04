@@ -1,7 +1,10 @@
 <template>
   <div class="qc-measurement">
-    <el-table :data="list" border fit highlight-current-row height="330">
-      <el-table-column label="序" min-width="40px" type="index" align="center">
+    <el-table :data="tableData" border fit highlight-current-row height="250">
+      <el-table-column label="" width="35px" align="center">
+        <template slot-scope="scope">
+          {{ renderFirstColumn(scope.$index) }}
+        </template>
       </el-table-column>
       <el-table-column label="厚" min-width="40px" align="center">
         <template slot-scope="scope">
@@ -29,7 +32,6 @@
         </template>
       </el-table-column>
     </el-table>
-
   </div>
 </template>
 
@@ -53,6 +55,59 @@
         deep: true
       }
     },
+    computed: {
+      statisticsData() {
+        let initData = new Array(5)
+        for (let i = 0; i < 5; i++) {
+          initData[i] = deepClone({
+            sum: 0,
+            count: 0,
+            max: -Number.MAX_VALUE,
+            min: Number.MAX_VALUE
+          })
+        }
+        const attrs = ['thickness', 'width', 'length', 'ts48', 'bs48']
+        let statisticsData = this.measurement.reduce((prev, cur) => {
+          for (let i = 0; i < attrs.length; i++) {
+            let val = parseFloat(cur[attrs[i]])
+            if (val.toString() != 'NaN') {
+              prev[i].valid = true
+              prev[i].attribute = attrs[i]
+              prev[i].sum += val
+              prev[i].max = Math.max(prev[i].max, val)
+              prev[i].min = Math.min(prev[i].min, val)
+              prev[i].count++
+            }
+          }
+          return prev
+        }, initData)
+        return statisticsData.map(item => {
+          if (item.valid) {
+            item.mean = item.count ? item.sum / item.count : null
+            return item
+          } else {
+            return deepClone({ sum: null, count: null, max: null, min: null })
+          }
+        })
+      },
+      statisticsList() {
+        let statisticsList = new Array(3)
+        for (let i = 0; i < 3; i++) {
+          statisticsList[i] = deepClone(this.temp)
+        }
+        this.statisticsData.forEach(item => {
+          if (item.valid) {
+            statisticsList[0][item.attribute] = item.mean
+            statisticsList[1][item.attribute] = item.min
+            statisticsList[2][item.attribute] = item.max
+          }
+        })
+        return statisticsList
+      },
+      tableData() {
+        return [...this.list, ...this.statisticsList]
+      }
+    },
     data() {
       return {
         tableKey: 0,
@@ -64,7 +119,7 @@
           ts48: null,
           bs48: null
         },
-        tempCopy: null,
+        tempCopy: null
 
       }
     },
@@ -80,17 +135,18 @@
           h('span', {}, column.label.split('|')[1])
         ])
       },
-
-      handleAdd() {
-
-      },
-      handleCopy() {
-
-      },
-      handlePaste() {
-
+      renderFirstColumn(index) {
+        let length = this.tableData.length
+        if (index == length - 3) {
+          return '均值'
+        } else if (index == length - 2) {
+          return 'Min'
+        } else if (index == length - 1) {
+          return 'Max'
+        } else {
+          return index + 1
+        }
       }
-
 
     }
   }
@@ -98,6 +154,11 @@
 <style lang="scss">
   .qc-measurement {
 
+  tbody tr:nth-last-of-type(1), tr:nth-last-of-type(2), tr:nth-last-of-type(3) {
+    color: red;
+  }
+
+  /*zoom:0.9;*/
   .el-icon-circle-plus-outline {
     /*margin: 3px;*/
     font-size: 16px !important;
@@ -118,12 +179,25 @@
   }
 
   }
+  .el-input__inner {
+    height: 26px;
+    border-radius: 0px;
+  }
 
+  .el-table {
+    font-size: 12px;
+  }
+
+  th {
+    padding: 0px;
+    text-align: center;
+  }
 
   .el-table__row {
 
   td {
     padding: 0px;
+    text-align: center;
 
   .cell {
     padding: 0px;

@@ -2,7 +2,7 @@
   <div class="app-container ipqc-container">
     <!--工具栏-->
     <div class="filter-container">
-      <el-form ref="filterForm" :model="listQuery" :inline="true" size="small">
+      <el-form ref="filterForm" :model="listQuery" :inline="true" size="mini">
         <el-form-item label="" prop="productNumber">
           <el-input
             v-model="listQuery.productNumber"
@@ -51,23 +51,26 @@
             <el-option key="NG" label="暂留" value="NG"></el-option>
           </el-select>
         </el-form-item>
-        <el-button v-waves class="filter-item" size="small" type="primary" icon="el-icon-search" @click="handleFilter">
+        <el-button v-waves class="filter-item" size="mini" type="primary" icon="el-icon-search" @click="handleFilter">
           搜索
         </el-button>
-        <el-button v-waves class="filter-item" size="small" @click="resetForm('filterForm');handleFilter()">重置
+        <el-button v-waves class="filter-item" size="mini" @click="resetForm('filterForm');handleFilter()">重置
         </el-button>
       </el-form>
     </div>
-    <el-row :gutter="20">
+    <el-row :gutter="10">
       <!--状态数据-->
-      <el-col :span="6">
+      <el-col :span="4">
         <el-table
           ref="ipqcTable"
           :key="tableKey"
           v-loading="listLoading"
           :data="list"
           @current-change="handleCurrentChange"
-          border fit highlight-current-row>
+          border fit highlight-current-row
+          class="ipqc-table"
+          style="zoom:0.9;"
+        >
           <el-table-column label="工序" min-width="30px" align="center">
             <template slot-scope="scope">
               <span>{{ scope.row.operation }}</span>
@@ -102,51 +105,50 @@
         </el-pagination>
       </el-col>
       <!--检验数据-->
-      <el-col :span="18">
+      <el-col :span="20">
         <!--表单-->
         <el-form
           ref="ipqcForm"
           :rules="rules"
           :model="temp"
-          size="small"
+          size="mini"
           label-position="right"
           label-width="120px"
         >
           <div v-if="temp.productNumber">
-            <el-button type="primary" size="small" @click="handleSave">保存
-            </el-button>
+            <el-button type="primary" size="small" @click="handleSave">保存</el-button>
             <el-button type="primary" size="small" @click="handleApprove">提交</el-button>
           </div>
           <el-row :gutter="5">
             <el-col :span="21">
               <el-tabs value="basic">
-                <el-tab-pane label="基本信息" name="basic">
+                <el-tab-pane label="基本信息" name="basic" size="mini">
                   <el-row>
-                    <el-col :span="8">
+                    <el-col :span="6">
                       <el-form-item label="日期：" prop="date">
                         <el-date-picker v-model="temp.date" type="date" placeholder="请选择日期" style="width: 100%;"
-                                        format="yyyy 年 MM 月 dd 日"
+                                        format="yyyy-MM-dd"
                                         value-format="yyyy-MM-dd"/>
                       </el-form-item>
                     </el-col>
-                    <el-col :span="8">
+                    <el-col :span="6">
                       <el-form-item label="产地：" prop="hotRollOrigin">
                         <el-input v-model="temp.hotRollOrigin"/>
                       </el-form-item>
                     </el-col>
-                    <el-col :span="8">
+                    <el-col :span="6">
                       <el-form-item label="产线：" prop="operation">
                         <el-input v-model="temp.operation"/>
                       </el-form-item>
                     </el-col>
-                  </el-row>
-                  <el-row>
-                    <el-col :span="8">
+                    <el-col :span="6">
                       <el-form-item label="下制程：" prop="nextOperation">
                         <el-input v-model="temp.nextOperation"/>
                       </el-form-item>
                     </el-col>
-                    <el-col :span="8">
+                  </el-row>
+                  <el-row>
+                    <el-col :span="6">
                       <el-form-item label="班别：" prop="shiftId">
                         <el-select v-model="temp.shiftId" style="width:100%">
                           <el-option
@@ -158,14 +160,12 @@
                         </el-select>
                       </el-form-item>
                     </el-col>
-                    <el-col :span="8">
+                    <el-col :span="6">
                       <el-form-item label="钢种：" prop="steelGrade">
                         <el-input v-model="temp.steelGrade"/>
                       </el-form-item>
                     </el-col>
-                  </el-row>
-                  <el-row>
-                    <el-col :span="8">
+                    <el-col :span="6">
                       <el-form-item label="表面品级：" prop="surfaceFinish">
                         <el-select v-model="temp.surfaceFinish">
                           <el-option
@@ -178,12 +178,14 @@
                         </el-select>
                       </el-form-item>
                     </el-col>
-                    <el-col :span="8">
+                    <el-col :span="6">
                       <el-form-item label="用途：" prop="uses">
                         <el-input v-model="temp.uses"/>
                       </el-form-item>
                     </el-col>
-                    <el-col :span="8">
+                  </el-row>
+                  <el-row>
+                    <el-col :span="6">
                       <el-form-item label="客户：" prop="customerId">
                         <el-select v-model="temp.customerId" style="width:100%">
                           <el-option
@@ -195,25 +197,45 @@
                         </el-select>
                       </el-form-item>
                     </el-col>
-                  </el-row>
-                  <el-row>
-                    <el-col :span="8">
+                    <el-col :span="6">
                       <el-form-item label="钢卷编号：" prop="productNumber">
                         <el-input v-model="temp.productNumber"/>
                       </el-form-item>
                     </el-col>
-                    <el-col :span="8">
+                    <el-col :span="6">
                       <el-form-item label="原料编号：" prop="materialNumber">
                         <el-input v-model="temp.materialNumber"/>
                       </el-form-item>
                     </el-col>
                   </el-row>
+
+                  <el-row>
+                    <el-col :span="12">
+                      <el-form-item label="宽度管制范围：" class="range-container">
+                        <el-input v-model="temp.minWidth"/>
+                        <div class="splitter">
+                          -
+                        </div>
+                        <el-input v-model="temp.maxWidth"/>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                      <el-form-item label="厚度管制范围：" class="range-container">
+                        <el-input v-model="temp.minThickness"/>
+                        <div class="splitter">
+                          -
+                        </div>
+                        <el-input v-model="temp.maxThickness"/>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+
                 </el-tab-pane>
               </el-tabs>
               <el-tabs value="record">
                 <el-tab-pane label="检验记录" name="record">
                   <el-row>
-                    <el-col :span="8">
+                    <el-col :span="6">
                       <el-form-item label="等级：" prop="grade">
                         <el-select v-model="temp.grade">
                           <el-option label="1" value="1"/>
@@ -224,62 +246,81 @@
                         </el-select>
                       </el-form-item>
                     </el-col>
-                    <el-col :span="8">
+                    <el-col :span="6">
                       <el-form-item label="有害缺陷率(%)：" prop="harmfulDefectPercent">
                         <el-input v-model="temp.harmfulDefectPercent"/>
                       </el-form-item>
                     </el-col>
-                    <el-col :span="8">
+                    <el-col :span="6">
                       <el-form-item label="等级评分：" prop="gradeScore">
                         <el-input v-model="temp.gradeScore"/>
                       </el-form-item>
                     </el-col>
-                  </el-row>
-                  <el-row>
-                    <el-col :span="8">
+                    <el-col :span="6">
                       <el-form-item label="退火TV：" prop="annealTv">
                         <el-input v-model="temp.annealTv"/>
                       </el-form-item>
                     </el-col>
-                    <el-col :span="8">
+                  </el-row>
+                  <el-row>
+                    <el-col :span="6">
                       <el-form-item label="退火硬度：" prop="annealHardness">
                         <el-input v-model="temp.annealHardness"/>
                       </el-form-item>
                     </el-col>
-                    <el-col :span="8">
+                    <el-col :span="6">
                       <el-form-item label="轧/平道次：" prop="rollingPass">
                         <el-input v-model="temp.rollingPass"/>
                       </el-form-item>
                     </el-col>
+                    <el-col :span="6">
+                      <el-form-item label="建议使用表面：" prop="recommendedSurface">
+                        <!--                        <el-select v-model="temp.recommendedSurface">
+                                                  <el-option label="上面" value="上面"/>
+                                                  <el-option label="下面" value="下面"/>
+                                                </el-select>-->
+                        <!--                        <el-input v-model="temp.recommendedSurface" @dblclick.native="handleDbclickRecommendedSurface"/>-->
+                        <el-radio-group v-model="temp.recommendedSurface">
+                          <el-radio label="上面">上面</el-radio>
+                          <el-radio label="下面">下面</el-radio>
+                        </el-radio-group>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="6">
+                      <el-form-item label="开卷方式：" prop="unwindMethod">
+                        <!--                        <el-input v-model="temp.unwindMethod" @dblclick.native="handleDbclickUnwindMethod"/>-->
+                        <el-radio-group v-model="temp.unwindMethod">
+                          <el-radio label="上翻">上翻</el-radio>
+                          <el-radio label="下翻">下翻</el-radio>
+                        </el-radio-group>
+                      </el-form-item>
+                    </el-col>
                   </el-row>
                   <el-row>
-                    <el-col :span="8">
-                      <el-form-item label="建议使用表面：" prop="recommendedSurface">
-                        <el-select v-model="temp.recommendedSurface">
-                          <el-option label="上面" value="上面"/>
-                          <el-option label="下面" value="下面"/>
-                        </el-select>
-                      </el-form-item>
-                    </el-col>
-                    <el-col :span="8">
-                      <el-form-item label="开卷方式：" prop="unwindMethod">
-                        <el-input v-model="temp.unwindMethod"/>
-                      </el-form-item>
-                    </el-col>
+                    <el-button plain size="mini" @click="handleAddBlanMeasurementkRow">添加空行</el-button>
+
+                    <div style="float: right">
+                      <el-button plain size="mini" @click="handleCopyDefect">复制缺陷</el-button>
+                      <el-button plain size="mini" @click="handleCutDefect">剪切缺陷</el-button>
+                      <el-button plain size="mini" @click="handlePasteDefect">粘贴缺陷</el-button>
+                      <el-button plain size="mini" @click="handleDeleteDefect">删除缺陷</el-button>
+                      <el-button plain size="mini" @click="handleSetTopDefect">置顶缺陷</el-button>
+                      <el-button plain size="mini" @click="handleAddBlankDefectRow">添加空行</el-button>
+                    </div>
                   </el-row>
-                  <el-row :gutter="3">
-                    <el-col :span="10">
-                      <qc-measurement v-bind:measurement.sync="temp.measurement" :key="temp.id"/>
+                  <el-row :gutter="3" class="measurement-defectList-container">
+                    <el-col :span="7">
+                      <qc-measurement ref="measurement" v-bind:measurement.sync="temp.measurement" :key="temp.id"/>
                     </el-col>
-                    <el-col :span="14">
-                      <qc-defect v-bind:defectList.sync="temp.defectList" :key="temp.id"/>
+                    <el-col :span="17">
+                      <qc-defect ref="defect" v-bind:defectList.sync="temp.defectList" :key="temp.id"/>
                     </el-col>
                   </el-row>
 
                   <el-row>
                     <el-col :span="24">
                       <el-form-item label="备注：" prop="note" class="note">
-                        <el-input type="textarea" :rows="6" v-model="temp.note"/>
+                        <el-input type="textarea" :rows="3" v-model="temp.note"/>
                       </el-form-item>
                     </el-col>
                   </el-row>
@@ -328,8 +369,14 @@
             </el-col>
 
             <el-col :span="3">
-              <el-form-item label="交接事项：" prop="handoverMatters" class="handoverMatters">
-                <el-input type="textarea" :rows="20" v-model="temp.handoverMatters"/>
+              <el-form-item label="生产要求：" prop="requirements" class="side-form-item">
+                <el-input type="textarea" :rows="17" v-model="temp.requirements"/>
+              </el-form-item>
+            </el-col>
+
+            <el-col :span="3">
+              <el-form-item label="交接事项：" prop="handoverMatters" class="side-form-item">
+                <el-input type="textarea" :rows="17" v-model="temp.handoverMatters"/>
               </el-form-item>
             </el-col>
           </el-row>
@@ -345,15 +392,17 @@
   import { addIpqc, getIpqcs, updateIpqc } from '@/api/ipqc.js'
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination/index.vue'
-  import QcDefect from './qc-defect'
-  import QcMeasurement from './qc-measurement'
+  import QcDefect from '../components/qc-defect'
+  import QcMeasurement from '../components/qc-measurement'
 
   import { getCustomers } from '@/api/customer'
   import { getOperations } from '@/api/operation'
   import { getShifts } from '@/api/shift'
   import { getInboundOrderRawItems } from '@/api/inboundorderrawitem'
   import { getOutboundOrderRawItems } from '@/api/outboundorderrawitem'
-  import { getInboundOrderRaws } from '@/api/inboundorderraw' // Secondary package based on el-pagination
+  import { getInboundOrderRaws } from '@/api/inboundorderraw'
+  import { login } from '@/api/user'
+  import { getWorkOrders } from '@/api/workorder' // Secondary package based on el-pagination
 
   export default {
     name: 'ipqc_query',
@@ -383,7 +432,8 @@
           if (!this.temp.measurement) {
             this.temp.measurement = []
           }
-          for (let i = this.temp.measurement.length; i < 10; i++) {
+          this.measurementTableRowLength = 5
+          for (let i = this.temp.measurement.length; i < this.measurementTableRowLength; i++) {
             this.temp.measurement.push(deepClone(this.measurementItem))
           }
           if (!this.temp.defectList) {
@@ -394,7 +444,8 @@
                       let res = await getQcDefects({ ipqcId: val.id })
                       this.temp.defectList = res.queryResult.list
                     }*/
-          for (let i = this.temp.defectList.length; i < 20; i++) {
+          this.defectTableRowLength = 20
+          for (let i = this.temp.defectList.length; i < this.defectTableRowLength; i++) {
             this.temp.defectList.push(deepClone(this.defectItem))
           }
           //console.log(this.temp.defectList)
@@ -411,7 +462,7 @@
         listLoading: true,
         listQuery: {
           current: 1,
-          size: 10,
+          size: 20,
           productNumber: undefined,
           operation: undefined,
           dateRange: undefined,
@@ -441,8 +492,9 @@
           annealTv: '',
           annealHardness: '',
           rollingPass: '',
-          recommendedSurface: '',
-          unwindMethod: '',
+          recommendedSurface: '下面',
+          unwindMethod: '上翻',
+          requirements: '',
           handoverMatters: '',
           note: '',
           inspectorName: '',
@@ -454,6 +506,10 @@
           status: null
         },
         tempCopy: null,
+        clipboardDefects: [],
+        defectTableRowLength: 20,
+        measurementTableRowLength: 5,
+
         shifts: [],
         customers: [],
         operations: [],
@@ -510,6 +566,11 @@
           }]
         },
         modified: false,
+        recommendedSurfaceIndex: 1,
+        recommendedSurfaces: ['上面', '下面'],
+        unwindMethodIndex: 0,
+        unwindMethods: ['上翻', '下翻'],
+
         rules: {
           name: [
             { required: true, trigger: 'blur', message: '请填写工艺名称' }
@@ -559,54 +620,139 @@
         })
         if (currentRow) {
           this.temp = deepClone(currentRow)
-          if (!this.temp.id) {
-            Promise.all([
-              getInboundOrderRawItems({
-                materialNumber: this.temp.materialNumber,
-                productNumber: this.temp.productNumber
+          // if (!this.temp.id) {
+          getInboundOrderRawItems({
+            materialNumber: this.temp.materialNumber,
+            productNumber: this.temp.productNumber
+          }).then(res => {
+            if (res.queryResult.total) {
+              const inboundOrderRawItem = res.queryResult.list[0]
+              this.temp.steelGrade = inboundOrderRawItem.steelGrade
+              this.temp.surfaceFinish = inboundOrderRawItem.surfaceFinish
+              getInboundOrderRaws({
+                inboundOrderRawId: inboundOrderRawItem.inboundOrderRawId
               }).then(res => {
                 if (res.queryResult.total) {
-                  const inboundOrderRawItem = res.queryResult.list[0]
-                  this.temp.steelGrade = inboundOrderRawItem.steelGrade
-                  this.temp.surfaceFinish = inboundOrderRawItem.surfaceFinish
-                  getInboundOrderRaws({
-                    inboundOrderRawId: inboundOrderRawItem.inboundOrderRawId
-                  }).then(res => {
-                    if (res.queryResult.total) {
-                      const inboundOrderRaw = res.queryResult.list[0]
-                      this.temp.hotRollOrigin = inboundOrderRaw.hotRollOrigin
-                    }
-                  })
-                }
-              }),
-              getOutboundOrderRawItems({
-                materialNumber: this.temp.materialNumber,
-                productNumber: this.temp.productNumber
-              }).then(res => {
-                if (res.queryResult.total) {
-                  const outboundOrderRawItem = res.queryResult.list[0]
-                  const operationHistory = JSON.parse(outboundOrderRawItem.operationHistory)
-                  const index = operationHistory.findIndex(item => item.itemId == this.temp.itemId)
-                  if (index != -1) {
-                    if (index != (operationHistory.length - 1)) {
-                      this.temp.nextOperation = operationHistory[index + 1].operationName
-                    } else if (index == (operationHistory.length - 1)) {
-                      this.temp.nextOperation = outboundOrderRawItem.nextOperationLabel
-                    }
-                  }
+                  const inboundOrderRaw = res.queryResult.list[0]
+                  console.log('inboundOrderRaw:')
+                  console.log(inboundOrderRaw)
+                  this.temp.hotRollOrigin = inboundOrderRaw.hotRollOrigin
                 }
               })
-            ])
-          }
+            }
+          }).catch(error => {
+            console.log(error)
+            this.$message.error('获取信息失败1')
+          })
+          getOutboundOrderRawItems({
+            materialNumber: this.temp.materialNumber,
+            productNumber: this.temp.productNumber
+          }).then(res => {
+            if (res.queryResult.total) {
+              const outboundOrderRawItem = res.queryResult.list[0]
+              getWorkOrders({
+                workOrderNumber: outboundOrderRawItem.workOrderNumber
+              }).then(res => {
+                if (res.queryResult.total) {
+                  const workOrder = res.queryResult.list[0]
+                  console.log('workOrder:')
+                  console.log(workOrder)
+                  this.temp.minWidth = workOrder.minWidth
+                  this.temp.maxWidth = workOrder.maxWidth
+                  this.temp.minThickness = workOrder.minThickness
+                  this.temp.maxThickness = workOrder.maxThickness
+                  this.temp.requirements = workOrder.requirements
+                }
+              }).catch(error => {
+                console.log(error)
+                this.$message.error('获取信息失败2')
+              })
+              console.log('outboundOrderRawItem:')
+              console.log(outboundOrderRawItem)
+              const operationHistory = JSON.parse(outboundOrderRawItem.operationHistory)
+              const index = operationHistory.findIndex(item => item.itemId == this.temp.itemId)
+              if (index != -1) {
+                if (index != (operationHistory.length - 1)) {
+                  this.temp.nextOperation = operationHistory[index + 1].operationName
+                } else if (index == (operationHistory.length - 1)) {
+                  if (outboundOrderRawItem.nextOperationLabel) {
+                    this.temp.nextOperation = outboundOrderRawItem.nextOperationLabel
+                  } else {
+                    this.temp.nextOperation = '成品入库'
+                  }
+                }
+              }
+            }
+          }).catch(error => {
+            console.log(error)
+            this.$message.error('获取信息失败3')
+          })
+          // }
         } else {
           this.temp = deepClone(this.tempCopy)
         }
       },
+      /*      handleDbclickRecommendedSurface() {
+              this.recommendedSurfaceIndex = (++this.recommendedSurfaceIndex) % 2
+              this.temp.recommendedSurface = this.recommendedSurfaces[this.recommendedSurfaceIndex]
+            },
+            handleDbclickUnwindMethod() {
+              this.unwindMethodIndex = (++this.unwindMethodIndex) % 2
+              this.temp.unwindMethod = this.unwindMethods[this.unwindMethodIndex]
+            },*/
       handleAddMeasurementItem(index) {
         this.temp.measurement.splice(index + 1, 0, deepClone(this.measurementItem))
       },
       handleDeleteMeasurementItem(index) {
         this.temp.measurement.splice(index, 1)
+      },
+
+      handleCopyDefect() {
+        this.clipboardDefects = deepClone(this.$refs.defect.selectedDefects.filter(
+          item => Object.values(item).join('') != '')
+        )
+      },
+      handleCutDefect() {
+        this.handleCopyDefect()
+        this.handleDeleteDefect()
+      },
+      handlePasteDefect() {
+        const defectList = this.$refs.defect.list.filter(item => Object.values(item).join('') != '')
+        this.$refs.defect.list = [...defectList, ...deepClone(this.clipboardDefects)]
+
+        for (let i = this.$refs.defect.list.length; i < this.defectTableRowLength; i++) {
+          this.$refs.defect.list.push(deepClone(this.defectItem))
+        }
+        let selectedDefects = this.$refs.defect.selectedDefects
+        this.$nextTick(() => {
+          this.$refs.defect.toggleSelection(selectedDefects)
+        })
+      },
+      handleDeleteDefect() {
+        let defectList = this.$refs.defect.list
+        let selectedDefects = this.$refs.defect.selectedDefects
+        this.$refs.defect.list = defectList.filter(v => !selectedDefects.includes(v))
+
+        for (let i = this.$refs.defect.list.length; i < this.defectTableRowLength; i++) {
+          this.$refs.defect.list.push(deepClone(this.defectItem))
+        }
+      },
+      handleSetTopDefect() {
+        let defectList = this.$refs.defect.list
+        let selectedDefects = this.$refs.defect.selectedDefects
+        this.$refs.defect.list = [...selectedDefects,
+          ...defectList.filter(v => !selectedDefects.includes(v))]
+        this.$nextTick(() => {
+          this.$refs.defect.toggleSelection(selectedDefects)
+        })
+      },
+      handleAddBlankDefectRow() {
+        this.$refs.defect.list.push(deepClone(this.defectItem))
+        this.defectTableRowLength++
+      },
+      handleAddBlanMeasurementkRow() {
+        this.$refs.measurement.list.push(deepClone(this.measurementItem))
+        this.measurementTableRowLength++
       },
       async getShifts() {
         const res = await getShifts({})
@@ -624,6 +770,10 @@
         this.listLoading = true
         getIpqcs(this.listQuery).then(res => {
           this.list = res.queryResult.list.map(item => {
+            if (!item.id) {
+              item.recommendedSurface = this.recommendedSurfaces[this.recommendedSurfaceIndex]
+              item.unwindMethod = this.unwindMethods[this.unwindMethodIndex]
+            }
             item.measurement = JSON.parse(item.measurement)
             item.defectList = JSON.parse(item.defectList)
             return item
@@ -755,12 +905,61 @@
 <style lang="scss">
   .ipqc-container {
 
+  .range-container {
+
+  .el-form-item__content {
+    display: flex;
+    /*默认的主轴是row,这里需要以列的方式进行排列*/
+    flex-direction: row;
+    /*设置子元素的主轴方向上的排列方式*/
+    justify-content: space-around;
+    align-items: center;
+
+  .splitter {
+    margin: 0 10px;
+  }
+
+  }
+
+  }
+
+
+  .el-tabs__item {
+    height: 35px;
+  }
+
+  .ipqc-table {
+
+  .cell {
+    padding: 0px !important;
+  }
+
+  td, th {
+    padding: 5px 2px;
+  }
+
+  }
+
+
+  .el-form-item--mini.el-form-item, .el-form-item--small.el-form-item {
+    margin-bottom: 2px;
+  }
+
   .el-icon-circle-plus, .el-icon-delete {
     margin: 5px;
     font-size: 22px !important;
   }
 
-  .handoverMatters {
+  .el-tabs__header {
+    margin: 0 0 5px;
+  }
+
+  .measurement-defectList-container {
+    margin-top: 5px;
+  }
+
+
+  .side-form-item {
     display: flex;
     /*默认的主轴是row,这里需要以列的方式进行排列*/
     flex-direction: column;

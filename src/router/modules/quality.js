@@ -36,7 +36,13 @@ const qualityRouter = {
       name: 'ipqc_query',
       component: () => import('@/views/quality/ipqc3/index'),
       meta: { title: '质检资料维查询', icon: 'dashboard' }
-    }
+    },
+    {
+      path: 'ipqc_prodution_defect',
+      name: 'ipqc_prodution_defect',
+      component: () => import('@/views/quality/prodution-defect'),
+      meta: { title: '缺陷等级查询', icon: 'dashboard' }
+    },
   ]
 }
 

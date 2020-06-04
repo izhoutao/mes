@@ -126,31 +126,31 @@
                   <el-row>
                     <el-col :span="6">
                       <el-form-item label="日期：" prop="date">
-                        <el-date-picker v-model="temp.date" type="date" placeholder="请选择日期" style="width: 100%;"
-                                        format="yyyy 年 MM 月 dd 日"
+                        <el-date-picker :value="temp.date" type="date" placeholder="请选择日期" style="width: 100%;"
+                                        format="yyyy-MM-dd"
                                         value-format="yyyy-MM-dd"/>
                       </el-form-item>
                     </el-col>
                     <el-col :span="6">
                       <el-form-item label="产地：" prop="hotRollOrigin">
-                        <el-input v-model="temp.hotRollOrigin"/>
+                        <el-input :value="temp.hotRollOrigin"/>
                       </el-form-item>
                     </el-col>
                     <el-col :span="6">
                       <el-form-item label="产线：" prop="operation">
-                        <el-input v-model="temp.operation"/>
+                        <el-input :value="temp.operation"/>
                       </el-form-item>
                     </el-col>
                     <el-col :span="6">
                       <el-form-item label="下制程：" prop="nextOperation">
-                        <el-input v-model="temp.nextOperation"/>
+                        <el-input :value="temp.nextOperation"/>
                       </el-form-item>
                     </el-col>
                   </el-row>
                   <el-row>
                     <el-col :span="6">
                       <el-form-item label="班别：" prop="shiftId">
-                        <el-select v-model="temp.shiftId" style="width:100%">
+                        <el-select :value="temp.shiftId" style="width:100%">
                           <el-option
                             v-for="item in shifts"
                             :key="item.id"
@@ -162,12 +162,12 @@
                     </el-col>
                     <el-col :span="6">
                       <el-form-item label="钢种：" prop="steelGrade">
-                        <el-input v-model="temp.steelGrade"/>
+                        <el-input :value="temp.steelGrade"/>
                       </el-form-item>
                     </el-col>
                     <el-col :span="6">
                       <el-form-item label="表面品级：" prop="surfaceFinish">
-                        <el-select v-model="temp.surfaceFinish">
+                        <el-select :value="temp.surfaceFinish">
                           <el-option
                             v-for="item in surfaceFinishes.list"
                             :key="item"
@@ -180,14 +180,14 @@
                     </el-col>
                     <el-col :span="6">
                       <el-form-item label="用途：" prop="uses">
-                        <el-input v-model="temp.uses"/>
+                        <el-input :value="temp.uses"/>
                       </el-form-item>
                     </el-col>
                   </el-row>
                   <el-row>
                     <el-col :span="6">
                       <el-form-item label="客户：" prop="customerId">
-                        <el-select v-model="temp.customerId" style="width:100%">
+                        <el-select :value="temp.customerId" style="width:100%">
                           <el-option
                             v-for="item in customers"
                             :key="item.id"
@@ -199,15 +199,33 @@
                     </el-col>
                     <el-col :span="6">
                       <el-form-item label="钢卷编号：" prop="productNumber">
-                        <el-input v-model="temp.productNumber"/>
+                        <el-input :value="temp.productNumber"/>
                       </el-form-item>
                     </el-col>
                     <el-col :span="6">
                       <el-form-item label="原料编号：" prop="materialNumber">
-                        <el-input v-model="temp.materialNumber"/>
+                        <el-input :value="temp.materialNumber"/>
                       </el-form-item>
                     </el-col>
                   </el-row>
+
+                  <el-row>
+                    <el-col :span="12">
+                      <el-form-item label="宽度管制范围：" class="range-container">
+                        <el-input :value="minWidth"/>
+                        <div class="splitter">-</div>
+                        <el-input :value="maxWidth"/>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                      <el-form-item label="厚度管制范围：" class="range-container">
+                        <el-input :value="minThickness"/>
+                        <div class="splitter">-</div>
+                        <el-input :value="maxThickness"/>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+
                 </el-tab-pane>
               </el-tabs>
               <el-tabs value="record">
@@ -298,7 +316,7 @@
                   <el-row>
                     <el-col :span="24">
                       <el-form-item label="备注：" prop="note" class="note">
-                        <el-input type="textarea" :rows="5" v-model="temp.note"/>
+                        <el-input type="textarea" :rows="3" v-model="temp.note"/>
                       </el-form-item>
                     </el-col>
                   </el-row>
@@ -347,8 +365,14 @@
             </el-col>
 
             <el-col :span="3">
-              <el-form-item label="交接事项：" prop="handoverMatters" class="handoverMatters">
-                <el-input type="textarea" :rows="20" v-model="temp.handoverMatters"/>
+              <el-form-item label="生产要求：" prop="requirements" class="side-form-item">
+                <el-input type="textarea" :rows="17" v-model="temp.requirements"/>
+              </el-form-item>
+            </el-col>
+
+            <el-col :span="3">
+              <el-form-item label="交接事项：" prop="handoverMatters" class="side-form-item">
+                <el-input type="textarea" :rows="17" v-model="temp.handoverMatters"/>
               </el-form-item>
             </el-col>
           </el-row>
@@ -364,8 +388,8 @@
   import { addIpqc, getIpqcs, updateIpqc } from '@/api/ipqc.js'
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination/index.vue'
-  import QcDefect from './qc-defect'
-  import QcMeasurement from './qc-measurement'
+  import QcDefect from '../components/qc-defect'
+  import QcMeasurement from '../components/qc-measurement'
 
   import { getCustomers } from '@/api/customer'
   import { getOperations } from '@/api/operation'
@@ -373,7 +397,8 @@
   import { getInboundOrderRawItems } from '@/api/inboundorderrawitem'
   import { getOutboundOrderRawItems } from '@/api/outboundorderrawitem'
   import { getInboundOrderRaws } from '@/api/inboundorderraw'
-  import { login } from '@/api/user' // Secondary package based on el-pagination
+  import { login } from '@/api/user'
+  import { getWorkOrders } from '@/api/workorder' // Secondary package based on el-pagination
 
   export default {
     name: 'ipqc_maint',
@@ -407,6 +432,14 @@
           for (let i = this.temp.measurement.length; i < this.measurementTableRowLength; i++) {
             this.temp.measurement.push(deepClone(this.measurementItem))
           }
+          this.$nextTick(() => {
+            this.temp.statistics = JSON.stringify({
+                mean: this.$refs.measurement.statisticsList[0],
+                min: this.$refs.measurement.statisticsList[1],
+                max: this.$refs.measurement.statisticsList[2]
+              }
+            )
+          })
           if (!this.temp.defectList) {
             this.temp.defectList = []
           }
@@ -424,6 +457,25 @@
         immediate: true
         // deep: true
       }
+    },
+    computed: {
+      minWidth() {
+        let minWidth = this.temp.targetWidth - this.temp.toleranceWidth
+        return minWidth.toString() == 'NaN' ? '' : minWidth
+      },
+      maxWidth() {
+        let maxWidth = this.temp.targetWidth + this.temp.toleranceWidth
+        return maxWidth.toString() == 'NaN' ? '' : maxWidth
+      },
+      minThickness() {
+        let minThickness = this.temp.targetThickness - this.temp.toleranceThickness
+        return minThickness.toString() == 'NaN' ? '' : minThickness
+      },
+      maxThickness() {
+        let maxThickness = this.temp.targetThickness + this.temp.toleranceThickness
+        return maxThickness.toString() == 'NaN' ? '' : maxThickness
+      }
+
     },
     data() {
       return {
@@ -465,6 +517,7 @@
           rollingPass: '',
           recommendedSurface: '下面',
           unwindMethod: '上翻',
+          requirements: '',
           handoverMatters: '',
           note: '',
           inspectorName: '',
@@ -590,50 +643,73 @@
         })
         if (currentRow) {
           this.temp = deepClone(currentRow)
-          if (!this.temp.id) {
-            Promise.all([
-              getInboundOrderRawItems({
-                materialNumber: this.temp.materialNumber,
-                productNumber: this.temp.productNumber
+          // if (!this.temp.id) {
+          getInboundOrderRawItems({
+            materialNumber: this.temp.materialNumber,
+            productNumber: this.temp.productNumber
+          }).then(res => {
+            if (res.queryResult.total) {
+              const inboundOrderRawItem = res.queryResult.list[0]
+              this.temp.steelGrade = inboundOrderRawItem.steelGrade
+              this.temp.surfaceFinish = inboundOrderRawItem.surfaceFinish
+              getInboundOrderRaws({
+                inboundOrderRawId: inboundOrderRawItem.inboundOrderRawId
               }).then(res => {
                 if (res.queryResult.total) {
-                  const inboundOrderRawItem = res.queryResult.list[0]
-                  this.temp.steelGrade = inboundOrderRawItem.steelGrade
-                  this.temp.surfaceFinish = inboundOrderRawItem.surfaceFinish
-                  getInboundOrderRaws({
-                    inboundOrderRawId: inboundOrderRawItem.inboundOrderRawId
-                  }).then(res => {
-                    if (res.queryResult.total) {
-                      const inboundOrderRaw = res.queryResult.list[0]
-                      this.temp.hotRollOrigin = inboundOrderRaw.hotRollOrigin
-                    }
-                  })
-                }
-              }),
-              getOutboundOrderRawItems({
-                materialNumber: this.temp.materialNumber,
-                productNumber: this.temp.productNumber
-              }).then(res => {
-                if (res.queryResult.total) {
-                  const outboundOrderRawItem = res.queryResult.list[0]
-                  const operationHistory = JSON.parse(outboundOrderRawItem.operationHistory)
-                  const index = operationHistory.findIndex(item => item.itemId == this.temp.itemId)
-                  if (index != -1) {
-                    if (index != (operationHistory.length - 1)) {
-                      this.temp.nextOperation = operationHistory[index + 1].operationName
-                    } else if (index == (operationHistory.length - 1)) {
-                      if (outboundOrderRawItem.nextOperationLabel) {
-                        this.temp.nextOperation = outboundOrderRawItem.nextOperationLabel
-                      } else {
-                        this.temp.nextOperation = '成品入库'
-                      }
-
-                    }
-                  }
+                  const inboundOrderRaw = res.queryResult.list[0]
+                  this.temp.hotRollOrigin = inboundOrderRaw.hotRollOrigin
                 }
               })
-            ]).catch(console.error)
-          }
+            }
+          }).catch(error => {
+            console.log(error)
+            this.$message.error('获取信息失败1')
+          })
+          getOutboundOrderRawItems({
+            materialNumber: this.temp.materialNumber,
+            productNumber: this.temp.productNumber
+          }).then(res => {
+            if (res.queryResult.total) {
+              const outboundOrderRawItem = res.queryResult.list[0]
+              getWorkOrders({
+                workOrderNumber: outboundOrderRawItem.workOrderNumber
+              }).then(res => {
+                if (res.queryResult.total) {
+                  const workOrder = res.queryResult.list[0]
+                  const targetWidth = parseFloat(workOrder.targetWidth)
+                  const toleranceWidth = parseFloat(workOrder.toleranceWidth)
+                  const targetThickness = parseFloat(workOrder.targetWidth)
+                  const toleranceThickness = parseFloat(workOrder.toleranceWidth)
+                  this.temp.targetWidth = targetWidth
+                  this.temp.toleranceWidth = toleranceWidth
+                  this.temp.targetThickness = targetThickness
+                  this.temp.toleranceThickness = toleranceThickness
+
+                  this.temp.requirements = workOrder.requirements
+                }
+              }).catch(error => {
+                console.log(error)
+                this.$message.error('获取信息失败2')
+              })
+              const operationHistory = JSON.parse(outboundOrderRawItem.operationHistory)
+              const index = operationHistory.findIndex(item => item.itemId == this.temp.itemId)
+              if (index != -1) {
+                if (index != (operationHistory.length - 1)) {
+                  this.temp.nextOperation = operationHistory[index + 1].operationName
+                } else if (index == (operationHistory.length - 1)) {
+                  if (outboundOrderRawItem.nextOperationLabel) {
+                    this.temp.nextOperation = outboundOrderRawItem.nextOperationLabel
+                  } else {
+                    this.temp.nextOperation = '成品入库'
+                  }
+                }
+              }
+            }
+          }).catch(error => {
+            console.log(error)
+            this.$message.error('获取信息失败3')
+          })
+          // }
         } else {
           this.temp = deepClone(this.tempCopy)
         }
@@ -851,6 +927,25 @@
 <style lang="scss">
   .ipqc-container {
 
+  .range-container {
+
+  .el-form-item__content {
+    display: flex;
+    /*默认的主轴是row,这里需要以列的方式进行排列*/
+    flex-direction: row;
+    /*设置子元素的主轴方向上的排列方式*/
+    justify-content: space-around;
+    align-items: center;
+
+  .splitter {
+    margin: 0 10px;
+  }
+
+  }
+
+  }
+
+
   .el-tabs__item {
     height: 35px;
   }
@@ -886,7 +981,7 @@
   }
 
 
-  .handoverMatters {
+  .side-form-item {
     display: flex;
     /*默认的主轴是row,这里需要以列的方式进行排列*/
     flex-direction: column;

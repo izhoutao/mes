@@ -48,6 +48,38 @@
             </el-form-item>
           </el-col>
         </el-row>
+
+        <el-row>
+          <el-col :span="7">
+            <el-form-item label="目标宽度：" prop="targetWidth">
+              <span>{{detail.targetWidth}} </span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="7">
+            <el-form-item label="宽度容差：" prop="toleranceWidth">
+              <span>{{detail.toleranceWidth}} </span>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="5">
+            <el-form-item label="目标厚度：" prop="targetThickness">
+              <span>{{detail.targetThickness}} </span>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="5">
+            <el-form-item label="厚度容差：" prop="toleranceThickness">
+              <span>{{detail.toleranceThickness}} </span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col>
+            <el-form-item label="生产要求：" prop="schStartTime">
+              <span>{{detail.requirements}} </span>
+            </el-form-item>
+          </el-col>
+        </el-row>
         <el-row>
           <el-col :span="7">
             <el-form-item label="创建时间：" prop="updateTime">
