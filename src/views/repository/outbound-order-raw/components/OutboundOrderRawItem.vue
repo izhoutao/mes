@@ -165,194 +165,32 @@
         label-width="150px"
       >
 
+        <!--        <el-form-item label="钢卷编号：" prop="productNumber">
+                  <el-select
+                    v-model="temp.productNumber"
+                    filterable
+                    remote
+                    reserve-keyword
+                    placeholder="请输入钢卷号"
+                    :remote-method="getStoredRawItems"
+                    :loading="loading">
+                    <el-option
+                      v-for="item in storedRawItems"
+                      :key="item"
+                      :label="item"
+                      :value="item">
+                    </el-option>
+                  </el-select>
+
+                </el-form-item>-->
+
         <el-form-item label="钢卷编号：" prop="productNumber">
-          <el-select
+          <el-autocomplete
             v-model="temp.productNumber"
-            filterable
-            remote
-            reserve-keyword
+            :fetch-suggestions="getStoredRawItems"
             placeholder="请输入钢卷号"
-            :remote-method="getStoredRawItems"
-            :loading="loading">
-            <el-option
-              v-for="item in storedRawItems"
-              :key="item"
-              :label="item"
-              :value="item">
-            </el-option>
-          </el-select>
-
+          ></el-autocomplete>
         </el-form-item>
-        <!--        <el-form-item label="钢种：" prop="steelGrade">
-                  <el-input v-model="temp.steelGrade"/>
-                </el-form-item>-->
-        <!--        <el-form-item label="表面品级：" prop="surfaceFinish">
-                  <el-input v-model="temp.surfaceFinish"/>
-                </el-form-item>
-
-                <el-form-item label="宽度(mm)：" prop="width">
-                  <el-input v-model.number="temp.width"/>
-                </el-form-item>
-                <el-form-item label="厚度(mm)：" prop="thickness">
-                  <el-input v-model.number="temp.thickness"/>
-                </el-form-item>
-                <el-form-item label="长度(mm)：" prop="length">
-                  <el-input v-model.number="temp.length"/>
-                </el-form-item>
-                <el-form-item label="标签规格mm*mm：" prop="labelSpecification">
-                  <el-input v-model="temp.labelSpecification"/>
-                </el-form-item>
-
-                <el-form-item label="实际规格mm*mm：" prop="specification">
-                  <el-input v-model="temp.specification"/>
-                </el-form-item>
-                <el-form-item label="标签净重(kg)：" prop="labelNetWeight">
-                  <el-input v-model.number="temp.labelNetWeight"/>
-                </el-form-item>
-                <el-form-item label="标签毛重(kg)：" prop="labelGrossWeight">
-                  <el-input v-model.number="temp.labelGrossWeight"/>
-                </el-form-item>
-                <el-form-item label="实磅净重(kg)：" prop="netWeight">
-                  <el-input v-model.number="temp.netWeight"/>
-                </el-form-item>
-
-                <el-form-item label="实磅毛重(kg)：" prop="grossWeight">
-                  <el-input v-model.number="temp.grossWeight"/>
-                </el-form-item>
-                <el-form-item label="边部：" prop="edge">
-                  <el-input v-model="temp.edge"/>
-                </el-form-item>
-                <el-form-item label="等级：" prop="grade">
-                  <el-input v-model="temp.grade"/>
-                </el-form-item>
-                <el-form-item label="检验员：" prop="inspector">
-                  <el-input v-model="temp.inspector"/>
-                </el-form-item>
-
-                <el-form-item label="条码：" prop="barcode">
-                  <el-input v-model="temp.barcode"/>
-                </el-form-item>
-                <el-form-item label="日期：" prop="date">
-                  <el-date-picker v-model="temp.date" type="date" placeholder="请选择日期" style="width: 100%;"
-                                  format="yyyy 年 MM 月 dd 日"
-                                  value-format="yyyy-MM-dd"/>
-                </el-form-item>
-                <el-form-item label="描述：" prop="description">
-                  <el-input
-                    v-model="temp.description"
-                    :autosize="{ minRows: 2, maxRows: 4}"
-                    type="textarea"
-                    placeholder="描述"
-                  />
-                </el-form-item>-->
-        <!--<el-row :gutter="80">
-          <el-col :span="20">
-            <el-form-item label="来料编号：" prop="materialNumber">
-              <el-input v-model="temp.materialNumber"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="20">
-            <el-form-item label="钢卷编号：" prop="productNumber">
-              <el-input v-model="temp.productNumber"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="20">
-            <el-form-item label="钢种：" prop="steelGrade">
-              <el-input v-model="temp.steelGrade"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="20">
-            <el-form-item label="表面品级：" prop="surfaceFinish">
-              <el-input v-model="temp.surfaceFinish"/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="80">
-          <el-col :span="20">
-            <el-form-item label="宽度(mm)：" prop="width">
-              <el-input v-model="temp.width"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="20">
-            <el-form-item label="厚度(mm)：" prop="thickness">
-              <el-input v-model="temp.thickness"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="20">
-            <el-form-item label="长度(mm)：" prop="length">
-              <el-input v-model="temp.length"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="20">
-            <el-form-item label="标签规格mm*mm：" prop="labelSpecification">
-              <el-input v-model="temp.labelSpecification"/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="80">
-          <el-col :span="20">
-            <el-form-item label="实际规格mm*mm：" prop="specification">
-              <el-input v-model="temp.specification"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="20">
-            <el-form-item label="标签净重(kg)：" prop="labelNetWeight">
-              <el-input v-model="temp.labelNetWeight"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="20">
-            <el-form-item label="标签毛重(kg)：" prop="labelGrossWeight">
-              <el-input v-model="temp.labelGrossWeight"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="20">
-            <el-form-item label="实磅净重(kg)：" prop="netWeight">
-              <el-input v-model="temp.netWeight"/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="80">
-          <el-col :span="20">
-            <el-form-item label="实磅毛重(kg)：" prop="grossWeight">
-              <el-input v-model="temp.grossWeight"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="20">
-            <el-form-item label="边部：" prop="edge">
-              <el-input v-model="temp.edge"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="20">
-            <el-form-item label="等级：" prop="grade">
-              <el-input v-model="temp.grade"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="20">
-            <el-form-item label="检验员：" prop="inspector">
-              <el-input v-model="temp.inspector"/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="80">
-          <el-col :span="20">
-            <el-form-item label="条码：" prop="barcode">
-              <el-input v-model="temp.barcode"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="20">
-            <el-form-item label="出生日期：" prop="date">
-              <el-date-picker v-model="temp.date" type="date" placeholder="请选择日期" style="width: 100%;"
-                              format="yyyy 年 MM 月 dd 日"
-                              value-format="yyyy-MM-dd"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="60">
-            <el-form-item label="备注：" prop="description">
-              <el-input v-model="temp.description"/>
-            </el-form-item>
-          </el-col>
-
-        </el-row>-->
         <el-form-item label="日期：" prop="time">
           <el-date-picker v-model="temp.time" type="datetime" placeholder="请选择时间" style="width: 100%;"
                           format="yyyy-MM-dd HH:mm:ss"
@@ -418,7 +256,6 @@
           current: 1,
           size: 10,
           outboundOrderRawDetailId: this.outboundOrderRawDetailId,
-          status: undefined
         },
         temp: {
           id: undefined,
@@ -449,8 +286,8 @@
                     workOrderNumber: undefined*/
         },
         tempCopy: null,
-        storedRawItems: [],
-        loading: false,
+        // storedRawItems: [],
+        // loading: false,
         statuses: ['未完成', '已完成'],
         tagTypes: ['success', 'info', 'warning', 'danger'],
         selectedMaterial: undefined,
@@ -477,13 +314,13 @@
             { required: true, trigger: 'blur', message: '请填写表面品级' }
           ],
           width: [
-            { required: true, trigger: 'blur', message: '请填写宽度' },
+            { required: true, trigger: 'blur', message: '请填写宽度' }
           ],
           thickness: [
-            { required: true, trigger: 'blur', message: '请填写厚度' },
+            { required: true, trigger: 'blur', message: '请填写厚度' }
           ],
           length: [
-            { required: true, trigger: 'blur', message: '请填写长度' },
+            { required: true, trigger: 'blur', message: '请填写长度' }
           ],
           labelSpecification: [
             { required: true, trigger: 'blur', message: '请填写标签规格' }
@@ -492,16 +329,16 @@
             { required: true, trigger: 'blur', message: '请填写实际规格' }
           ],
           labelNetWeight: [
-            { required: true, trigger: 'blur', message: '请填写标签净重' },
+            { required: true, trigger: 'blur', message: '请填写标签净重' }
           ],
           labelGrossWeight: [
-            { required: true, trigger: 'blur', message: '请填写标签毛重' },
+            { required: true, trigger: 'blur', message: '请填写标签毛重' }
           ],
           netWeight: [
-            { required: true, trigger: 'blur', message: '请填写实磅净重' },
+            { required: true, trigger: 'blur', message: '请填写实磅净重' }
           ],
           grossWeight: [
-            { required: true, trigger: 'blur', message: '请填写实磅毛重' },
+            { required: true, trigger: 'blur', message: '请填写实磅毛重' }
           ],
           edge: [
             { required: true, trigger: 'blur', message: '请填写边部' }
@@ -564,21 +401,34 @@
         })
       },
 
-      getStoredRawItems(query) {
-        if (query !== '') {
-          this.loading = true
-          getStoredRawItems().then(res => {
-            this.loading = false
-            this.storedRawItems = res.queryResult.list.filter(item => {
-              return item.toLowerCase()
-                .indexOf(query.toLowerCase()) > -1
-            })
-          })
-        } else {
-          this.storedRawItems = []
+      /*      getStoredRawItems(query) {
+              if (query !== '') {
+                this.loading = true
+                getStoredRawItems().then(res => {
+                  this.loading = false
+                  this.storedRawItems = res.queryResult.list.filter(item => {
+                    return item.toLowerCase()
+                      .indexOf(query.toLowerCase()) > -1
+                  })
+                })
+              } else {
+                this.storedRawItems = []
+              }
+            },*/
+      getStoredRawItems(queryString, cb) {
+        getStoredRawItems().then(res => {
+          let storedRawItems = res.queryResult.list.map(item => {
+            return { value: item }
+          }).filter(this.createStateFilter(queryString))
+          cb(storedRawItems)
+        })
+
+      },
+      createStateFilter(queryString) {
+        return (state) => {
+          return (state.value.toLowerCase().indexOf(queryString.toLowerCase()) > -1)
         }
       },
-
       handleFilter() {
         this.listQuery.current = 1
         this.getList()
@@ -610,7 +460,7 @@
               this.list.unshift(res.model)
               this.$emit('update:outQuantity', ++this.total)
               this.dialogFormVisible = false
-              this.storedRawItems = []
+              // this.storedRawItems = []
               this.$notify({
                 title: '成功',
                 message: '创建成功',

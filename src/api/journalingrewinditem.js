@@ -31,3 +31,33 @@ export function deleteJournalingRewindItem(id) {
   })
 }
 
+export function saveOrUpdateSplitRawItem(productNumber, data) {
+  return request({
+    url: `/basic/journalingrewinditem/split/${productNumber}`,
+    method: 'post',
+    data
+  })
+}
+
+export function splitRawItem(productNumber) {
+  return request({
+    url: `/basic/journalingrewinditem/split/${productNumber}`,
+    method: 'get'
+  })
+}
+
+export function undoSplitRawItem(productNumber) {
+  return request({
+    url: `/basic/journalingrewinditem/split/undo/${productNumber}`,
+    method: 'get'
+  })
+}
+
+export function removeSplitRawItem(id) {
+  return request({
+    url: `/basic/journalingrewinditem/split/delete/${id}`,
+    method: 'get'
+  })
+}
+
+

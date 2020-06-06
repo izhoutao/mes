@@ -32,58 +32,58 @@
     </div>
 
     <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%">
-      <el-table-column label="序号" width="60px" type="index" align="center" fixed>
+      <el-table-column label="序" width="40px" type="index" align="center" fixed>
       </el-table-column>
-      <el-table-column label="原料编号" width="160px" align="center">
+      <el-table-column label="原料编号" width="135px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.materialNumber }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="钢卷编号" width="160px" align="center">
+      <el-table-column label="钢卷编号" width="135px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.productNumber }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="钢种" width="100px" align="center">
+      <el-table-column label="钢种" width="80px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.steelGrade }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="表面品级" width="100px" align="center">
+      <el-table-column label="表面品级" width="80px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.surfaceFinish }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="规格|mm*mm" width="100px" align="center" :render-header="renderHeader">
+      <el-table-column label="规格|mm*mm" width="80px" align="center" :render-header="renderHeader">
         <template slot-scope="scope">
           <span>{{ scope.row.specification }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="净重|(kg)" width="100px" align="center" :render-header="renderHeader">
+      <el-table-column label="净重|(kg)" width="80px" align="center" :render-header="renderHeader">
         <template slot-scope="scope">
           <span>{{ scope.row.netWeight }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="毛重|(kg)" width="100px" align="center" :render-header="renderHeader">
+      <el-table-column label="毛重|(kg)" width="80px" align="center" :render-header="renderHeader">
         <template slot-scope="scope">
           <span>{{ scope.row.grossWeight }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="参考厚度|(mm)" width="100px" align="center" :render-header="renderHeader">
+      <el-table-column label="参考厚度|(mm)" width="80px" align="center" :render-header="renderHeader">
         <template slot-scope="scope">
           <span>{{ scope.row.referenceThickness }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="参考宽度|(mm)" width="100px" align="center" :render-header="renderHeader">
+      <el-table-column label="参考宽度|(mm)" width="80px" align="center" :render-header="renderHeader">
         <template slot-scope="scope">
           <span>{{ scope.row.referenceWidth }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="参考长度|(mm)" width="100px" align="center" :render-header="renderHeader">
+      <el-table-column label="参考长度|(mm)" width="80px" align="center" :render-header="renderHeader">
         <template slot-scope="scope">
           <span>{{ scope.row.referenceLength }}</span>
         </template>
@@ -118,12 +118,12 @@
               <span>{{ scope.row.grossWeight }}</span>
             </template>
           </el-table-column>-->
-      <el-table-column label="边部" width="100px" align="center">
+      <el-table-column label="边部" width="80px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.edge }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="等级" width="100px" align="center">
+      <el-table-column label="等级" width="80px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.grade }}</span>
         </template>
@@ -236,7 +236,7 @@
         </el-form-item>
         <el-form-item label="日期：" prop="date">
           <el-date-picker v-model="temp.date" type="date" placeholder="请选择日期" style="width: 100%;"
-                          format="yyyy 年 MM 月 dd 日"
+                          format="yyyy-MM-dd"
                           value-format="yyyy-MM-dd"/>
         </el-form-item>
 
@@ -400,7 +400,7 @@
         return query => {
           if (query !== '') {
             this.loading = true
-            getOutboundOrderRawItems({ next_operation_label: '成品入库' }).then(res => {
+            getOutboundOrderRawItems({ next_operation_label: '成品入库', status:0 }).then(res => {
               this.loading = false
               this.pendingRawItems = res.queryResult.list.map(item => item[type]).filter(item => {
                 return item.toLowerCase()
@@ -415,7 +415,7 @@
 
       handleProductNumberChange(val) {
         if (val) {
-          getOutboundOrderRawItems({ next_operation_label: '成品入库', product_number: val }).then(res => {
+          getOutboundOrderRawItems({ next_operation_label: '成品入库', product_number: val, status:0 }).then(res => {
             if (res.queryResult.list.length == 1) {
               this.temp.materialNumber = res.queryResult.list[0].materialNumber
             } else {
@@ -427,7 +427,7 @@
 
       handleMaterialNumberChange(val) {
         if (val) {
-          getOutboundOrderRawItems({ next_operation_label: '成品入库', material_number: val }).then(res => {
+          getOutboundOrderRawItems({ next_operation_label: '成品入库', material_number: val, status:0 }).then(res => {
             if (res.queryResult.list.length == 1) {
               this.temp.productNumber = res.queryResult.list[0].productNumber
             } else {
@@ -520,7 +520,7 @@
         })
       },
       handleDelete(row) {
-        this.$confirm('此操作将永久删除该出货单项, 是否继续?', '提示', {
+        this.$confirm('此操作将永久删除该成品入库单项, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'

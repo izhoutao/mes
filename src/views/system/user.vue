@@ -165,12 +165,12 @@
         </el-form-item>
         <el-form-item label="出生日期：" prop="birthday">
           <el-date-picker v-model="temp.birthday" type="date" placeholder="请选择日期" style="width: 100%;"
-                          format="yyyy 年 MM 月 dd 日"
+                          format="yyyy-MM-dd"
                           value-format="yyyy-MM-dd"/>
         </el-form-item>
         <el-form-item label="入职日期：" prop="hiredate">
           <el-date-picker v-model="temp.hiredate" type="date" placeholder="请选择日期" style="width: 100%;"
-                          format="yyyy 年 MM 月 dd 日"
+                          format="yyyy-MM-dd"
                           value-format="yyyy-MM-dd"/>
         </el-form-item>
         <el-form-item label="备注：" prop="description">

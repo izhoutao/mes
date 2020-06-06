@@ -667,7 +667,8 @@
           })
           getOutboundOrderRawItems({
             materialNumber: this.temp.materialNumber,
-            productNumber: this.temp.productNumber
+            productNumber: this.temp.productNumber,
+            status: 0
           }).then(res => {
             if (res.queryResult.total) {
               const outboundOrderRawItem = res.queryResult.list[0]

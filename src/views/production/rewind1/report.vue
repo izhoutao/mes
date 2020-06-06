@@ -10,7 +10,7 @@
             style="width: 100%;"
             class="filter-item"
             clearable=""
-            format="yyyy 年 MM 月 dd 日"
+            format="yyyy-MM-dd"
             value-format="yyyy-MM-dd"
             @change="handleFilter"
           />
@@ -151,7 +151,7 @@
       >
         <el-form-item label="日期：" prop="date">
           <el-date-picker v-model="temp.date" type="date" placeholder="请选择日期" style="width: 100%;"
-                          format="yyyy 年 MM 月 dd 日"
+                          format="yyyy-MM-dd"
                           value-format="yyyy-MM-dd"/>
         </el-form-item>
         <el-form-item label="班别：" prop="shiftId">

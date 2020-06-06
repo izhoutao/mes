@@ -163,21 +163,21 @@
           <el-col :span="6">
             <el-form-item label="下单日期：" prop="beginDate">
               <el-date-picker v-model="temp.beginDate" type="date" placeholder="请选择日期" style="width: 100%;"
-                              format="yyyy 年 MM 月 dd 日"
+                              format="yyyy-MM-dd"
                               value-format="yyyy-MM-dd"/>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="交货日期：" prop="deliveryDate">
               <el-date-picker v-model="temp.deliveryDate" type="date" placeholder="请选择日期" style="width: 100%;"
-                              format="yyyy 年 MM 月 dd 日"
+                              format="yyyy-MM-dd"
                               value-format="yyyy-MM-dd"/>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="完成日期：" prop="deliveryDate">
               <el-date-picker v-model="temp.finishDate" type="date" placeholder="请选择日期" style="width: 100%;"
-                              format="yyyy 年 MM 月 dd 日"
+                              format="yyyy-MM-dd"
                               value-format="yyyy-MM-dd"/>
             </el-form-item>
           </el-col>

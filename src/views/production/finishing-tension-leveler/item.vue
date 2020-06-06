@@ -14,7 +14,7 @@
           <el-col :span="6">
             <el-form-item label="日期：" prop="date">
               <el-date-picker v-model="temp.date" type="date" placeholder="请选择日期" style="width: 100%;"
-                              format="yyyy 年 MM 月 dd 日"
+                              format="yyyy-MM-dd"
                               value-format="yyyy-MM-dd"/>
             </el-form-item>
           </el-col>
@@ -525,7 +525,7 @@
 
       getPendingItemsByNumberType(type) {
         return (queryString, cb) => {
-          getOutboundOrderRawItems({ next_operation_label: '精整拉矫' }).then(res => {
+          getOutboundOrderRawItems({ next_operation_label: '精整拉矫', status: 0 }).then(res => {
             let pendingItems = res.queryResult.list.map(item => {
               return { ...item, value: item[type] }
             }).filter(this.createStateFilter(queryString))

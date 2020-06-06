@@ -313,7 +313,7 @@
             delete outboundOrderRawDetail.materialCode
             delete outboundOrderRawDetail.materialName
             updateOutboundOrderRawDetail(outboundOrderRawDetail).then(() => {
-              getOutboundOrderRawItems({ outboundOrderRawDetailId: this.temp.id }).then((res) => {
+              getOutboundOrderRawItems({ outboundOrderRawDetailId: this.temp.id}).then((res) => {
                 outboundOrderRawDetail.outQuantity = res.queryResult.total
                 for (const v of this.list) {
                   if (v.id === outboundOrderRawDetail.id) {

@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container production-defect">
     <div class="filter-container">
       <el-form ref="filterForm" :model="listQuery" :inline="true" size="mini">
         <el-form-item label="" prop="productNumber">
@@ -115,7 +115,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="订单厚度" min-width="60px" align="center">
+      <el-table-column label="订单厚度" min-width="70px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.targetThickness }}</span>
         </template>
@@ -186,7 +186,7 @@
       </el-table-column>
       <el-table-column label="缺陷长度" min-width="60px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.hotRollOrigin }}</span>
+          <span>{{ scope.row.defectLength }}</span>
         </template>
       </el-table-column>
       <el-table-column label="程度" min-width="60px" align="center">
@@ -249,7 +249,7 @@
           <span>{{ scope.row.margin }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="备注" min-width="60px" align="center">
+      <el-table-column label="备注" min-width="200px" align="center" show-overflow-tooltip>
         <template slot-scope="scope">
           <span>{{ scope.row.note }}</span>
         </template>
@@ -316,7 +316,7 @@
           operation: undefined,
           dateRange: undefined,
           degree: undefined,
-          grade: undefined,
+          grade: undefined
         },
         pickerOptions: {
           shortcuts: [{
@@ -344,7 +344,7 @@
               picker.$emit('pick', [start, end])
             }
           }]
-        },
+        }
       }
     },
     created() {
@@ -376,16 +376,23 @@
           return false
         }
         this.$refs[formName].resetFields()
-
-        this.temp = deepClone(this.tempCopy)
       }
     }
   }
 </script>
 <style lang="scss">
+  .production-defect {
+
+  .el-input.filter-item {
+    width: 150px!important;
+  }
+
   .zoom-production-defect {
     zoom: 0.8;
 
   }
+
+  }
+
 </style>
 

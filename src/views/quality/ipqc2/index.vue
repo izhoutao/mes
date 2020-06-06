@@ -415,9 +415,9 @@
             case '重卷':
               this.surfaceFinishes = { default: '', list: ['2BA', 'BA', 'NO.1', '硬板G'] }
               break
-/*            case '轧机':
-              this.surfaceFinishes = { default: '硬板G', list: ['2BA', 'BA', 'NO.1', '硬板G'] }
-              break*/
+            /*            case '轧机':
+                          this.surfaceFinishes = { default: '硬板G', list: ['2BA', 'BA', 'NO.1', '硬板G'] }
+                          break*/
             case '退火炉':
               this.surfaceFinishes = { default: '2BA', list: ['2BA', 'BA', 'NO.1', '硬板G'] }
               break
@@ -646,7 +646,8 @@
           })
           getOutboundOrderRawItems({
             materialNumber: this.temp.materialNumber,
-            productNumber: this.temp.productNumber
+            productNumber: this.temp.productNumber,
+            status: 0
           }).then(res => {
             if (res.queryResult.total) {
               const outboundOrderRawItem = res.queryResult.list[0]
@@ -948,7 +949,6 @@ FROM
 JOIN `tb_ipqc` `ipqc` ON ((
 `qd`.`ipqc_id` = `ipqc`.`id`
 )))-->
-
 
 
 <style lang="scss">
