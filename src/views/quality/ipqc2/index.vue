@@ -126,31 +126,31 @@
                   <el-row>
                     <el-col :span="6">
                       <el-form-item label="日期：" prop="date">
-                        <el-date-picker v-model="temp.date" type="date" placeholder="请选择日期" style="width: 100%;"
+                        <el-date-picker :value="temp.date" type="date" placeholder="请选择日期" style="width: 100%;"
                                         format="yyyy-MM-dd"
                                         value-format="yyyy-MM-dd"/>
                       </el-form-item>
                     </el-col>
                     <el-col :span="6">
                       <el-form-item label="产地：" prop="hotRollOrigin">
-                        <el-input v-model="temp.hotRollOrigin"/>
+                        <el-input :value="temp.hotRollOrigin"/>
                       </el-form-item>
                     </el-col>
                     <el-col :span="6">
                       <el-form-item label="产线：" prop="operation">
-                        <el-input v-model="temp.operation"/>
+                        <el-input :value="temp.operation"/>
                       </el-form-item>
                     </el-col>
                     <el-col :span="6">
                       <el-form-item label="下制程：" prop="nextOperation">
-                        <el-input v-model="temp.nextOperation"/>
+                        <el-input :value="temp.nextOperation"/>
                       </el-form-item>
                     </el-col>
                   </el-row>
                   <el-row>
                     <el-col :span="6">
                       <el-form-item label="班别：" prop="shiftId">
-                        <el-select v-model="temp.shiftId" style="width:100%">
+                        <el-select :value="temp.shiftId" style="width:100%">
                           <el-option
                             v-for="item in shifts"
                             :key="item.id"
@@ -162,12 +162,12 @@
                     </el-col>
                     <el-col :span="6">
                       <el-form-item label="钢种：" prop="steelGrade">
-                        <el-input v-model="temp.steelGrade"/>
+                        <el-input :value="temp.steelGrade"/>
                       </el-form-item>
                     </el-col>
                     <el-col :span="6">
                       <el-form-item label="表面品级：" prop="surfaceFinish">
-                        <el-select v-model="temp.surfaceFinish">
+                        <el-select :value="temp.surfaceFinish">
                           <el-option
                             v-for="item in surfaceFinishes.list"
                             :key="item"
@@ -180,14 +180,14 @@
                     </el-col>
                     <el-col :span="6">
                       <el-form-item label="用途：" prop="uses">
-                        <el-input v-model="temp.uses"/>
+                        <el-input :value="temp.uses"/>
                       </el-form-item>
                     </el-col>
                   </el-row>
                   <el-row>
                     <el-col :span="6">
                       <el-form-item label="客户：" prop="customerId">
-                        <el-select v-model="temp.customerId" style="width:100%">
+                        <el-select :value="temp.customerId" style="width:100%">
                           <el-option
                             v-for="item in customers"
                             :key="item.id"
@@ -199,12 +199,12 @@
                     </el-col>
                     <el-col :span="6">
                       <el-form-item label="钢卷编号：" prop="productNumber">
-                        <el-input v-model="temp.productNumber"/>
+                        <el-input :value="temp.productNumber"/>
                       </el-form-item>
                     </el-col>
                     <el-col :span="6">
                       <el-form-item label="原料编号：" prop="materialNumber">
-                        <el-input v-model="temp.materialNumber"/>
+                        <el-input :value="temp.materialNumber"/>
                       </el-form-item>
                     </el-col>
                   </el-row>
@@ -212,20 +212,16 @@
                   <el-row>
                     <el-col :span="12">
                       <el-form-item label="宽度管制范围：" class="range-container">
-                        <el-input v-model="temp.minWidth"/>
-                        <div class="splitter">
-                          -
-                        </div>
-                        <el-input v-model="temp.maxWidth"/>
+                        <el-input :value="minWidth"/>
+                        <div class="splitter">-</div>
+                        <el-input :value="maxWidth"/>
                       </el-form-item>
                     </el-col>
                     <el-col :span="12">
                       <el-form-item label="厚度管制范围：" class="range-container">
-                        <el-input v-model="temp.minThickness"/>
-                        <div class="splitter">
-                          -
-                        </div>
-                        <el-input v-model="temp.maxThickness"/>
+                        <el-input :value="minThickness"/>
+                        <div class="splitter">-</div>
+                        <el-input :value="maxThickness"/>
                       </el-form-item>
                     </el-col>
                   </el-row>
@@ -398,7 +394,9 @@
   import { getCustomers } from '@/api/customer'
   import { getOperations } from '@/api/operation'
   import { getShifts } from '@/api/shift'
-  import { getInboundOrderRawItems } from '@/api/inboundorderrawitem'
+  import {
+    getInboundOrderRawItemByOutboundRawItemProductNumber,
+  } from '@/api/inboundorderrawitem'
   import { getOutboundOrderRawItems } from '@/api/outboundorderrawitem'
   import { getInboundOrderRaws } from '@/api/inboundorderraw'
   import { login } from '@/api/user'
@@ -415,9 +413,9 @@
             case '重卷':
               this.surfaceFinishes = { default: '', list: ['2BA', 'BA', 'NO.1', '硬板G'] }
               break
-            /*            case '轧机':
-                          this.surfaceFinishes = { default: '硬板G', list: ['2BA', 'BA', 'NO.1', '硬板G'] }
-                          break*/
+            case '轧机':
+              this.surfaceFinishes = { default: '硬板G', list: ['2BA', 'BA', 'NO.1', '硬板G'] }
+              break
             case '退火炉':
               this.surfaceFinishes = { default: '2BA', list: ['2BA', 'BA', 'NO.1', '硬板G'] }
               break
@@ -436,6 +434,14 @@
           for (let i = this.temp.measurement.length; i < this.measurementTableRowLength; i++) {
             this.temp.measurement.push(deepClone(this.measurementItem))
           }
+          this.$nextTick(() => {
+            this.temp.statistics = JSON.stringify({
+                mean: this.$refs.measurement.statisticsList[0],
+                min: this.$refs.measurement.statisticsList[1],
+                max: this.$refs.measurement.statisticsList[2]
+              }
+            )
+          })
           if (!this.temp.defectList) {
             this.temp.defectList = []
           }
@@ -453,6 +459,25 @@
         immediate: true
         // deep: true
       }
+    },
+    computed: {
+      minWidth() {
+        let minWidth = this.temp.targetWidth - this.temp.toleranceWidth
+        return minWidth.toString() == 'NaN' ? '' : minWidth
+      },
+      maxWidth() {
+        let maxWidth = this.temp.targetWidth + this.temp.toleranceWidth
+        return maxWidth.toString() == 'NaN' ? '' : maxWidth
+      },
+      minThickness() {
+        let minThickness = this.temp.targetThickness - this.temp.toleranceThickness
+        return minThickness.toString() == 'NaN' ? '' : minThickness
+      },
+      maxThickness() {
+        let maxThickness = this.temp.targetThickness + this.temp.toleranceThickness
+        return maxThickness.toString() == 'NaN' ? '' : maxThickness
+      }
+
     },
     data() {
       return {
@@ -621,25 +646,18 @@
         if (currentRow) {
           this.temp = deepClone(currentRow)
           // if (!this.temp.id) {
-          getInboundOrderRawItems({
-            materialNumber: this.temp.materialNumber,
-            productNumber: this.temp.productNumber
-          }).then(res => {
-            if (res.queryResult.total) {
-              const inboundOrderRawItem = res.queryResult.list[0]
-              this.temp.steelGrade = inboundOrderRawItem.steelGrade
-              this.temp.surfaceFinish = inboundOrderRawItem.surfaceFinish
-              getInboundOrderRaws({
-                inboundOrderRawId: inboundOrderRawItem.inboundOrderRawId
-              }).then(res => {
-                if (res.queryResult.total) {
-                  const inboundOrderRaw = res.queryResult.list[0]
-                  console.log('inboundOrderRaw:')
-                  console.log(inboundOrderRaw)
-                  this.temp.hotRollOrigin = inboundOrderRaw.hotRollOrigin
-                }
-              })
-            }
+          getInboundOrderRawItemByOutboundRawItemProductNumber(this.temp.productNumber).then(res => {
+            const inboundOrderRawItem = res.model
+            this.temp.steelGrade = inboundOrderRawItem.steelGrade
+            this.temp.surfaceFinish = inboundOrderRawItem.surfaceFinish
+            getInboundOrderRaws({
+              inboundOrderRawId: inboundOrderRawItem.inboundOrderRawId
+            }).then(res => {
+              if (res.queryResult.total) {
+                const inboundOrderRaw = res.queryResult.list[0]
+                this.temp.hotRollOrigin = inboundOrderRaw.hotRollOrigin
+              }
+            })
           }).catch(error => {
             console.log(error)
             this.$message.error('获取信息失败1')
@@ -656,20 +674,21 @@
               }).then(res => {
                 if (res.queryResult.total) {
                   const workOrder = res.queryResult.list[0]
-                  console.log('workOrder:')
-                  console.log(workOrder)
-                  this.temp.minWidth = workOrder.minWidth
-                  this.temp.maxWidth = workOrder.maxWidth
-                  this.temp.minThickness = workOrder.minThickness
-                  this.temp.maxThickness = workOrder.maxThickness
+                  const targetWidth = parseFloat(workOrder.targetWidth)
+                  const toleranceWidth = parseFloat(workOrder.toleranceWidth)
+                  const targetThickness = parseFloat(workOrder.targetWidth)
+                  const toleranceThickness = parseFloat(workOrder.toleranceWidth)
+                  this.temp.targetWidth = targetWidth
+                  this.temp.toleranceWidth = toleranceWidth
+                  this.temp.targetThickness = targetThickness
+                  this.temp.toleranceThickness = toleranceThickness
+
                   this.temp.requirements = workOrder.requirements
                 }
               }).catch(error => {
                 console.log(error)
                 this.$message.error('获取信息失败2')
               })
-              console.log('outboundOrderRawItem:')
-              console.log(outboundOrderRawItem)
               const operationHistory = JSON.parse(outboundOrderRawItem.operationHistory)
               const index = operationHistory.findIndex(item => item.itemId == this.temp.itemId)
               if (index != -1) {
@@ -903,54 +922,6 @@
     }
   }
 </script>
-
-<!--SELECT
-qd.*,
-ipqc.inspect_date,
-ipqc.date,
-ipqc.hot_roll_origin,
-ipqc.operation,
-ipqc.next_operation,
-ipqc.shift_id,
-ipqc.steel_grade,
-ipqc.surface_finish,
-ipqc.uses,
-ipqc.customer_id,
-ipqc.product_number,
-ipqc.material_number,
-ipqc.grade,
-ipqc.harmful_defect_percent,
-ipqc.grade_score,
-ipqc.anneal_tv,
-ipqc.anneal_hardness,
-ipqc.rolling_pass,
-ipqc.recommended_surface,
-ipqc.unwind_method,
-ipqc.handover_matters,
-ipqc.note,
-ipqc.inspector,
-ipqc.checker,
-ipqc.inspector_name,
-ipqc.checker_name,
-ipqc.measurement,
-ipqc.inspector_result,
-ipqc.checker_result,
-ipqc.STATUS,
-ipqc.defect_list,
-ipqc.requirements,
-ipqc.target_width,
-ipqc.tolerance_width,
-ipqc.target_thickness,
-ipqc.tolerance_thickness,
-ipqc.statistics
-FROM
-(
-`tb_qc_defect` `qd`
-JOIN `tb_ipqc` `ipqc` ON ((
-`qd`.`ipqc_id` = `ipqc`.`id`
-)))-->
-
-
 <style lang="scss">
   .ipqc-container {
 

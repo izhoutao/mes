@@ -132,12 +132,15 @@
           style="margin: 10px 0px 20px;display: flex;flex-direction: row;justify-content: center;align-items: center;">
           <el-button type="danger" style="width: 30%;" @click="dialogStatus==='create'?submit():updateData()">提交
           </el-button>
-          <el-button type="danger" size="small" @click="splitVisible = true">分卷</el-button>
         </div>
       </div>
       <el-card class="box-card">
         <div slot="header" class="clearfix">
-          <div style="font-size: 20px;">报工记录</div>
+          <span style="font-size: 20px;">报工记录</span>
+          <el-button style="float: right;"
+                     v-waves class="filter-item" type="warning"
+                     @click="splitVisible = true">分卷操作台
+          </el-button>
         </div>
         <div>
           <div class="filter-container">
@@ -273,7 +276,6 @@
       </el-card>
     </div>
     <split operation="重卷" v-if="splitVisible" :splitVisible.sync="splitVisible"></split>
-
   </div>
 </template>
 
@@ -339,7 +341,6 @@
         shifts: [],
         shiftMap: null,
         splitVisible: false,
-        // dialogFormVisible: false,
         dialogStatus: 'create',
 
         /*        textMap: {

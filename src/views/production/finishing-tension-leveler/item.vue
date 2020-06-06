@@ -1,348 +1,351 @@
 <template>
   <div class="app-container journaling-finishing-tension-leveler-item">
-    <div>
-      <!--      <div style="font-size: 20px;">{{textMap[dialogStatus]}}报工</div>-->
-
-      <el-form
-        ref="journalingFinishingTensionLevelerItemForm"
-        :rules="rules"
-        :model="temp"
-        label-position="right"
-        label-width="150px"
-      >
-        <el-row>
-          <el-col :span="6">
-            <el-form-item label="日期：" prop="date">
-              <el-date-picker v-model="temp.date" type="date" placeholder="请选择日期" style="width: 100%;"
-                              format="yyyy-MM-dd"
-                              value-format="yyyy-MM-dd"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="班别：" prop="shiftId">
-              <el-select v-model="temp.shiftId" filterable placeholder="请选择" style="width:100%">
-                <el-option
-                  v-for="item in shifts"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="钢卷编号：" prop="productNumber">
-              <el-autocomplete
-                v-model="temp.productNumber"
-                :fetch-suggestions="getPendingItemsByNumberType('productNumber')"
-                placeholder="请输入钢卷号"
-                @select="item => handleNumberChange(item,'materialNumber')"
-              ></el-autocomplete>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="原料编号：" prop="materialNumber">
-              <el-autocomplete
-                v-model="temp.materialNumber"
-                :fetch-suggestions="getPendingItemsByNumberType('materialNumber')"
-                placeholder="请输入原料编号"
-                @select="item => handleNumberChange(item,'productNumber')"
-              ></el-autocomplete>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="6">
-            <el-form-item label="进料宽度(mm)：" prop="inputWidth">
-              <el-input v-model="temp.inputWidth"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="进料厚度(mm)：" prop="inputThickness">
-              <el-input v-model="temp.inputThickness"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="进料重量(kg)：" prop="inputWeight">
-              <el-input v-model="temp.inputWeight"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="生产方式：" prop="paramProductionMode">
-              <el-radio-group v-model="temp.paramProductionMode">
-                <el-radio :label="0">精整</el-radio>
-                <el-radio :label="1">拉矫</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-
-          <el-col :span="6">
-            <el-form-item label="入口张力(KN)：" prop="paramInletTesion">
-              <el-input v-model="temp.paramInletTesion"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="总轧制力(T)：" prop="paramTotalRollingForce">
-              <el-input v-model="temp.paramTotalRollingForce"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="出口张力(KN)：" prop="paramOutletTesion">
-              <el-input v-model="temp.paramOutletTesion"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="延伸率(%)：" prop="paramPercentageElongation">
-              <el-input v-model="temp.paramPercentageElongation"/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="6">
-            <el-form-item label="出料厚度(mm)：" prop="outputThickness">
-              <el-input v-model="temp.outputThickness"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="出料长度(mm)：" prop="outputLength">
-              <el-input v-model="temp.outputLength"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="出料重量(kg)：" prop="outputWeight">
-              <el-input v-model="temp.outputWeight"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="套筒重量(kg)：" prop="outputSleeveWeight">
-              <el-input v-model="temp.outputSleeveWeight"/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-
-          <el-col :span="6">
-            <el-form-item label="出料速度(m/min)：" prop="outputSpeed">
-              <el-input v-model="temp.outputSpeed"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="上机时间：" prop="beginTime">
-              <el-date-picker
-                v-model="temp.beginTime"
-                type="datetime"
-                placeholder="选择日期时间"
-                default-time="12:00:00"
-                format="yyyy-MM-dd HH:mm:ss"
-                value-format="yyyy-MM-ddTHH:mm:ss"
-              >
-              </el-date-picker>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="下机时间：" prop="endTime">
-              <el-date-picker
-                v-model="temp.endTime"
-                type="datetime"
-                placeholder="选择日期时间"
-                default-time="12:00:00"
-                format="yyyy-MM-dd HH:mm:ss"
-                value-format="yyyy-MM-ddTHH:mm:ss"
-              >
-              </el-date-picker>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-      <div style="margin: 10px 0px 20px;display: flex;flex-direction: row;justify-content: center;align-items: center;">
-        <el-button type="danger" style="width: 30%;" @click="dialogStatus==='create'?submit():updateData()">提交
-        </el-button>
-        <!--        <el-button type="danger" size="small" @click="dialogFormVisible = false">取消</el-button>-->
-      </div>
-    </div>
-
-    <el-card class="box-card">
-      <div slot="header" class="clearfix">
-        <div style="font-size: 20px;">报工记录</div>
-      </div>
+    <div v-if="!splitVisible">
       <div>
-        <div class="filter-container">
-          <el-form ref="filterForm" :model="listQuery" :inline="true">
-            <el-form-item label="" prop="journalingBeginTime">
-              <el-date-picker
-                v-model="listQuery.journalingBeginTime"
-                type="datetime"
-                placeholder="选择起始日期时间"
-                format="yyyy-MM-dd HH:mm:ss"
-                value-format="yyyy-MM-ddTHH:mm:ss"
-              >
-              </el-date-picker>
-            </el-form-item>
+        <!--      <div style="font-size: 20px;">{{textMap[dialogStatus]}}报工</div>-->
 
-            <el-form-item label="" prop="journalingEndTime">
-              <el-date-picker
-                v-model="listQuery.journalingEndTime"
-                type="datetime"
-                placeholder="选择结束日期时间"
-                format="yyyy-MM-dd HH:mm:ss"
-                value-format="yyyy-MM-ddTHH:mm:ss"
-              >
-              </el-date-picker>
-            </el-form-item>
-            <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索
-            </el-button>
-            <el-button v-waves class="filter-item" @click="resetForm('filterForm');handleFilter()">重置</el-button>
-            <!--            <el-button class="filter-item" style="margin-left: 10px;" type="success"
-                                   icon="el-icon-edit" @click="handleAdd">
-                          添加
-                        </el-button>-->
-          </el-form>
-          <pagination
-            v-show="total>0"
-            :total="total"
-            :page.sync="listQuery.current"
-            :limit.sync="listQuery.size"
-            @pagination="getList"
-          />
+        <el-form
+          ref="journalingFinishingTensionLevelerItemForm"
+          :rules="rules"
+          :model="temp"
+          label-position="right"
+          label-width="150px"
+        >
+          <el-row>
+            <el-col :span="6">
+              <el-form-item label="日期：" prop="date">
+                <el-date-picker v-model="temp.date" type="date" placeholder="请选择日期" style="width: 100%;"
+                                format="yyyy-MM-dd"
+                                value-format="yyyy-MM-dd"/>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="班别：" prop="shiftId">
+                <el-select v-model="temp.shiftId" filterable placeholder="请选择" style="width:100%">
+                  <el-option
+                    v-for="item in shifts"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="钢卷编号：" prop="productNumber">
+                <el-autocomplete
+                  v-model="temp.productNumber"
+                  :fetch-suggestions="getPendingItemsByNumberType('productNumber')"
+                  placeholder="请输入钢卷号"
+                  @select="item => handleNumberChange(item,'materialNumber')"
+                ></el-autocomplete>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="原料编号：" prop="materialNumber">
+                <el-autocomplete
+                  v-model="temp.materialNumber"
+                  :fetch-suggestions="getPendingItemsByNumberType('materialNumber')"
+                  placeholder="请输入原料编号"
+                  @select="item => handleNumberChange(item,'productNumber')"
+                ></el-autocomplete>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="6">
+              <el-form-item label="进料宽度(mm)：" prop="inputWidth">
+                <el-input v-model="temp.inputWidth"/>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="进料厚度(mm)：" prop="inputThickness">
+                <el-input v-model="temp.inputThickness"/>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="进料重量(kg)：" prop="inputWeight">
+                <el-input v-model="temp.inputWeight"/>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="生产方式：" prop="paramProductionMode">
+                <el-radio-group v-model="temp.paramProductionMode">
+                  <el-radio :label="0">精整</el-radio>
+                  <el-radio :label="1">拉矫</el-radio>
+                </el-radio-group>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+
+            <el-col :span="6">
+              <el-form-item label="入口张力(KN)：" prop="paramInletTesion">
+                <el-input v-model="temp.paramInletTesion"/>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="总轧制力(T)：" prop="paramTotalRollingForce">
+                <el-input v-model="temp.paramTotalRollingForce"/>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="出口张力(KN)：" prop="paramOutletTesion">
+                <el-input v-model="temp.paramOutletTesion"/>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="延伸率(%)：" prop="paramPercentageElongation">
+                <el-input v-model="temp.paramPercentageElongation"/>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="6">
+              <el-form-item label="出料厚度(mm)：" prop="outputThickness">
+                <el-input v-model="temp.outputThickness"/>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="出料长度(mm)：" prop="outputLength">
+                <el-input v-model="temp.outputLength"/>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="出料重量(kg)：" prop="outputWeight">
+                <el-input v-model="temp.outputWeight"/>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="套筒重量(kg)：" prop="outputSleeveWeight">
+                <el-input v-model="temp.outputSleeveWeight"/>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+
+            <el-col :span="6">
+              <el-form-item label="出料速度(m/min)：" prop="outputSpeed">
+                <el-input v-model="temp.outputSpeed"/>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="上机时间：" prop="beginTime">
+                <el-date-picker
+                  v-model="temp.beginTime"
+                  type="datetime"
+                  placeholder="选择日期时间"
+                  default-time="12:00:00"
+                  format="yyyy-MM-dd HH:mm:ss"
+                  value-format="yyyy-MM-ddTHH:mm:ss"
+                >
+                </el-date-picker>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="下机时间：" prop="endTime">
+                <el-date-picker
+                  v-model="temp.endTime"
+                  type="datetime"
+                  placeholder="选择日期时间"
+                  default-time="12:00:00"
+                  format="yyyy-MM-dd HH:mm:ss"
+                  value-format="yyyy-MM-ddTHH:mm:ss"
+                >
+                </el-date-picker>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <div style="margin: 10px 0px 20px;display: flex;flex-direction: row;justify-content: center;align-items: center;">
+          <el-button type="danger" style="width: 30%;" @click="dialogStatus==='create'?submit():updateData()">提交
+          </el-button>
         </div>
-        <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row>
-          <el-table-column label="序号" min-width="40px" type="index" align="center">
-          </el-table-column>
-          <el-table-column label="钢卷编号" min-width="80px" align="center">
-            <template slot-scope="scope">
-              <span>{{ scope.row.productNumber }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="钢种" min-width="80px" align="center">
-            <template slot-scope="scope">
-              <span>{{ scope.row.steelGrade }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="表面" min-width="80px" align="center">
-            <template slot-scope="scope">
-              <span>{{ scope.row.surfaceFinish }}</span>
-            </template>
-          </el-table-column>
-
-          <el-table-column label="进料" align="center">
-            <el-table-column label="厚度|(mm)" min-width="50px" align="center" :render-header="renderHeader">
-              <template slot-scope="scope">
-                <span>{{ scope.row.inputThickness }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="宽度|(mm)" min-width="50px" align="center" :render-header="renderHeader">
-              <template slot-scope="scope">
-                <span>{{ scope.row.inputWidth }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="重量|(kg)" min-width="50px" align="center" :render-header="renderHeader">
-              <template slot-scope="scope">
-                <span>{{ scope.row.inputWeight }}</span>
-              </template>
-            </el-table-column>
-          </el-table-column>
-
-          <el-table-column label="精整拉矫参数" align="center">
-            <el-table-column label="生产方式" min-width="50px" align="center">
-              <template slot-scope="scope">
-                <span>{{ scope.row.paramProductionMode }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="入口张力|(KN)" min-width="50px" align="center" :render-header="renderHeader">
-              <template slot-scope="scope">
-                <span>{{ scope.row.paramInletTesion }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="总轧制力|(T)" min-width="50px" align="center" :render-header="renderHeader">
-              <template slot-scope="scope">
-                <span>{{ scope.row.paramTotalRollingForce }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="出口张力|(KN)" min-width="50px" align="center" :render-header="renderHeader">
-              <template slot-scope="scope">
-                <span>{{ scope.row.paramOutletTesion }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="延伸率|(%)" min-width="50px" align="center" :render-header="renderHeader">
-              <template slot-scope="scope">
-                <span>{{ scope.row.paramPercentageElongation }}</span>
-              </template>
-            </el-table-column>
-          </el-table-column>
-          <el-table-column label="出料" align="center">
-            <el-table-column label="厚度|(mm)" min-width="50px" align="center" :render-header="renderHeader">
-              <template slot-scope="scope">
-                <span>{{ scope.row.outputThickness }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="长度(mm)" min-width="50px" align="center" :render-header="renderHeader">
-              <template slot-scope="scope">
-                <span>{{ scope.row.outputLength }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="重量|(kg)" min-width="50px" align="center" :render-header="renderHeader">
-              <template slot-scope="scope">
-                <span>{{ scope.row.outputWeight }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="套筒重量|(kg)" min-width="50px" align="center" :render-header="renderHeader">
-              <template slot-scope="scope">
-                <span>{{ scope.row.outputWeight }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="损耗|(kg)" min-width="50px" align="center" :render-header="renderHeader">
-              <template slot-scope="scope">
-                <span>{{ scope.row.outputWeightLoss }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="出料速度|(m/min)" min-width="50px" align="center" :render-header="renderHeader">
-              <template slot-scope="scope">
-                <span>{{ scope.row.outputSpeed }}</span>
-              </template>
-            </el-table-column>
-          </el-table-column>
-          <el-table-column label="时间统计" align="center">
-            <el-table-column label="上机时间" min-width="65px" align="center">
-              <template slot-scope="scope">
-                <span>{{ scope.row.beginTime  | parseTime('{h}:{i}') }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="下机时间" min-width="65px" align="center">
-              <template slot-scope="scope">
-                <span>{{ scope.row.endTime | parseTime('{h}:{i}') }}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column label="用时|（min）" min-width="50px" align="center" :render-header="renderHeader">
-              <template slot-scope="scope">
-                <span>{{ scope.row.costTime }}</span>
-              </template>
-            </el-table-column>
-          </el-table-column>
-
-          <el-table-column label="操作" align="center" min-width="60">
-            <template slot-scope="scope">
-              <!--          <el-button type="primary" icon="el-icon-edit" size="mini"
-                                   @click="handleUpdate(scope.row)">编辑
-                        </el-button>
-                        <el-button
-                          icon="el-icon-delete"
-                          size="mini"
-                          type="danger"
-                          @click="handleDelete(scope.row,'true')"
-                        >删除
-                        </el-button>-->
-              <i class="el-icon-edit update" @click="handleUpdate(scope.row)"/>
-              <i class="el-icon-delete delete" @click="handleDelete(scope.row,'true')"/>
-            </template>
-          </el-table-column>
-        </el-table>
       </div>
-    </el-card>
+      <el-card class="box-card">
+        <div slot="header" class="clearfix">
+          <span style="font-size: 20px;">报工记录</span>
+          <el-button style="float: right;"
+                     v-waves class="filter-item" type="warning"
+                     @click="splitVisible = true">分卷操作台
+          </el-button>
+        </div>
+        <div>
+          <div class="filter-container">
+            <el-form ref="filterForm" :model="listQuery" :inline="true">
+              <el-form-item label="" prop="journalingBeginTime">
+                <el-date-picker
+                  v-model="listQuery.journalingBeginTime"
+                  type="datetime"
+                  placeholder="选择起始日期时间"
+                  format="yyyy-MM-dd HH:mm:ss"
+                  value-format="yyyy-MM-ddTHH:mm:ss"
+                >
+                </el-date-picker>
+              </el-form-item>
 
+              <el-form-item label="" prop="journalingEndTime">
+                <el-date-picker
+                  v-model="listQuery.journalingEndTime"
+                  type="datetime"
+                  placeholder="选择结束日期时间"
+                  format="yyyy-MM-dd HH:mm:ss"
+                  value-format="yyyy-MM-ddTHH:mm:ss"
+                >
+                </el-date-picker>
+              </el-form-item>
+              <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索
+              </el-button>
+              <el-button v-waves class="filter-item" @click="resetForm('filterForm');handleFilter()">重置</el-button>
+              <!--            <el-button class="filter-item" style="margin-left: 10px;" type="success"
+                                     icon="el-icon-edit" @click="handleAdd">
+                            添加
+                          </el-button>-->
+            </el-form>
+            <pagination
+              v-show="total>0"
+              :total="total"
+              :page.sync="listQuery.current"
+              :limit.sync="listQuery.size"
+              @pagination="getList"
+            />
+          </div>
+          <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row>
+            <el-table-column label="序号" min-width="40px" type="index" align="center">
+            </el-table-column>
+            <el-table-column label="钢卷编号" min-width="80px" align="center">
+              <template slot-scope="scope">
+                <span>{{ scope.row.productNumber }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="钢种" min-width="80px" align="center">
+              <template slot-scope="scope">
+                <span>{{ scope.row.steelGrade }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="表面" min-width="80px" align="center">
+              <template slot-scope="scope">
+                <span>{{ scope.row.surfaceFinish }}</span>
+              </template>
+            </el-table-column>
 
+            <el-table-column label="进料" align="center">
+              <el-table-column label="厚度|(mm)" min-width="50px" align="center" :render-header="renderHeader">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.inputThickness }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="宽度|(mm)" min-width="50px" align="center" :render-header="renderHeader">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.inputWidth }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="重量|(kg)" min-width="50px" align="center" :render-header="renderHeader">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.inputWeight }}</span>
+                </template>
+              </el-table-column>
+            </el-table-column>
+
+            <el-table-column label="精整拉矫参数" align="center">
+              <el-table-column label="生产方式" min-width="50px" align="center">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.paramProductionMode }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="入口张力|(KN)" min-width="50px" align="center" :render-header="renderHeader">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.paramInletTesion }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="总轧制力|(T)" min-width="50px" align="center" :render-header="renderHeader">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.paramTotalRollingForce }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="出口张力|(KN)" min-width="50px" align="center" :render-header="renderHeader">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.paramOutletTesion }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="延伸率|(%)" min-width="50px" align="center" :render-header="renderHeader">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.paramPercentageElongation }}</span>
+                </template>
+              </el-table-column>
+            </el-table-column>
+            <el-table-column label="出料" align="center">
+              <el-table-column label="厚度|(mm)" min-width="50px" align="center" :render-header="renderHeader">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.outputThickness }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="长度(mm)" min-width="50px" align="center" :render-header="renderHeader">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.outputLength }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="重量|(kg)" min-width="50px" align="center" :render-header="renderHeader">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.outputWeight }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="套筒重量|(kg)" min-width="50px" align="center" :render-header="renderHeader">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.outputWeight }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="损耗|(kg)" min-width="50px" align="center" :render-header="renderHeader">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.outputWeightLoss }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="出料速度|(m/min)" min-width="50px" align="center" :render-header="renderHeader">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.outputSpeed }}</span>
+                </template>
+              </el-table-column>
+            </el-table-column>
+            <el-table-column label="时间统计" align="center">
+              <el-table-column label="上机时间" min-width="65px" align="center">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.beginTime  | parseTime('{h}:{i}') }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="下机时间" min-width="65px" align="center">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.endTime | parseTime('{h}:{i}') }}</span>
+                </template>
+              </el-table-column>
+
+              <el-table-column label="用时|（min）" min-width="50px" align="center" :render-header="renderHeader">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.costTime }}</span>
+                </template>
+              </el-table-column>
+            </el-table-column>
+
+            <el-table-column label="操作" align="center" min-width="60">
+              <template slot-scope="scope">
+                <!--          <el-button type="primary" icon="el-icon-edit" size="mini"
+                                     @click="handleUpdate(scope.row)">编辑
+                          </el-button>
+                          <el-button
+                            icon="el-icon-delete"
+                            size="mini"
+                            type="danger"
+                            @click="handleDelete(scope.row,'true')"
+                          >删除
+                          </el-button>-->
+                <i class="el-icon-edit update" @click="handleUpdate(scope.row)"/>
+                <i class="el-icon-delete delete" @click="handleDelete(scope.row,'true')"/>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </el-card>
+    </div>
+    <split operation="精整拉矫" v-if="splitVisible" :splitVisible.sync="splitVisible"></split>
   </div>
 </template>
 
@@ -359,12 +362,13 @@
 
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
+  import Split from '../components/split' // Secondary package based on el-pagination
   import { getShifts } from '@/api/shift'
   import { getOutboundOrderRawItems } from '@/api/outboundorderrawitem'
 
   export default {
     name: 'finishingTensionLevelerItem',
-    components: { Pagination },
+    components: { Pagination, Split },
     directives: { waves },
     data() {
       return {
@@ -412,8 +416,7 @@
 
         shifts: [],
         shiftMap: null,
-
-        // dialogFormVisible: false,
+        splitVisible: false,
         dialogStatus: 'create',
 
         /*        textMap: {

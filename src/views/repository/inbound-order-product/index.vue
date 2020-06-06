@@ -259,7 +259,6 @@
     addInboundOrderProductItem,
     updateInboundOrderProductItem,
     deleteInboundOrderProductItem,
-    getProductSerialNumbers
   } from '@/api/inboundorderproductitem.js'
 
 

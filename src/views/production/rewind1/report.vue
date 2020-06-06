@@ -192,14 +192,6 @@
   import { mapGetters } from 'vuex'
   import { deepClone, parseTime } from '@/utils'
 
-  import {
-    getWorkOrders,
-    addWorkOrder,
-    updateWorkOrder,
-    deleteWorkOrder,
-    getProductSerialNumbers
-  } from '@/api/workorder.js'
-  import { getCustomers } from '@/api/customer' // Secondary package based on el-pagination
 
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination/index.vue'

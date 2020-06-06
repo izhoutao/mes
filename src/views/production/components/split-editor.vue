@@ -21,7 +21,7 @@
           </el-button>
           <el-button class="filter-item" size="small" type="success"
                      icon="el-icon-check" @click="handleRevoke" v-if="parentItem.status==1">
-            撤销
+            撤销分卷
           </el-button>
         </el-form>
       </div>
@@ -379,13 +379,6 @@
   import {
     getOutboundOrderRawItems,
   } from '@/api/outboundorderrawitem.js'
-  import {
-    getInboundOrderRawItems,
-    addInboundOrderRawItem,
-    updateInboundOrderRawItem,
-    deleteInboundOrderRawItem,
-    getProductSerialNumbers
-  } from '@/api/inboundorderrawitem.js'
 
   import {
     saveOrUpdateSplitRawItem,

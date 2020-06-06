@@ -230,13 +230,6 @@
     deleteOutboundOrderRawItem,
     getStoredRawItems
   } from '@/api/outboundorderrawitem.js'
-  import {
-    getInboundOrderRawItems,
-    addInboundOrderRawItem,
-    updateInboundOrderRawItem,
-    deleteInboundOrderRawItem,
-    getProductSerialNumbers
-  } from '@/api/inboundorderrawitem.js'
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
   import Material from './material.vue'
@@ -376,12 +369,6 @@
           tagType: this.tagTypes[status],
           text: this.statuses[status]
         }
-      },
-      handleGetProductSerialNumber() {
-        getProductSerialNumbers(1).then(res => {
-          // console.log(res)
-          this.temp.productNumber = res.model[0]
-        })
       },
       handleSelectMaterial() {
         this.materialDialogFormVisible = true

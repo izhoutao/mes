@@ -36,3 +36,11 @@ export function deleteInboundOrderRawItem(id) {
     method: 'delete'
   })
 }
+
+export function getInboundOrderRawItemByOutboundRawItemProductNumber(productNumber) {
+  return request({
+    url: `/basic/inboundorderrawitem/outboundrawitemproductnumber/${productNumber}`,
+    method: 'get'
+  })
+}
+

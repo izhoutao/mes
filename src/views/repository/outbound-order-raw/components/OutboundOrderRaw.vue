@@ -226,11 +226,7 @@
     deleteOutboundOrderRaw
   } from '@/api/outboundorderraw.js'
   import {
-    getWorkOrders,
-    addWorkOrder,
-    updateWorkOrder,
-    deleteWorkOrder,
-    getProductSerialNumbers
+    getWorkOrders
   } from '@/api/workorder.js'
   import { getDictInfos } from '@/api/dictionary.js'
   import { getWarehouses } from '@/api/warehouse.js'

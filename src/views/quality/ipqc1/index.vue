@@ -394,7 +394,9 @@
   import { getCustomers } from '@/api/customer'
   import { getOperations } from '@/api/operation'
   import { getShifts } from '@/api/shift'
-  import { getInboundOrderRawItems } from '@/api/inboundorderrawitem'
+  import {
+    getInboundOrderRawItemByOutboundRawItemProductNumber,
+  } from '@/api/inboundorderrawitem'
   import { getOutboundOrderRawItems } from '@/api/outboundorderrawitem'
   import { getInboundOrderRaws } from '@/api/inboundorderraw'
   import { login } from '@/api/user'
@@ -644,12 +646,8 @@
         if (currentRow) {
           this.temp = deepClone(currentRow)
           // if (!this.temp.id) {
-          getInboundOrderRawItems({
-            materialNumber: this.temp.materialNumber,
-            productNumber: this.temp.productNumber
-          }).then(res => {
-            if (res.queryResult.total) {
-              const inboundOrderRawItem = res.queryResult.list[0]
+          getInboundOrderRawItemByOutboundRawItemProductNumber(this.temp.productNumber).then(res => {
+              const inboundOrderRawItem = res.model
               this.temp.steelGrade = inboundOrderRawItem.steelGrade
               this.temp.surfaceFinish = inboundOrderRawItem.surfaceFinish
               getInboundOrderRaws({
@@ -660,7 +658,6 @@
                   this.temp.hotRollOrigin = inboundOrderRaw.hotRollOrigin
                 }
               })
-            }
           }).catch(error => {
             console.log(error)
             this.$message.error('获取信息失败1')
