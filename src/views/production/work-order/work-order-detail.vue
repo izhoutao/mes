@@ -1,7 +1,7 @@
 <template>
   <el-tabs :value="activeName" @tab-click="handleClick">
-    <el-tab-pane label="工单详情" name="first">
-      <el-form label-width="110px">
+    <el-tab-pane label="工单详情" name="first" class="work-order-detail-tab-container">
+      <el-form label-width="125px">
         <el-row>
           <el-col :span="7">
             <el-form-item label="产品名称：" prop="materialName">
@@ -137,3 +137,24 @@
     }
   }
 </script>
+
+<style lang="scss">
+  .work-order-detail-tab-container {
+
+  .el-form-item {
+    margin: 0px;
+  }
+
+  .el-col {
+    border: 1px solid #EBEEF5;
+  .el-form-item__label{
+    padding: 0px;
+    border-right: 1px solid #EBEEF5;
+  }
+  .el-form-item__content{
+    text-align: center;
+  }
+  }
+
+  }
+</style>

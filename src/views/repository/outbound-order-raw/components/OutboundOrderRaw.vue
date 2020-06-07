@@ -161,29 +161,11 @@
                   </el-select>
                 </el-form-item>-->
         <el-form-item label="工单号：" prop="workOrderNumber">
-          <!--          <el-select v-model="temp.workOrderNumber" filterable placeholder="请选择" style="width:100%">
-                      <el-option
-                        v-for="item in workOrders"
-                        :key="item.id"
-                        :label="item.workOrderNumber"
-                        :value="item.workOrderNumber">
-                      </el-option>
-                    </el-select>-->
-          <el-select
+          <el-autocomplete
             v-model="temp.workOrderNumber"
-            filterable
-            remote
-            reserve-keyword
+            :fetch-suggestions="getWorkOrderNumbers"
             placeholder="请输入工单号"
-            :remote-method="getWorkOrders"
-            :loading="loading">
-            <el-option
-              v-for="item in workOrders"
-              :key="item.id"
-              :label="item.workOrderNumber"
-              :value="item.workOrderNumber">
-            </el-option>
-          </el-select>
+          />
         </el-form-item>
         <el-form-item label="出库时间：" prop="outboundTime">
           <el-date-picker
@@ -361,23 +343,17 @@
           this.statuses = res.queryResult.list
         })
       },
-      /*      getWorkOrders() {
-              getWorkOrders({status:1}).then(res => {
-                this.workOrders = res.queryResult.list
-              })
-            },*/
-      getWorkOrders(query) {
-        if (query !== '') {
-          this.loading = true
-          getWorkOrders({ status: 1 }).then(res => {
-            this.loading = false
-            this.workOrders = res.queryResult.list.filter(item => {
-              return item.workOrderNumber.toLowerCase()
-                .indexOf(query.toLowerCase()) > -1
-            })
-          })
-        } else {
-          this.workOrders = []
+      getWorkOrderNumbers(queryString, cb) {
+        getWorkOrders({ status: 1 }).then(res => {
+          let workOrders = res.queryResult.list.map(item => {
+            return { ...item, value: item.workOrderNumber }
+          }).filter(this.createStateFilter(queryString))
+          cb(workOrders)
+        })
+      },
+      createStateFilter(queryString) {
+        return (state) => {
+          return (state.value.toLowerCase().indexOf(queryString.toLowerCase()) > -1)
         }
       },
 

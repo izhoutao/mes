@@ -129,7 +129,7 @@
       </el-table-column>
       <el-table-column label="时间" width="100px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.time }}</span>
+          <span>{{ scope.row.time | parseTime('{y}-{m}-{d} {h}:{i}:{s}')}}</span>
         </template>
       </el-table-column>
       <el-table-column label="备注" width="150px" align="center">

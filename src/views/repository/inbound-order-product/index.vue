@@ -22,6 +22,16 @@
             @keyup.enter.native="handleFilter"
           />
         </el-form-item>
+        <el-form-item label="" prop="workOrderNumber">
+          <el-input
+            v-model="listQuery.workOrderNumber"
+            placeholder="请输入工单号"
+            style="width: 200px;"
+            class="filter-item"
+            clearable=""
+            @keyup.enter.native="handleFilter"
+          />
+        </el-form-item>
         <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
         <el-button v-waves class="filter-item" @click="resetForm('filterForm');handleFilter()">重置</el-button>
         <el-button class="filter-item" style="margin-left: 10px;" type="success"
@@ -34,6 +44,11 @@
     <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%">
       <el-table-column label="序" width="40px" type="index" align="center" fixed>
       </el-table-column>
+      <el-table-column label="工单号" width="150px" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.workOrderNumber }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="原料编号" width="135px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.materialNumber }}</span>
@@ -45,7 +60,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="钢种" width="80px" align="center">
+      <el-table-column label="钢种" width="100px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.steelGrade }}</span>
         </template>
@@ -178,6 +193,7 @@
       >
         <el-form-item label="钢卷编号：" prop="productNumber">
           <el-autocomplete
+            :disabled="this.dialogStatus != 'create'"
             v-model="temp.productNumber"
             :fetch-suggestions="getPendingItemsByNumberType('productNumber')"
             placeholder="请输入钢卷号"
@@ -186,6 +202,7 @@
         </el-form-item>
         <el-form-item label="原料编号：" prop="materialNumber">
           <el-autocomplete
+            :disabled="this.dialogStatus != 'create'"
             v-model="temp.materialNumber"
             :fetch-suggestions="getPendingItemsByNumberType('materialNumber')"
             placeholder="请输入原料编号"
@@ -193,7 +210,7 @@
           ></el-autocomplete>
         </el-form-item>
         <el-form-item label="钢种：" prop="steelGrade">
-          <el-input v-model="temp.steelGrade"/>
+          <el-input  :disabled="this.dialogStatus != 'create'" v-model="temp.steelGrade"/>
         </el-form-item>
         <el-form-item label="表面品级：" prop="surfaceFinish">
           <el-input v-model="temp.surfaceFinish"/>
@@ -275,10 +292,11 @@
           size: 10,
           materialNumber:'',
           productNumber:'',
+          workOrderNumber:''
         },
         temp: {
           id: undefined,
-          materialNumber: undefined,
+          materialNumber: '',
           productNumber: '',
           steelGrade: '',
           surfaceFinish: undefined,
