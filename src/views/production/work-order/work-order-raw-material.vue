@@ -32,14 +32,19 @@
               style="width: 100%;margin-top: 10px">
       <el-table-column label="序号" width="60px" type="index" align="center" fixed>
       </el-table-column>
+      <el-table-column label="钢卷编号" width="160px" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.productNumber }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="原料编号" width="160px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.materialNumber }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="钢卷编号" width="160px" align="center">
+      <el-table-column label="当前程序" width="160px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.productNumber }}</span>
+          <span>{{ scope.row.currentOperationLabel }}</span>
         </template>
       </el-table-column>
       <el-table-column label="钢种" width="100px" align="center">

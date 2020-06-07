@@ -58,54 +58,73 @@
         </el-button>
       </el-form>
     </div>
-    <el-row :gutter="10">
-      <!--状态数据-->
-      <el-col :span="4">
-        <el-table
-          ref="ipqcTable"
-          :key="tableKey"
-          v-loading="listLoading"
-          :data="list"
-          @current-change="handleCurrentChange"
-          border fit highlight-current-row
-          class="ipqc-table"
-          style="zoom:0.9;"
-        >
-          <el-table-column label="工序" min-width="30px" align="center">
-            <template slot-scope="scope">
-              <span>{{ scope.row.operation }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="钢卷编号" min-width="85px" align="center">
-            <template slot-scope="scope">
-              <span>{{ scope.row.productNumber }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="状态" min-width="25px" align="center">
-            <template slot-scope="scope">
-              <span>{{ scope.row.inspectorResult }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="确认" min-width="25px" align="center">
-            <template slot-scope="scope">
-              <span>{{ scope.row.status?'Y':'N' }}</span>
-            </template>
-          </el-table-column>
-        </el-table>
-        <!--分页组件-->
-        <el-pagination
-          v-show="total>0"
-          :total="total"
-          :page-size="listQuery.size"
-          :pager-count="5"
-          @current-change="handleCurrentPageChange"
-          :hide-on-single-page="true"
-          small
-          layout="prev, pager, next">
-        </el-pagination>
-      </el-col>
+    <el-row :gutter="0" class="ipqc-main-container">
+
+      <transition name="collapse">
+        <!--状态数据-->
+        <el-col :span="4"
+                v-show="!ipqcTableCollapsed">
+          <el-table
+            ref="ipqcTable"
+            :key="tableKey"
+            v-loading="listLoading"
+            :data="list"
+            @current-change="handleCurrentChange"
+            border fit highlight-current-row
+            class="ipqc-table"
+            style="zoom:0.9;"
+          >
+            <el-table-column label="工序" min-width="30px" align="center">
+              <template slot-scope="scope">
+                <span>{{ scope.row.operation }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="钢卷编号" min-width="85px" align="center">
+              <template slot-scope="scope">
+                <span>{{ scope.row.productNumber }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="状态" min-width="25px" align="center">
+              <template slot-scope="scope">
+                <span>{{ scope.row.inspectorResult }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="确认" min-width="25px" align="center">
+              <template slot-scope="scope">
+                <span>{{ scope.row.status?'Y':'N' }}</span>
+              </template>
+            </el-table-column>
+          </el-table>
+          <!--分页组件-->
+          <el-pagination
+            v-show="total>0"
+            :total="total"
+            :page-size="listQuery.size"
+            :pager-count="5"
+            @current-change="handleCurrentPageChange"
+            :hide-on-single-page="true"
+            small
+            layout="prev, pager, next">
+          </el-pagination>
+        </el-col>
+      </transition>
+      <!--      <transition name="extend">-->
       <!--检验数据-->
-      <el-col :span="20">
+      <el-col :span="ipqcColSpan"
+              style="display: flex;flex-direction: row;justify-content: space-between;align-items: stretch;">
+        <!--      <el-col
+                :style="'width: 83.333%;display: flex;flex-direction: row;justify-content: space-between;align-items: stretch;'">-->
+        <div @click="handleIpqcTableCollapseChange"
+             style="display: flex;
+              flex-direction: column;
+              justify-content: center;">
+          <div class="ipqc-el-icon-d-arrow">
+            <i v-show="!ipqcTableCollapsed"
+               class="el-icon-d-arrow-left"/>
+            <i v-show="ipqcTableCollapsed"
+               class="el-icon-d-arrow-right"/>
+          </div>
+        </div>
         <!--表单-->
         <el-form
           ref="ipqcForm"
@@ -378,6 +397,7 @@
           </el-row>
         </el-form>
       </el-col>
+      <!--      </transition>-->
     </el-row>
   </div>
 </template>
@@ -395,7 +415,7 @@
   import { getOperations } from '@/api/operation'
   import { getShifts } from '@/api/shift'
   import {
-    getInboundOrderRawItemByOutboundRawItemProductNumber,
+    getInboundOrderRawItemByOutboundRawItemProductNumber
   } from '@/api/inboundorderrawitem'
   import { getOutboundOrderRawItems } from '@/api/outboundorderrawitem'
   import { getInboundOrderRaws } from '@/api/inboundorderraw'
@@ -531,6 +551,8 @@
           status: null
         },
         tempCopy: null,
+        ipqcTableCollapsed: false,
+        ipqcColSpan: 20,
         clipboardDefects: [],
         defectTableRowLength: 20,
         measurementTableRowLength: 5,
@@ -628,6 +650,17 @@
             type: 'success'
           })
         })
+      },
+      handleIpqcTableCollapseChange() {
+        this.ipqcTableCollapsed = !this.ipqcTableCollapsed
+        if (this.ipqcTableCollapsed) {
+          setTimeout(() => {
+            this.ipqcColSpan = 24
+          }, 500)
+        } else {
+          this.ipqcColSpan = 20
+        }
+
       },
       handleCurrentChange(currentRow, oldCurrentRow) {
         /*        if (this.modified) {
@@ -924,6 +957,27 @@
 </script>
 <style lang="scss">
   .ipqc-container {
+
+  .ipqc-main-container {
+
+
+  .collapse-enter, .collapse-leave-to {
+    width: 0;
+  }
+
+  .collapse-enter-active, .collapse-leave-active {
+    transition: width .5s;
+  }
+
+
+  .ipqc-el-icon-d-arrow {
+    padding: 100px 0;
+    background-color: rgba(0, 102, 10, 0.1);
+    border-radius: 0 200% 200% 0 / 0 100% 100% 0;
+  }
+
+  }
+
 
   .range-container {
 
