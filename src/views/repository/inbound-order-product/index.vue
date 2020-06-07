@@ -296,8 +296,6 @@
           workOrderNumber: undefined
         },
         tempCopy: null,
-        pendingRawItems: [],
-        loading: false,
 
         statuses: ['未完成', '已完成'],
         tagTypes: ['success', 'info', 'warning', 'danger'],
@@ -311,43 +309,34 @@
         },
         rules: {
           materialNumber: [
-            { required: true, trigger: 'blur', message: '请填写来料编号' }
+            { required: true, trigger: 'blur', message: '请填写原料编号' }
           ],
           productNumber: [
             { required: true, trigger: 'blur', message: '请填写钢卷编号' }
           ],
-          /*          steelGrade: [
-                      { required: true, trigger: 'blur', message: '请填写钢种' }
-                    ],*/
+          steelGrade: [
+            { required: true, trigger: 'blur', message: '请填写钢种' }
+          ],
           surfaceFinish: [
             { required: true, trigger: 'blur', message: '请填写表面品级' }
           ],
-          width: [
-            { required: true, trigger: 'blur', message: '请填写宽度' }
-          ],
-          thickness: [
-            { required: true, trigger: 'blur', message: '请填写厚度' }
-          ],
-          length: [
-            { required: true, trigger: 'blur', message: '请填写长度' }
-          ],
-          labelSpecification: [
-            { required: true, trigger: 'blur', message: '请填写标签规格' }
-          ],
           specification: [
-            { required: true, trigger: 'blur', message: '请填写实际规格' }
-          ],
-          labelNetWeight: [
-            { required: true, trigger: 'blur', message: '请填写标签净重' }
-          ],
-          labelGrossWeight: [
-            { required: true, trigger: 'blur', message: '请填写标签毛重' }
+            { required: true, trigger: 'blur', message: '请填写规格' }
           ],
           netWeight: [
-            { required: true, trigger: 'blur', message: '请填写实磅净重' }
+            { required: true, trigger: 'blur', message: '请填写净重' }
           ],
           grossWeight: [
-            { required: true, trigger: 'blur', message: '请填写实磅毛重' }
+            { required: true, trigger: 'blur', message: '请填写标签毛重' }
+          ],
+          referenceWidth: [
+            { required: true, trigger: 'blur', message: '请填写参考宽度' }
+          ],
+          referenceThickness: [
+            { required: true, trigger: 'blur', message: '请填写参考厚度' }
+          ],
+          referenceLength: [
+            { required: true, trigger: 'blur', message: '请填写参考长度' }
           ],
           edge: [
             { required: true, trigger: 'blur', message: '请填写边部' }
@@ -361,7 +350,7 @@
           barcode: [
             { required: true, trigger: 'blur', message: '请填写条码' }
           ],
-          time: [
+          date: [
             { required: true, trigger: 'blur', message: '请填写时间' },
             { required: true, message: '请选择时间', trigger: 'change' }
           ]
@@ -407,6 +396,7 @@
       handleNumberChange(item, type) {
         if (item) {
           this.temp[type] = item[type]
+          this.temp.steelGrade = item.steelGrade
         } else {
           this.temp[type] = ''
         }
