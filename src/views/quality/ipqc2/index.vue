@@ -114,11 +114,10 @@
               style="display: flex;flex-direction: row;justify-content: space-between;align-items: stretch;">
         <!--      <el-col
                 :style="'width: 83.333%;display: flex;flex-direction: row;justify-content: space-between;align-items: stretch;'">-->
-        <div @click="handleIpqcTableCollapseChange"
-             style="display: flex;
+        <div style="display: flex;
               flex-direction: column;
               justify-content: center;">
-          <div class="ipqc-el-icon-d-arrow">
+          <div class="ipqc-el-icon-d-arrow" @click="handleIpqcTableCollapseChange">
             <i v-show="!ipqcTableCollapsed"
                class="el-icon-d-arrow-left"/>
             <i v-show="ipqcTableCollapsed"
@@ -656,7 +655,7 @@
         if (this.ipqcTableCollapsed) {
           setTimeout(() => {
             this.ipqcColSpan = 24
-          }, 500)
+          }, 100)
         } else {
           this.ipqcColSpan = 20
         }
@@ -966,7 +965,7 @@
   }
 
   .collapse-enter-active, .collapse-leave-active {
-    transition: width .5s;
+    transition: width .1s;
   }
 
 

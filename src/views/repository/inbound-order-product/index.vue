@@ -177,26 +177,20 @@
         label-width="150px"
       >
         <el-form-item label="钢卷编号：" prop="productNumber">
-          <el-select
+          <el-autocomplete
             v-model="temp.productNumber"
-            filterable
-            remote
-            reserve-keyword
+            :fetch-suggestions="getPendingItemsByNumberType('productNumber')"
             placeholder="请输入钢卷号"
-            :remote-method="getPendingRawItemsByNumberType('productNumber')"
-            :loading="loading"
-            @change="handleProductNumberChange">
-            <el-option
-              v-for="item in pendingRawItems"
-              :key="item"
-              :label="item"
-              :value="item">
-            </el-option>
-          </el-select>
-
+            @select="item => handleNumberChange(item,'materialNumber')"
+          ></el-autocomplete>
         </el-form-item>
         <el-form-item label="原料编号：" prop="materialNumber">
-          <el-input v-model="temp.materialNumber"/>
+          <el-autocomplete
+            v-model="temp.materialNumber"
+            :fetch-suggestions="getPendingItemsByNumberType('materialNumber')"
+            placeholder="请输入原料编号"
+            @select="item => handleNumberChange(item,'productNumber')"
+          ></el-autocomplete>
         </el-form-item>
         <el-form-item label="钢种：" prop="steelGrade">
           <el-input v-model="temp.steelGrade"/>
@@ -395,44 +389,26 @@
           text: this.statuses[status]
         }
       },
-      getPendingRawItemsByNumberType(type) {
-        return query => {
-          if (query !== '') {
-            this.loading = true
-            getOutboundOrderRawItems({ next_operation_label: '成品入库', status:0 }).then(res => {
-              this.loading = false
-              this.pendingRawItems = res.queryResult.list.map(item => item[type]).filter(item => {
-                return item.toLowerCase()
-                  .indexOf(query.toLowerCase()) > -1
-              })
-            })
-          } else {
-            this.pendingRawItems = []
-          }
-        }
-      },
-
-      handleProductNumberChange(val) {
-        if (val) {
-          getOutboundOrderRawItems({ next_operation_label: '成品入库', product_number: val, status:0 }).then(res => {
-            if (res.queryResult.list.length == 1) {
-              this.temp.materialNumber = res.queryResult.list[0].materialNumber
-            } else {
-              this.temp.materialNumber = ''
-            }
+      getPendingItemsByNumberType(type) {
+        return (queryString, cb) => {
+          getOutboundOrderRawItems({ next_operation_label: '成品入库', status: 0 }).then(res => {
+            let pendingItems = res.queryResult.list.map(item => {
+              return { ...item, value: item[type] }
+            }).filter(this.createStateFilter(queryString))
+            cb(pendingItems)
           })
         }
       },
-
-      handleMaterialNumberChange(val) {
-        if (val) {
-          getOutboundOrderRawItems({ next_operation_label: '成品入库', material_number: val, status:0 }).then(res => {
-            if (res.queryResult.list.length == 1) {
-              this.temp.productNumber = res.queryResult.list[0].productNumber
-            } else {
-              this.temp.productNumber = ''
-            }
-          })
+      createStateFilter(queryString) {
+        return (state) => {
+          return (state.value.toLowerCase().indexOf(queryString.toLowerCase()) > -1)
+        }
+      },
+      handleNumberChange(item, type) {
+        if (item) {
+          this.temp[type] = item[type]
+        } else {
+          this.temp[type] = ''
         }
       },
 
