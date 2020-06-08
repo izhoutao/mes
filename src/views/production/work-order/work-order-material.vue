@@ -315,7 +315,7 @@
         })
       },
       handleDelete(row) {
-        this.$confirm('此操作将永久删除该子订单, 是否继续?', '提示', {
+        this.$confirm('此操作将永久删除该工单物料项, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'

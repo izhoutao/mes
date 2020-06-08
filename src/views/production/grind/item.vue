@@ -1,17 +1,15 @@
 <template>
   <div class="app-container journaling-rewind-item">
     <div>
-      <!--      <div style="font-size: 20px;">{{textMap[dialogStatus]}}报工</div>-->
-
       <el-form
-        ref="journalingRewindItemForm"
+        ref="journalingGrindItemForm"
         :rules="rules"
         :model="temp"
         label-position="right"
         label-width="150px"
       >
 
-        <el-row :gutter="40">
+        <el-row>
           <el-col :span="6">
             <el-form-item label="日期：" prop="date">
               <el-date-picker v-model="temp.date" type="date" placeholder="请选择日期" style="width: 100%;"
@@ -32,79 +30,21 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="钢卷编号：" prop="productNumber">
-              <el-select
-                v-model="temp.productNumber"
-                filterable
-                remote
-                reserve-keyword
-                placeholder="请输入钢卷号"
-                :remote-method="getPendingRawItems"
-                :loading="loading">
-                <el-option
-                  v-for="item in pendingRawItems"
-                  :key="item.productNumber"
-                  :label="item.productNumber"
-                  :value="item.productNumber">
-                </el-option>
-              </el-select>
-
+            <el-form-item label="辊号：" prop="rollerNumber">
+              <el-input v-model="temp.rollerNumber"/>
             </el-form-item>
-
           </el-col>
           <el-col :span="6">
-            <el-form-item label="原料编号：" prop="materialNumber">
-              <el-select
-                v-model="temp.materialNumber"
-                filterable
-                remote
-                reserve-keyword
-                placeholder="请输入原料编号"
-                :remote-method="getPendingRawItems"
-                :loading="loading">
-                <el-option
-                  v-for="item in pendingRawItems"
-                  :key="item.materialNumber"
-                  :label="item.materialNumber"
-                  :value="item.materialNumber">
-                </el-option>
-              </el-select>
-
-            </el-form-item>
-
-          </el-col>
-        </el-row>
-        <el-row :gutter="40">
-          <el-col :span="8">
-            <el-form-item label="进料厚度(mm)：" prop="inputThickness">
-              <el-input v-model="temp.inputThickness"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="进料重量(kg)：" prop="inputWeight">
-              <el-input v-model="temp.inputWeight"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="生产速度(m/min)：" prop="processVelocity">
-              <el-input v-model="temp.processVelocity"/>
+            <el-form-item label="种类：" prop="type">
+              <el-input v-model="temp.type"/>
             </el-form-item>
           </el-col>
 
         </el-row>
 
-        <el-row :gutter="40">
-          <el-col :span="8">
-            <el-form-item label="焊机电流：" prop="welderCurrent">
-              <el-input v-model="temp.welderCurrent"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="焊机速度：" prop="welderVelocity">
-              <el-input v-model="temp.welderVelocity"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
+
+        <el-row>
+          <el-col :span="6">
             <el-form-item label="上机时间：" prop="beginTime">
               <el-date-picker
                 v-model="temp.beginTime"
@@ -117,9 +57,19 @@
               </el-date-picker>
             </el-form-item>
           </el-col>
+          <el-col :span="6">
+            <el-form-item label="磨前外径：" prop="outerDiameterBeforeGrinding">
+              <el-input v-model="temp.outerDiameterBeforeGrinding"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="磨前情况说明：" prop="descriptionBeforeGrinding">
+              <el-input v-model="temp.descriptionBeforeGrinding"/>
+            </el-form-item>
+          </el-col>
         </el-row>
-        <el-row :gutter="40">
-          <el-col :span="8">
+        <el-row>
+          <el-col :span="6">
             <el-form-item label="下机时间：" prop="endTime">
               <el-date-picker
                 v-model="temp.endTime"
@@ -132,33 +82,27 @@
               </el-date-picker>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
-            <el-form-item label="出料重量(kg)：" prop="outputWeight">
-              <el-input v-model="temp.outputWeight"/>
+          <el-col :span="6">
+            <el-form-item label="磨后外径：" prop="outerDiameterAfterGrinding">
+              <el-input v-model="temp.outerDiameterAfterGrinding"/>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
-            <el-form-item label="出料长度(m)：" prop="outputLength">
-              <el-input v-model="temp.outputLength"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="损耗原因：" prop="lossReason">
-              <el-input v-model="temp.lossReason"/>
+          <el-col :span="6">
+            <el-form-item label="磨工：" prop="grinder">
+              <el-input v-model="temp.grinder"/>
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
-      <div style="margin: 10px 0px 20px;display: flex;flex-direction: row;justify-content: center;align-items: center;">
+      <div
+        style="margin: 10px 0px 20px;display: flex;flex-direction: row;justify-content: center;align-items: center;">
         <el-button type="danger" style="width: 30%;" @click="dialogStatus==='create'?submit():updateData()">提交
         </el-button>
-        <!--        <el-button type="danger" size="small" @click="dialogFormVisible = false">取消</el-button>-->
       </div>
     </div>
-
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <div style="font-size: 20px;">报工记录</div>
+        <span style="font-size: 20px;">报工记录</span>
       </div>
       <div>
         <div class="filter-container">
@@ -187,10 +131,6 @@
             <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索
             </el-button>
             <el-button v-waves class="filter-item" @click="resetForm('filterForm');handleFilter()">重置</el-button>
-            <!--            <el-button class="filter-item" style="margin-left: 10px;" type="success"
-                                   icon="el-icon-edit" @click="handleAdd">
-                          添加
-                        </el-button>-->
           </el-form>
           <pagination
             v-show="total>0"
@@ -203,88 +143,55 @@
         <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row>
           <el-table-column label="序号" min-width="40px" type="index" align="center">
           </el-table-column>
-          <el-table-column label="钢卷编号" min-width="80px" align="center">
+          <el-table-column label="辊号" min-width="80px" align="center">
             <template slot-scope="scope">
-              <span>{{ scope.row.productNumber }}</span>
+              <span>{{ scope.row.rollerNumber }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="钢种" min-width="80px" align="center">
+          <el-table-column label="种类" min-width="80px" align="center">
             <template slot-scope="scope">
-              <span>{{ scope.row.steelGrade }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="产地" min-width="80px" align="center">
-            <template slot-scope="scope">
-              <span>{{ scope.row.hotRollOrigin }}</span>
+              <span>{{ scope.row.type }}</span>
             </template>
           </el-table-column>
 
-          <el-table-column label="进料" align="center">
-            <el-table-column label="厚度|(mm)" min-width="50px" align="center" :render-header="renderHeader">
+          <el-table-column label="磨前状况" align="center">
+            <el-table-column label="上机时间" min-width="65px" align="center">
               <template slot-scope="scope">
-                <span>{{ scope.row.inputThickness }}</span>
+                <span>{{ scope.row.beginTime  | parseTime('{h}:{i}') }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="重量|(kg)" min-width="50px" align="center" :render-header="renderHeader">
+
+            <el-table-column label="磨前外径" min-width="50px" align="center">
               <template slot-scope="scope">
-                <span>{{ scope.row.inputWeight }}</span>
+                <span>{{ scope.row.outerDiameterBeforeGrinding }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="磨前情况说明" min-width="50px" align="center">
+              <template slot-scope="scope">
+                <span>{{ scope.row.descriptionBeforeGrinding }}</span>
               </template>
             </el-table-column>
           </el-table-column>
 
-          <el-table-column label="生产参数" align="center">
-            <el-table-column label="速度|(m/min)" min-width="50px" align="center" :render-header="renderHeader">
+          <el-table-column label="磨后状况" align="center">
+            <el-table-column label="下机时间" min-width="65px" align="center">
               <template slot-scope="scope">
-                <span>{{ scope.row.processVelocity }}</span>
+                <span>{{ scope.row.endTime  | parseTime('{h}:{i}') }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="焊机参数" align="center">
-              <el-table-column label="电流" min-width="50px" align="center">
-                <template slot-scope="scope">
-                  <span>{{ scope.row.welderCurrent }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="速度" min-width="50px" align="center">
-                <template slot-scope="scope">
-                  <span>{{ scope.row.welderVelocity }}</span>
-                </template>
-              </el-table-column>
-            </el-table-column>
-            <el-table-column label="上下机时间" min-width="65px" align="center">
+            <el-table-column label="磨后外径" min-width="50px" align="center">
               <template slot-scope="scope">
-                <span>{{ scope.row.beginTime  | parseTime('{h}:{i}') }}-{{ scope.row.endTime | parseTime('{h}:{i}') }}</span>
+                <span>{{ scope.row.outerDiameterAfterGrinding }}</span>
               </template>
             </el-table-column>
           </el-table-column>
-          <el-table-column label="出料" align="center">
-            <el-table-column label="重量|(kg)" min-width="50px" align="center" :render-header="renderHeader">
-              <template slot-scope="scope">
-                <span>{{ scope.row.outputWeight }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="长度|(m)" min-width="50px" align="center" :render-header="renderHeader">
-              <template slot-scope="scope">
-                <span>{{ scope.row.outputLength }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="损耗原因" min-width="50px" align="center">
-              <template slot-scope="scope">
-                <span>{{ scope.row.lossReason }}</span>
-              </template>
-            </el-table-column>
+          <el-table-column label="磨工" min-width="50px" align="center">
+            <template slot-scope="scope">
+              <span>{{ scope.row.grinder }}</span>
+            </template>
           </el-table-column>
           <el-table-column label="操作" align="center" min-width="60">
             <template slot-scope="scope">
-              <!--          <el-button type="primary" icon="el-icon-edit" size="mini"
-                                   @click="handleUpdate(scope.row)">编辑
-                        </el-button>
-                        <el-button
-                          icon="el-icon-delete"
-                          size="mini"
-                          type="danger"
-                          @click="handleDelete(scope.row,'true')"
-                        >删除
-                        </el-button>-->
               <i class="el-icon-edit update" @click="handleUpdate(scope.row)"/>
               <i class="el-icon-delete delete" @click="handleDelete(scope.row,'true')"/>
             </template>
@@ -292,8 +199,6 @@
         </el-table>
       </div>
     </el-card>
-
-
   </div>
 </template>
 
@@ -302,20 +207,21 @@
   import { deepClone, parseTime } from '@/utils'
 
   import {
-    getJournalingRewindItems,
-    addJournalingRewindItem,
-    updateJournalingRewindItem,
-    deleteJournalingRewindItem
-  } from '@/api/journalingrewinditem'
+    getJournalingGrindItems,
+    addJournalingGrindItem,
+    updateJournalingGrindItem,
+    deleteJournalingGrindItem
+  } from '@/api/journalinggrinditem'
 
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
+  import Split from '../components/split' // Secondary package based on el-pagination
   import { getShifts } from '@/api/shift'
   import { getOutboundOrderRawItems } from '@/api/outboundorderrawitem'
 
   export default {
-    name: 'rewindItem',
-    components: { Pagination },
+    name: 'grindItem',
+    components: { Pagination, Split },
     directives: { waves },
     data() {
       return {
@@ -330,36 +236,28 @@
           //journalingEndTime: parseTime(new Date(new Date(new Date().toLocaleDateString()).getTime() + 24 * 60 * 60 * 1000 - 1), '{y}-{m}-{d}T{h}:{i}:{s}')
           journalingBeginTime: undefined,
           journalingEndTime: undefined,
-          createPerson: ''
+          createPerson: '',
+          orders: ['date desc', 'update_time desc']
           // shiftId: '',
           // date: parseTime(new Date(),'{y}-{m}-{d} {h}:{i}:{s}')
         },
         temp: {
           id: undefined,
-          productNumber: '',
-          materialNumber: '',
-          /*          steelGrade: '',
-                    hotRollOrigin: '',*/
-          inputThickness: '',
-          inputWeight: '',
-          processVelocity: '',
-          welderCurrent: '',
-          welderVelocity: '',
-          beginTime: undefined,
-          endTime: undefined,
-          outputWeight: '',
-          outputLength: '',
-          lossReason: '',
+          rollerNumber: '',
+          type: '',
+          beginTime: '',
+          outerDiameterBeforeGrinding: '',
+          descriptionBeforeGrinding: '',
+          endTime: '',
+          outerDiameterAfterGrinding: '',
+          grinder: '',
           shiftId: '',
-          date: parseTime(new Date(), '{y}-{m}-{d}T{h}:{i}:{s}')
+          date: parseTime(new Date(), '{y}-{m}-{d}T{h}:{i}:{s}'),
+          status: ''
         },
         tempCopy: null,
-        pendingRawItems: [],
-        loading: false,
         shifts: [],
         shiftMap: null,
-
-        // dialogFormVisible: false,
         dialogStatus: 'create',
 
         /*        textMap: {
@@ -373,38 +271,29 @@
           shiftId: [
             { required: true, trigger: 'blur', message: '请选择班别' }
           ],
-          productNumber: [
-            { required: true, message: '钢卷编号不能为空' }
+          rollerNumber: [
+            { required: true, message: '辊号不能为空' }
           ],
-          inputThickness: [
-            { required: true, message: '进料厚度不能为空' }
-          ],
-          inputWeight: [
-            { required: true, message: '进料重量不能为空' }
-          ],
-          processVelocity: [
-            { required: true, message: '生产速度不能为空' }
-          ],
-          welderCurrent: [
-            { required: true, message: '焊机电流不能为空' }
-          ],
-          welderVelocity: [
-            { required: true, message: '焊机速度不能为空' }
+          type: [
+            { required: true, message: '种类不能为空' }
           ],
           beginTime: [
             { required: true, message: '上机时间不能为空' }
           ],
+          outerDiameterBeforeGrinding: [
+            { required: true, message: '磨前外径不能为空' }
+          ],
+          descriptionBeforeGrinding: [
+            { required: true, message: '磨前情况说明不能为空' }
+          ],
           endTime: [
             { required: true, message: '下机时间不能为空' }
           ],
-          outputWeight: [
-            { required: true, message: '出料重量不能为空' }
+          outerDiameterAfterGrinding: [
+            { required: true, message: '磨后外径不能为空' }
           ],
-          outputLength: [
-            { required: true, message: '出料长度不能为空' }
-          ],
-          lossReason: [
-            { required: true, message: '损耗原因不能为空' }
+          grinder: [
+            { required: true, message: '磨工不能为空' }
           ]
         }
       }
@@ -450,29 +339,9 @@
           return [shift.id, shift]
         }))
       },
-      getPendingRawItems(query) {
-        if (query !== '') {
-          this.loading = true
-          getOutboundOrderRawItems({ next_operation_label: '重卷' , status:0}).then(res => {
-            this.loading = false
-            this.pendingRawItems = res.queryResult.list.map(item => {
-              return {
-                productNumbers: item.productNumber,
-                materialNumbers: item.materialNumber
-              }
-            }).filter(item => {
-              return item.toLowerCase()
-                .indexOf(query.toLowerCase()) > -1
-            })
-
-          })
-        } else {
-          this.pendingRawItems = []
-        }
-      },
       getList() {
         this.listLoading = true
-        getJournalingRewindItems(this.listQuery).then(res => {
+        getJournalingGrindItems(this.listQuery).then(res => {
           this.list = res.queryResult.list.map(item => {
             let shift = this.shiftMap[item.shiftId]
             item.shiftName = shift.name
@@ -496,26 +365,25 @@
         this.temp = deepClone(this.tempCopy)
       },
       handleAdd() {
-        this.resetForm('journalingRewindItemForm')
+        this.resetForm('journalingGrindItemForm')
         this.dialogStatus = 'create'
         // this.dialogFormVisible = true
         // this.rules.password[0].required = true
         this.$nextTick(() => {
-          this.$refs['journalingRewindItemForm'].clearValidate()
+          this.$refs['journalingGrindItemForm'].clearValidate()
         })
       },
       submit() {
-        this.$refs['journalingRewindItemForm'].validate((valid) => {
+        this.$refs['journalingGrindItemForm'].validate((valid) => {
           if (valid) {
             // const tempData = deepClone(this.temp)
-            let journalingRewindItem = deepClone(this.temp)
-            delete journalingRewindItem.shiftName
-            addJournalingRewindItem(journalingRewindItem).then((res) => {
-              let shift = this.shiftMap[journalingRewindItem.shiftId]
+            let journalingGrindItem = deepClone(this.temp)
+            delete journalingGrindItem.shiftName
+            addJournalingGrindItem(journalingGrindItem).then((res) => {
+              let shift = this.shiftMap[journalingGrindItem.shiftId]
               res.model.shiftName = shift.name
               this.list.unshift(res.model)
               this.total++
-              this.pendingRawItems = []
               // this.dialogFormVisible = false
               this.handleAdd()
               this.$notify({
@@ -535,21 +403,21 @@
         // this.temp.password = ''
         // this.dialogFormVisible = true
         this.$nextTick(() => {
-          this.$refs['journalingRewindItemForm'].clearValidate()
+          this.$refs['journalingGrindItemForm'].clearValidate()
         })
       },
       updateData() {
-        this.$refs['journalingRewindItemForm'].validate((valid) => {
+        this.$refs['journalingGrindItemForm'].validate((valid) => {
           if (valid) {
-            let journalingRewindItem = deepClone(this.temp)
-            delete journalingRewindItem.shiftName
-            updateJournalingRewindItem(journalingRewindItem).then(() => {
-              let shift = this.shiftMap[journalingRewindItem.shiftId]
-              journalingRewindItem.shiftName = shift.name
+            let journalingGrindItem = deepClone(this.temp)
+            delete journalingGrindItem.shiftName
+            updateJournalingGrindItem(journalingGrindItem).then(() => {
+              let shift = this.shiftMap[journalingGrindItem.shiftId]
+              journalingGrindItem.shiftName = shift.name
               for (const v of this.list) {
-                if (v.id === journalingRewindItem.id) {
+                if (v.id === journalingGrindItem.id) {
                   const index = this.list.indexOf(v)
-                  this.list.splice(index, 1, journalingRewindItem)
+                  this.list.splice(index, 1, journalingGrindItem)
                   break
                 }
               }
@@ -571,7 +439,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          deleteJournalingRewindItem(row.id).then(() => {
+          deleteJournalingGrindItem(row.id).then(() => {
             this.$notify({
               title: '成功',
               message: '删除成功',
