@@ -195,18 +195,25 @@
         <el-form-item label="应到人数：" prop="expectedAttendanceNum">
           <el-input v-model.number="temp.expectedAttendanceNum"/>
         </el-form-item>
-        <el-form-item label="实到人数：" prop="actualAttendanceNum">
-          <el-input v-model.number="temp.actualAttendanceNum"/>
+        <el-form-item label="实际出勤人员：" prop="actualAttendanceVal">
+          <el-select
+            v-model="temp.actualAttendanceVal"
+            multiple
+            filterable
+            remote
+            placeholder="请输入姓名或工号"
+            :remote-method="getStaff"
+            :loading="loading"
+            @change="handleAttendanceChange"
+          >
+            <el-option
+              v-for="item in staff"
+              :key="item.id"
+              :label="item.label"
+              :value="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
-
-        <el-form-item label="出勤工号：" prop="actualAttendanceStaffIds">
-          <el-input v-model.number="temp.actualAttendanceStaffIds"/>
-        </el-form-item>
-
-        <el-form-item label="出勤姓名：" prop="actualAttendanceNames">
-          <el-input v-model.number="temp.actualAttendanceNames"/>
-        </el-form-item>
-
         <el-form-item label="问题记录：" prop="mattersRecord">
           <el-input type="textarea" v-model="temp.mattersRecord"/>
         </el-form-item>
@@ -249,7 +256,7 @@
     deleteJournalingGrindShiftReport
   } from '@/api/journalinggrindshiftreport'
   import { getShifts } from '@/api/shift'
-  import { login } from '@/api/user'
+  import { getUsers } from '@/api/system'
 
   export default {
     name: 'grindShiftReport',
@@ -283,9 +290,9 @@
           assembledRollNumber: null,
           expectedAttendanceNum: null,
           actualAttendanceNum: null,
-          actualAttendanceStaffIds: null,
+          actualAttendance: null,
           // status: undefined,
-          actualAttendanceNames: null,
+          actualAttendanceVal: [],
           shiftLeader: null,
           shiftLeaderName: null,
           supervisor: null,
@@ -298,6 +305,10 @@
         tempCopy: null,
         statuses: ['新建', '班长已审核', '主管已审核', '已呈阅审核'],
         tagTypes: ['success', 'info', 'warning', 'danger'],
+        loading: false,
+        staff: [],
+        users: [],
+        userMap: null,
         shifts: [],
         shiftMap: null,
         shiftRoles: [],
@@ -315,9 +326,9 @@
           assembledRollNumber: null,
           expectedAttendanceNum: null,
           actualAttendanceNum: null,
-          actualAttendanceStaffIds: null,
+          actualAttendance: null,
+          actualAttendanceVal: [],
           // status: undefined,
-          actualAttendanceNames: null,
           shiftLeader: null,
           shiftLeaderName: null,
           supervisor: null,
@@ -350,11 +361,11 @@
             { type: 'number', message: '抛光辊数量必须为数字值' }
           ],
           abnormalRollerNumber: [
-            { required: true, trigger: 'blur', message: '异常辊数量不能为空' }
+            { required: true, trigger: 'blur', message: '异常辊数量不能为空' },
             { type: 'number', message: '异常辊数量必须为数字值' }
           ],
           assembledRollNumber: [
-            { required: true, trigger: 'blur', message: '组装轧辊数量不能为空' }
+            { required: true, trigger: 'blur', message: '组装轧辊数量不能为空' },
             { type: 'number', message: '组装轧辊数量必须为数字值' }
           ],
           expectedAttendanceNum: [
@@ -362,14 +373,11 @@
             { type: 'number', message: '应到人数必须为数字值' }
           ],
           actualAttendanceNum: [
-            { required: true, trigger: 'blur', message: '实到人数不能为空' }
+            { required: true, trigger: 'blur', message: '实到人数不能为空' },
             { type: 'number', message: '实到人数必须为数字值' }
           ],
-          actualAttendanceStaffIds: [
-            { required: true, trigger: 'blur', message: '出勤工号不能为空' }
-          ],
-          actualAttendanceNames: [
-            { required: true, trigger: 'blur', message: '请选择出勤姓名不能为空' }
+          actualAttendanceVal: [
+            { required: true, trigger: 'blur', message: '出勤人员不能为空' }
           ]
         }
       }
@@ -399,7 +407,7 @@
       const isShiftLeader = this.roles.includes('grindShiftLeader')
       const isSupervisor = this.roles.includes('supervisor')
       const isInspector = this.roles.includes('inspector')
-      let shiftRoles = [{ code: 'grindShiftLeader', name: '磨床研磨班班长'},
+      let shiftRoles = [{ code: 'grindShiftLeader', name: '磨床研磨班班长' },
         { code: 'supervisor', name: '主管' },
         { code: 'inspector', name: '呈阅' }]
       const shiftRoleBoolArr = [isShiftLeader, isSupervisor, isInspector]
@@ -411,6 +419,7 @@
       this.listLoading = true
       this.$nextTick(async() => {
         await this.getShifts({})
+        await this.getUsers({})
         this.getList()
       })
     },
@@ -441,21 +450,84 @@
           return [shift.id, shift]
         }))
       },
-
+      async getUsers(query) {
+        const res = await getUsers(query)
+        this.users = res.queryResult.list.map(item => {
+          item.label = item.staffId + '/' + item.name
+          return item
+        })
+        this.userMap = _.fromPairs(this.users.map(user => {
+          return [user.id, user]
+        }))
+      },
+      getStaff(query) {
+        if (query !== '') {
+          this.loading = true
+          setTimeout(() => {
+            this.loading = false
+            this.staff = this.users.filter(item => {
+              return (item.name.toLowerCase()
+                .indexOf(query.toLowerCase()) > -1) || (item.staffId.toLowerCase()
+                .indexOf(query.toLowerCase()) > -1)
+            })
+          }, 100)
+        } else {
+          this.staff = []
+        }
+      },
       getList() {
         this.listLoading = true
         getJournalingGrindShiftReports(this.listQuery).then(res => {
           this.list = res.queryResult.list.map(item => {
             let shift = this.shiftMap[item.shiftId]
             item.shiftName = shift.name
+            try {
+              item.actualAttendanceVal = JSON.parse(item.actualAttendance).map(
+                item => item.staffId + '/' + item.name
+              )
+            } catch (e) {
+              item.actualAttendanceVal = []
+            }
             return item
           })
           this.total = res.queryResult.total
           this.listLoading = false
         })
       },
+      handleAttendanceChange(val) {
+        if (val) {
+          this.temp.actualAttendanceNum = val.length
+          let attendance = val.map((item, index) => {
+            if (!item.includes('/')) {
+              return {
+                id: item,
+                staffId: this.userMap[item].staffId,
+                name: this.userMap[item].name
+              }
+            }
+            let actualAttendance = JSON.parse(this.temp.actualAttendance)
+            const arr = item.split('/')
+            for (let i = 0; i < actualAttendance.length; i++) {
+              if (actualAttendance[i].staffId == arr[0]) {
+                return actualAttendance[i]
+              }
+            }
+          })
+          attendance = _.uniqWith(attendance, _.isEqual)
+          this.temp.actualAttendance = JSON.stringify(attendance)
+          this.temp.actualAttendanceVal = attendance.map(item => item.staffId + '/' + item.name)
+          if (this.currentReport) {
+            this.currentReport.actualAttendanceLabel = this.temp.actualAttendanceVal
+          }
+        }
+      },
       handleCurrentChange(val) {
-        this.currentReport = val
+        if (val) {
+          this.currentReport = deepClone(val)
+          this.currentReport.actualAttendanceLabel = JSON.parse(val.actualAttendance).map(
+            item => item.staffId + '/' + item.name
+          )
+        }
       },
       handleFilter() {
         this.listQuery.current = 1
@@ -489,13 +561,12 @@
           if (valid) {
             // const tempData = deepClone(this.temp)
             let report = deepClone(this.temp)
-            const index = this.shiftLeaders.indexOf(this.listQuery.role)
-            if (index != -1) {
-              report.type = index
-            }
+            const actualAttendanceVal = deepClone(report.actualAttendanceVal)
+            delete report.actualAttendanceVal
             addJournalingGrindShiftReport(report).then((res) => {
               let shift = this.shiftMap[res.model.shiftId]
               res.model.shiftName = shift.name
+              res.model.actualAttendanceVal = actualAttendanceVal
               this.list.unshift(res.model)
               this.total++
               // this.handleUpdate(res.model)
@@ -522,10 +593,9 @@
           id: this.selectedReport.id,
           date: this.selectedReport.date,
           shiftId: this.selectedReport.shiftId,
-          shiftLeader: this.shiftLeaders.includes(this.listQuery.role) ? this.id : null,
+          shiftLeader: this.listQuery.role == 'grindShiftLeader' ? this.id : null,
           supervisor: this.listQuery.role == 'supervisor' ? this.id : null,
-          inspector: this.listQuery.role == 'inspector' ? this.id : null,
-          type: this.listQuery.type
+          inspector: this.listQuery.role == 'inspector' ? this.id : null
         }
         updateJournalingGrindShiftReport(r).then((res) => {
           for (const v of this.list) {
@@ -583,17 +653,17 @@
         this.$refs['reportForm'].validate((valid) => {
           if (valid) {
             let report = deepClone(this.temp)
+            const actualAttendanceVal = deepClone(report.actualAttendanceVal)
+            delete report.actualAttendanceVal
             updateJournalingGrindShiftReport(report).then(() => {
               for (const v of this.list) {
                 if (v.id === report.id) {
                   const index = this.list.indexOf(v)
+                  report.actualAttendanceVal = actualAttendanceVal
                   this.list.splice(index, 1, report)
                   break
                 }
               }
-              /*             if(report.id==this.selectedReport.id){
-                             this.currentReport = report
-                           }*/
               this.dialogFormVisible = false
               this.$notify({
                 title: '成功',

@@ -1,7 +1,7 @@
 <template>
   <div class="journaling-rewind-list">
     <div class="filter-container">
-      <el-form ref="filterForm" :model="listQuery" :inline="true">
+<!--      <el-form ref="filterForm" :model="listQuery" :inline="true">
         <el-form-item label="" prop="journalingBeginTime">
           <el-date-picker
             v-model="listQuery.journalingBeginTime"
@@ -26,11 +26,11 @@
         <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索
         </el-button>
         <el-button v-waves class="filter-item" @click="resetForm('filterForm');handleFilter()">重置</el-button>
-        <!--            <el-button class="filter-item" style="margin-left: 10px;" type="success"
+        &lt;!&ndash;            <el-button class="filter-item" style="margin-left: 10px;" type="success"
                                icon="el-icon-edit" @click="handleAdd">
                       添加
-                    </el-button>-->
-      </el-form>
+                    </el-button>&ndash;&gt;
+      </el-form>-->
       <pagination
         v-show="total>0"
         :total="total"
@@ -401,8 +401,8 @@
         listQuery: {
           current: 1,
           size: 10,
-          journalingBeginTime: undefined,
-          journalingEndTime: undefined,
+/*          journalingBeginTime: undefined,
+          journalingEndTime: undefined,*/
           createPerson: '',
           shiftId: '',
           date: undefined

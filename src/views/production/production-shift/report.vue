@@ -196,11 +196,31 @@
             </el-option>
           </el-select>
         </el-form-item>
+
+        <el-form-item label="设备使用率(%)：" prop="capacityUtilization">
+          <el-input v-model="temp.capacityUtilization"/>
+        </el-form-item>
         <el-form-item label="应到人数：" prop="expectedAttendanceNum">
           <el-input v-model.number="temp.expectedAttendanceNum"/>
         </el-form-item>
-        <el-form-item label="设备使用率(%)：" prop="capacityUtilization">
-          <el-input v-model="temp.capacityUtilization"/>
+        <el-form-item label="实际出勤人员：" prop="actualAttendanceVal">
+          <el-select
+            v-model="temp.actualAttendanceVal"
+            multiple
+            filterable
+            remote
+            placeholder="请输入姓名或工号"
+            :remote-method="getStaff"
+            :loading="loading"
+            @change="handleAttendanceChange"
+          >
+            <el-option
+              v-for="item in staff"
+              :key="item.id"
+              :label="item.label"
+              :value="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="问题记录：" prop="mattersRecord">
           <el-input type="textarea" v-model="temp.mattersRecord"/>
@@ -225,15 +245,6 @@
   import { mapGetters } from 'vuex'
   import { deepClone, parseTime } from '@/utils'
 
-  import {
-    getWorkOrders,
-    addWorkOrder,
-    updateWorkOrder,
-    deleteWorkOrder,
-    getProductSerialNumbers
-  } from '@/api/workorder.js'
-  import { getCustomers } from '@/api/customer' // Secondary package based on el-pagination
-
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination/index.vue'
   import ReportDetail from './report-detail.vue'
@@ -244,7 +255,7 @@
     deleteJournalingProductionShiftReport
   } from '@/api/journalingproductionshiftreport'
   import { getShifts } from '@/api/shift'
-  import { login } from '@/api/user'
+  import { getUsers } from '@/api/system'
 
   export default {
     name: 'productionShiftReport',
@@ -281,8 +292,8 @@
           expectedAttendanceNum: null,
           // status: undefined,
           actualAttendanceNum: null,
-          actualAttendance: '',
-          actualAttendanceName: '',
+          actualAttendance: null,
+          actualAttendanceVal: [],
           shiftLeader: null,
           shiftLeaderName: null,
           supervisor: null,
@@ -295,6 +306,10 @@
         tempCopy: null,
         statuses: ['新建', '班长已审核', '主管已审核', '已呈阅审核'],
         tagTypes: ['success', 'info', 'warning', 'danger'],
+        loading: false,
+        staff: [],
+        users: [],
+        userMap: null,
         shifts: [],
         shiftMap: null,
         shiftRoles: [],
@@ -314,8 +329,8 @@
           expectedAttendanceNum: null,
           // status: undefined,
           actualAttendanceNum: null,
-          actualAttendance: '',
-          actualAttendanceName: '',
+          actualAttendance: null,
+          actualAttendanceVal: [],
           shiftLeader: null,
           shiftLeaderName: null,
           supervisor: null,
@@ -340,12 +355,20 @@
           shiftId: [
             { required: true, trigger: 'blur', message: '请选择班别' }
           ],
+
+          capacityUtilization: [
+            { required: true, message: '设备使用率不能为空' }
+          ],
           expectedAttendanceNum: [
             { required: true, message: '应到人数不能为空' },
             { type: 'number', message: '应到人数必须为数字值' }
           ],
-          capacityUtilization: [
-            { required: true, message: '设备使用率不能为空' },
+          actualAttendanceNum: [
+            { required: true, message: '实到人数不能为空' },
+            { type: 'number', message: '实到人数必须为数字值' }
+          ],
+          actualAttendanceVal: [
+            { required: true, trigger: 'blur', message: '出勤人员不能为空' }
           ]
         }
       }
@@ -399,6 +422,7 @@
       this.listLoading = true
       this.$nextTick(async() => {
         await this.getShifts({})
+        await this.getUsers({})
         this.getList()
       })
     },
@@ -429,32 +453,97 @@
           return [shift.id, shift]
         }))
       },
-
+      async getUsers(query) {
+        const res = await getUsers(query)
+        this.users = res.queryResult.list.map(item => {
+          item.label = item.staffId + '/' + item.name
+          return item
+        })
+        this.userMap = _.fromPairs(this.users.map(user => {
+          return [user.id, user]
+        }))
+      },
+      getStaff(query) {
+        if (query !== '') {
+          this.loading = true
+          setTimeout(() => {
+            this.loading = false
+            this.staff = this.users.filter(item => {
+              return (item.name.toLowerCase()
+                .indexOf(query.toLowerCase()) > -1) || (item.staffId.toLowerCase()
+                .indexOf(query.toLowerCase()) > -1)
+            })
+          }, 100)
+        } else {
+          this.staff = []
+        }
+      },
       getList() {
         this.listLoading = true
         getJournalingProductionShiftReports(this.listQuery).then(res => {
           this.list = res.queryResult.list.map(item => {
             let shift = this.shiftMap[item.shiftId]
             item.shiftName = shift.name
+            try {
+              item.actualAttendanceVal = JSON.parse(item.actualAttendance).map(
+                item => item.staffId + '/' + item.name
+              )
+            } catch (e) {
+              item.actualAttendanceVal = []
+            }
             return item
           })
           this.total = res.queryResult.total
           this.listLoading = false
         })
       },
+      handleAttendanceChange(val) {
+        if (val) {
+          this.temp.actualAttendanceNum = val.length
+          let attendance = val.map((item, index) => {
+            if (!item.includes('/')) {
+              return {
+                id: item,
+                staffId: this.userMap[item].staffId,
+                name: this.userMap[item].name
+              }
+            }
+            let actualAttendance = JSON.parse(this.temp.actualAttendance)
+            const arr = item.split('/')
+            for (let i = 0; i < actualAttendance.length; i++) {
+              if (actualAttendance[i].staffId == arr[0]) {
+                return actualAttendance[i]
+              }
+            }
+          })
+          attendance = _.uniqWith(attendance, _.isEqual)
+          this.temp.actualAttendance = JSON.stringify(attendance)
+          this.temp.actualAttendanceVal = attendance.map(item => item.staffId + '/' + item.name)
+          if (this.currentReport) {
+            this.currentReport.actualAttendanceLabel = this.temp.actualAttendanceVal
+          }
+        }
+      },
       handleCurrentChange(val) {
-        this.currentReport = val
+        if (val) {
+          this.currentReport = deepClone(val)
+          this.currentReport.actualAttendanceLabel = JSON.parse(val.actualAttendance).map(
+            item => item.staffId + '/' + item.name
+          )
+        }
       },
       handleFilter() {
         this.listQuery.current = 1
         this.getList()
-      },
+      }
+      ,
       translateStatus(status) {
         return {
           tagType: this.tagTypes[status],
           text: this.statuses[status]
         }
-      },
+      }
+      ,
       resetForm(formName) {
         if (this.$refs[formName] === undefined) {
           return false
@@ -462,7 +551,8 @@
         this.$refs[formName].resetFields()
 
         this.temp = deepClone(this.tempCopy)
-      },
+      }
+      ,
       handleAdd() {
         this.resetForm('reportForm')
         this.dialogStatus = 'create'
@@ -481,9 +571,12 @@
             if (index != -1) {
               report.type = index
             }
+            const actualAttendanceVal = deepClone(report.actualAttendanceVal)
+            delete report.actualAttendanceVal
             addJournalingProductionShiftReport(report).then((res) => {
               let shift = this.shiftMap[res.model.shiftId]
               res.model.shiftName = shift.name
+              res.model.actualAttendanceVal = actualAttendanceVal
               this.list.unshift(res.model)
               this.total++
               // this.handleUpdate(res.model)
@@ -497,7 +590,8 @@
             })
           }
         })
-      },
+      }
+      ,
       handleApprove() {
         if (!this.selectedReport.id) {
           this.$message({
@@ -508,8 +602,8 @@
         }
         const r = {
           id: this.selectedReport.id,
-          date:this.selectedReport.date,
-          shiftId:this.selectedReport.shiftId,
+          date: this.selectedReport.date,
+          shiftId: this.selectedReport.shiftId,
           shiftLeader: this.shiftLeaders.includes(this.listQuery.role) ? this.id : null,
           supervisor: this.listQuery.role == 'supervisor' ? this.id : null,
           inspector: this.listQuery.role == 'inspector' ? this.id : null,
@@ -549,7 +643,8 @@
             duration: 2000
           })
         })
-      },
+      }
+      ,
       handleUpdate(row) {
         if (row.status != 0) {
           this.$message({
@@ -566,15 +661,19 @@
         this.$nextTick(() => {
           this.$refs['reportForm'].clearValidate()
         })
-      },
+      }
+      ,
       updateData() {
         this.$refs['reportForm'].validate((valid) => {
           if (valid) {
             let report = deepClone(this.temp)
+            const actualAttendanceVal = deepClone(report.actualAttendanceVal)
+            delete report.actualAttendanceVal
             updateJournalingProductionShiftReport(report).then(() => {
               for (const v of this.list) {
                 if (v.id === report.id) {
                   const index = this.list.indexOf(v)
+                  report.actualAttendanceVal = actualAttendanceVal
                   this.list.splice(index, 1, report)
                   break
                 }
@@ -592,7 +691,8 @@
             })
           }
         })
-      },
+      }
+      ,
       handleDelete(row) {
         if (row.status > 1) {
           this.$message({

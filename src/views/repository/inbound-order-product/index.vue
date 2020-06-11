@@ -278,7 +278,7 @@
   import { getOutboundOrderRawItems } from '@/api/outboundorderrawitem' // Secondary package based on el-pagination
 
   export default {
-    name: 'InboundOrderProductItem',
+    name: 'inboundOrderProduct',
     components: { Pagination },
     directives: { waves },
     data() {

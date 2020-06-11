@@ -54,7 +54,20 @@ const productionRouter = {
       name: 'productionShiftReport',
       component: () => import('@/views/production/production-shift/report'),
       meta: { title: '生产班管理', icon: 'dashboard' }
-    }
+    },
+    {
+      path: 'grinditem',
+      name: 'grindItem',
+      component: () => import('@/views/production/grind/item'),
+      meta: { title: '磨床报工', icon: 'dashboard' }
+    },
+    {
+      path: 'grindshiftreport',
+      name: 'grindShiftReport',
+      component: () => import('@/views/production/grind-shift/report'),
+      meta: { title: '研磨班管理', icon: 'dashboard' }
+    },
+
   ]
 }
 

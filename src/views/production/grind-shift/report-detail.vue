@@ -14,23 +14,23 @@
             </el-form-item>
           </el-col>
           <el-col :span="4">
-            <el-form-item label="生产钢卷数：" prop="producedCoilNumber">
-              <span>{{detail.producedCoilNumber}} </span>
+            <el-form-item label="研磨轧辊数：" prop="grindRollNumber">
+              <span>{{detail.grindRollNumber}} </span>
             </el-form-item>
           </el-col>
           <el-col :span="4">
-            <el-form-item label="进料总重量(kg)：" prop="totalInputWeight">
-              <span>{{detail.totalInputWeight}} </span>
+            <el-form-item label="总研磨量mm：" prop="totalGrindAmount">
+              <span>{{detail.totalGrindAmount}} </span>
             </el-form-item>
           </el-col>
           <el-col :span="4">
-            <el-form-item label="损耗总重量(kg)：" prop="totalLossWeight">
-              <span>{{detail.totalLossWeight}} </span>
+            <el-form-item label="抛光辊数量：" prop="polishedRollerNumber">
+              <span>{{detail.polishedRollerNumber}} </span>
             </el-form-item>
           </el-col>
           <el-col :span="4">
-            <el-form-item label="出料总重量(kg)：" prop="totalOutputWeight">
-              <span>{{detail.totalOutputWeight}} </span>
+            <el-form-item label="异常辊数量：" prop="abnormalRollerNumber">
+              <span>{{detail.abnormalRollerNumber}} </span>
             </el-form-item>
           </el-col>
         </el-row>
@@ -38,13 +38,8 @@
 
 
           <el-col :span="4">
-            <el-form-item label="产出率(kg)：" prop="outputRate">
-              <span>{{detail.outputRate}} </span>
-            </el-form-item>
-          </el-col>
-          <el-col :span="4">
-            <el-form-item label="设备使用率(kg)：" prop="capacityUtilization">
-              <span>{{detail.capacityUtilization}} </span>
+            <el-form-item label="组装轧辊数量：" prop="assembledRollNumber">
+              <span>{{detail.assembledRollNumber}} </span>
             </el-form-item>
           </el-col>
           <el-col :span="4">
@@ -57,9 +52,9 @@
               <span>{{detail.actualAttendanceNum}} </span>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
-            <el-form-item label="出勤姓名：" prop="actualAttendanceName">
-              <span>{{detail.actualAttendanceName}} </span>
+          <el-col :span="12">
+            <el-form-item label="出勤姓名：" prop="actualAttendance">
+              <span>{{detail.actualAttendanceLabel}} </span>
             </el-form-item>
           </el-col>
         </el-row>

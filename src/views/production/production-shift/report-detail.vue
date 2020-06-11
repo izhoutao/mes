@@ -59,7 +59,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="出勤姓名：" prop="actualAttendanceName">
-              <span>{{detail.actualAttendanceName}} </span>
+              <span>{{detail.actualAttendanceLabel}} </span>
             </el-form-item>
           </el-col>
         </el-row>
