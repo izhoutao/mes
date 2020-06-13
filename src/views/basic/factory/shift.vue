@@ -22,7 +22,7 @@
     </div>
 
     <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row>
-      <el-table-column label="序号" min-width="20px" type="index" align="center">
+      <el-table-column label="序" min-width="20px" type="index" align="center">
       </el-table-column>
       <el-table-column label="班别编码" min-width="70px" align="center">
         <template slot-scope="scope">

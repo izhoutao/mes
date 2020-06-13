@@ -40,7 +40,7 @@
 
     <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%"
               height="250">
-      <el-table-column label="序号" width="60px" type="index" align="center" fixed>
+      <el-table-column label="序" width="60px" type="index" align="center" fixed>
       </el-table-column>
       <el-table-column label="原料编号" width="160px" align="center">
         <template slot-scope="scope">
@@ -122,11 +122,11 @@
           <span>{{ scope.row.inspector }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="条码" width="120px" align="center">
+<!--      <el-table-column label="条码" width="120px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.barcode }}</span>
         </template>
-      </el-table-column>
+      </el-table-column>-->
       <el-table-column label="时间" width="100px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.time | parseTime('{y}-{m}-{d} {h}:{i}:{s}')}}</span>
@@ -270,7 +270,7 @@
           edge: undefined,
           grade: undefined,
           inspector: undefined,
-          barcode: undefined,
+          // barcode: undefined,
           time: undefined,
           description: undefined,
           createTime: undefined,
@@ -342,9 +342,9 @@
           inspector: [
             { required: true, trigger: 'blur', message: '请填写检验员' }
           ],
-          barcode: [
+/*          barcode: [
             { required: true, trigger: 'blur', message: '请填写条码' }
-          ],
+          ],*/
           time: [
             { required: true, trigger: 'blur', message: '请填写日期' },
             { required: true, message: '请选择时间', trigger: 'change' }

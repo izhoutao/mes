@@ -41,7 +41,7 @@
     </div>
     <el-table v-if="detail.type==0" :key="tableKey" v-loading="listLoading" :data="list" border fit
               highlight-current-row>
-      <el-table-column label="序号" min-width="40px" type="index" align="center">
+      <el-table-column label="序" min-width="40px" type="index" align="center">
       </el-table-column>
       <el-table-column label="钢卷编号" min-width="80px" align="center">
         <template slot-scope="scope">
@@ -114,7 +114,7 @@
     </el-table>
     <el-table v-if="detail.type==1" :key="tableKey" v-loading="listLoading" :data="list" border fit
               highlight-current-row>
-      <el-table-column label="序号" min-width="40px" type="index" align="center">
+      <el-table-column label="序" min-width="40px" type="index" align="center">
       </el-table-column>
       <el-table-column label="钢卷编号" min-width="80px" align="center">
         <template slot-scope="scope">
@@ -187,7 +187,7 @@
     </el-table>
     <el-table v-if="detail.type==2" :key="tableKey" v-loading="listLoading" :data="list" border fit
               highlight-current-row>
-      <el-table-column label="序号" min-width="40px" type="index" align="center">
+      <el-table-column label="序" min-width="40px" type="index" align="center">
       </el-table-column>
       <el-table-column label="钢卷编号" min-width="80px" align="center">
         <template slot-scope="scope">
@@ -260,7 +260,7 @@
     </el-table>
     <el-table v-if="detail.type==3" :key="tableKey" v-loading="listLoading" :data="list" border fit
               highlight-current-row>
-      <el-table-column label="序号" min-width="40px" type="index" align="center">
+      <el-table-column label="序" min-width="40px" type="index" align="center">
       </el-table-column>
       <el-table-column label="钢卷编号" min-width="80px" align="center">
         <template slot-scope="scope">

@@ -36,7 +36,7 @@
         highlight-current-row
         :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
       >
-        <!--      <el-table-column label="序号" width="60px" type="index" align="center" fixed>
+        <!--      <el-table-column label="序" width="60px" type="index" align="center" fixed>
               </el-table-column>-->
         <el-table-column label="钢卷编号" width="200px" align="left">
           <template slot-scope="scope">
@@ -118,11 +118,11 @@
             <span>{{ scope.row.inspector }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="条码" width="150px" align="center">
+<!--        <el-table-column label="条码" width="150px" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.barcode }}</span>
           </template>
-        </el-table-column>
+        </el-table-column>-->
         <el-table-column label="时间" width="100px" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.time | parseTime('{y}-{m}-{d}') }}</span>
@@ -347,9 +347,9 @@
             <el-input v-model="temp.inspector"/>
           </el-form-item>
 
-          <el-form-item label="条码：" prop="barcode">
+<!--          <el-form-item label="条码：" prop="barcode">
             <el-input v-model="temp.barcode"/>
-          </el-form-item>
+          </el-form-item>-->
 
           <el-form-item label="描述：" prop="description">
             <el-input
@@ -429,7 +429,7 @@
           edge: undefined,
           grade: undefined,
           inspector: undefined,
-          barcode: undefined,
+          // barcode: undefined,
           time: undefined,
           description: undefined,
           createTime: undefined,

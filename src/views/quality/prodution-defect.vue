@@ -314,6 +314,7 @@
           size: 10,
           productNumber: undefined,
           operation: undefined,
+          defectCode: undefined,
           dateRange: undefined,
           degree: undefined,
           grade: undefined

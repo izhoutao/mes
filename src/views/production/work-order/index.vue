@@ -48,7 +48,7 @@
         @select-all="handleSelectAll"
         @current-change="handleCurrentChange"
       >
-        <!--        <el-table-column label="序号" min-width="40px" type="index" align="center">
+        <!--        <el-table-column label="序" min-width="40px" type="index" align="center">
                 </el-table-column>-->
         <el-table-column
           type="selection"
@@ -339,7 +339,7 @@
 
 
       <el-table :key="tableKey" :data="psnlist" border fit highlight-current-row>
-        <el-table-column label="序号" min-width="20px" type="index" align="center">
+        <el-table-column label="序" min-width="20px" type="index" align="center">
         </el-table-column>
         <el-table-column label="SN" min-width="70px" align="center">
           <template slot-scope="scope">
@@ -464,7 +464,7 @@
           edge: undefined,
           grade: undefined,
           inspector: undefined,
-          barcode: undefined,
+          // barcode: undefined,
           date: undefined,
           createTime: undefined,
           updateTime: undefined,

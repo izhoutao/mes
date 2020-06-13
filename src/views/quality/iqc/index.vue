@@ -25,7 +25,7 @@
       </div>
 
       <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row>
-        <el-table-column label="序号" min-width="40px" type="index" align="center">
+        <el-table-column label="序" min-width="40px" type="index" align="center">
         </el-table-column>
         <el-table-column label="入库单号" min-width="80px" align="center">
           <template slot-scope="scope">
@@ -219,7 +219,7 @@
         <el-tab-pane label="检验记录" name="first">
 
           <el-table :key="tableKey" v-loading="listLoading" :data="temp.checkList" border fit highlight-current-row>
-            <el-table-column label="序号" min-width="40px" type="index" align="center">
+            <el-table-column label="序" min-width="40px" type="index" align="center">
             </el-table-column>
             <el-table-column label="检验项目" min-width="80px" align="center">
               <template slot-scope="scope">

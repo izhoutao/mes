@@ -130,11 +130,11 @@
               <span>{{ scope.row.inspector }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="条码" width="150px" align="center">
+<!--          <el-table-column label="条码" width="150px" align="center">
             <template slot-scope="scope">
               <span>{{ scope.row.barcode }}</span>
             </template>
-          </el-table-column>
+          </el-table-column>-->
           <el-table-column label="时间" width="100px" align="center">
             <template slot-scope="scope">
               <span>{{ scope.row.time | parseTime('{y}-{m}-{d}') }}</span>
@@ -222,7 +222,7 @@
           edge: undefined,
           grade: undefined,
           inspector: undefined,
-          barcode: undefined,
+          // barcode: undefined,
           time: undefined,
           description: undefined,
           createTime: undefined,
@@ -292,9 +292,9 @@
           inspector: [
             { required: true, trigger: 'blur', message: '请填写检验员' }
           ],
-          barcode: [
-            { required: true, trigger: 'blur', message: '请填写条码' }
-          ],
+          // barcode: [
+          //   { required: true, trigger: 'blur', message: '请填写条码' }
+          // ],
           time: [
             { required: true, trigger: 'blur', message: '请填写日期' },
             { required: true, message: '请选择时间', trigger: 'change' }

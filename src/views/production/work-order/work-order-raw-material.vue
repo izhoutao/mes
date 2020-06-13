@@ -5,7 +5,7 @@
     <el-radio v-model="radio" label="2">钢卷列表</el-radio>
     <el-table v-show="radio=='1'" :key="0" v-loading="listLoading" :data="detailList" border fit highlight-current-row
               style="width: 100%;margin-top: 10px">
-      <el-table-column label="序号" min-width="40px" type="index" align="center">
+      <el-table-column label="序" min-width="40px" type="index" align="center">
       </el-table-column>
       <el-table-column label="料号" min-width="80px" align="center">
         <template slot-scope="scope">
@@ -30,7 +30,7 @@
     </el-table>
     <el-table v-show="radio=='2'" :key="1" v-loading="listLoading" :data="itemList" border fit highlight-current-row
               style="width: 100%;margin-top: 10px">
-      <el-table-column label="序号" width="60px" type="index" align="center" fixed>
+      <el-table-column label="序" width="60px" type="index" align="center" fixed>
       </el-table-column>
       <el-table-column label="钢卷编号" width="160px" align="center">
         <template slot-scope="scope">
@@ -117,11 +117,11 @@
           <span>{{ scope.row.inspector }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="条码" width="120px" align="center">
+<!--      <el-table-column label="条码" width="120px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.barcode }}</span>
         </template>
-      </el-table-column>
+      </el-table-column>-->
       <el-table-column label="日期" width="100px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.date }}</span>
