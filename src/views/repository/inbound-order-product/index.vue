@@ -189,7 +189,7 @@
               <div style="font-size:15px;font-family:'Microsoft YaHei';">Date</div>
             </div>
             <div
-              style="width: 140px;height: 80px;border:1px solid black;border-right:none;text-align:center;line-height:60px;">
+              style="width: 140px;height: 80px;border:1px solid black;border-right:none;text-align:center;line-height:80px;">
               {{temp.date}}
             </div>
             <div
@@ -197,9 +197,16 @@
               <div>条码</div>
               <div style="font-size:15px;font-family:'Microsoft YaHei';">barcode</div>
             </div>
-            <div style="width: 302px;height: 80px;border:1px solid black;text-align:center;line-height:60px;">
-
-              <!--{{temp.barcode}}-->
+            <div
+              style="width: 302px;height: 80px;border:1px solid black;display: flex;flex-direction: column;justify-content:center;align-items:center;">
+              <svg id="barcode"
+                   jsbarcode-format="CODE128"
+                   :jsbarcode-value=temp.productNumber
+                   jsbarcode-textmargin="0"
+                   jsbarcode-fontoptions="bold"
+                   jsbarcode-width="1.5"
+                   jsbarcode-height="35"
+              ></svg>
             </div>
 
             <!--            <div-->
@@ -366,7 +373,7 @@
       </el-table-column>
       <el-table-column label="条码" width="120px" align="center">
         <template slot-scope="scope">
-<!--          <span>{{ scope.row.barcode }}</span>-->
+          <!--          <span>{{ scope.row.barcode }}</span>-->
         </template>
       </el-table-column>
       <el-table-column label="日期" width="100px" align="center">
@@ -463,9 +470,9 @@
         <el-form-item label="检验员：" prop="inspector">
           <el-input v-model="temp.inspector"/>
         </el-form-item>
-<!--        <el-form-item label="条码：" prop="barcode">
-          <el-input v-model="temp.barcode"/>
-        </el-form-item>-->
+        <!--        <el-form-item label="条码：" prop="barcode">
+                  <el-input v-model="temp.barcode"/>
+                </el-form-item>-->
         <el-form-item label="日期：" prop="date">
           <el-date-picker v-model="temp.date" type="date" placeholder="请选择日期" style="width: 100%;"
                           format="yyyy-MM-dd"
@@ -496,8 +503,9 @@
   import { getOutboundOrderRawItems } from '@/api/outboundorderrawitem' // Secondary package based on el-pagination
   // Local instruction
   // import print from 'vue-print-nb'
-  import { getLodop } from '@/assets/js/LodopFuncs'
+  // import { getLodop } from '@/assets/js/LodopFuncs'
   import html2canvas from 'html2canvas'
+  import JsBarcode from 'jsbarcode'
 
   export default {
     name: 'inboundOrderProduct',
@@ -786,6 +794,35 @@
         LODOP.ADD_PRINT_BARCODE(482, 500, 250, 65, '128A', this.temp.productNumber)
       },
 
+      doPrint() {
+        JsBarcode('#barcode').init()
+        //判断iframe是否存在，不存在则创建iframe
+        var iframe = document.getElementById('print-iframe')
+        if (iframe) {
+          iframe.childNodes.forEach(node => document.removeChild(node))
+        } else {
+          iframe = document.createElement('IFRAME')
+          iframe.setAttribute('id', 'print-iframe')
+          iframe.setAttribute('visible', false)
+        }
+        var el = document.getElementById('label-container')
+        var doc = null
+        // iframe.setAttribute('style', 'position:absolute;width:0px;height:0px;left:-500px;top:-500px;');
+        document.body.appendChild(iframe)
+        doc = iframe.contentWindow.document
+        //这里可以自定义样式
+        //doc.write("<LINK rel="stylesheet" type="text/css" href="css/print.css">");
+        doc.write('<div>' + el.innerHTML + '</div>')
+        doc.close()
+        iframe.contentWindow.focus()
+
+        iframe.contentWindow.print()
+        if (navigator.userAgent.indexOf('MSIE') > 0) {
+          document.body.removeChild(iframe)
+        }
+
+      },
+
       getList() {
         this.listLoading = true
         getInboundOrderProductItems(this.listQuery).then(res => {
@@ -889,7 +926,8 @@
       handlePrint(row, type) {
         this.temp = deepClone(row) // copy obj
         this.$nextTick(() => {
-          this.handleCommand(type)
+          // this.handleCommand(type)
+          this.doPrint()
         })
       }
     }
