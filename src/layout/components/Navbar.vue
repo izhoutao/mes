@@ -25,9 +25,9 @@
           <i class="el-icon-caret-bottom"/>
         </div>
         <el-dropdown-menu slot="dropdown">
-          <router-link to="/profile/index">
+<!--          <router-link to="/profile/index">
             <el-dropdown-item>Profile</el-dropdown-item>
-          </router-link>
+          </router-link>-->
           <!--  <router-link to="/profile/index">
             <el-dropdown-item>Profile</el-dropdown-item>
           </router-link>
@@ -41,7 +41,7 @@
             <el-dropdown-item>Docs</el-dropdown-item>
           </a>-->
           <el-dropdown-item divided>
-            <span style="display:block;" @click="logout">Log out</span>
+            <span style="display:block;" @click="logout">退出登录</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>

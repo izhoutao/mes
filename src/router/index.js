@@ -66,20 +66,20 @@ export const constantRoutes = [
     component: () => import('@/views/error-page/404'),
     hidden: true
   },
-  {
-    path: '/profile',
-    component: Layout,
-    redirect: '/profile/index',
-    hidden: true,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/profile/index'),
-        name: 'Profile',
-        meta: { title: '个人中心', icon: 'user', noCache: true }
-      }
-    ]
-  },
+  /*  {
+      path: '/profile',
+      component: Layout,
+      redirect: '/profile/index',
+      hidden: true,
+      children: [
+        {
+          path: 'index',
+          component: () => import('@/views/profile/index'),
+          name: 'Profile',
+          meta: { title: '个人中心', icon: 'user', noCache: true }
+        }
+      ]
+    },*/
   {
     path: '/',
     component: Layout,
@@ -88,7 +88,7 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index0.vue'),
-      meta: { title: '主页', icon: 'dashboard', affix: true  }
+      meta: { title: '主页', icon: 'dashboard', affix: true }
     }]
   }
 ]
