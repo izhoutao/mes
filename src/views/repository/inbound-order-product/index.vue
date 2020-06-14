@@ -43,12 +43,12 @@
     <!--startprint-->
     <div id="label-container" v-show="false">
       <div id="product-label"
-           style="padding: 20px;border: 6px solid blue;border-radius: 60px; width: 710px;display: flex;flex-direction: column;justify-content: space-between;align-items:center;">
+           style="padding: 10px;border: 6px solid blue;border-radius: 60px; width: 710px;display: flex;flex-direction: column;justify-content: space-between;align-items:center;">
         <div
           style="width:590px;display: flex;flex-direction: column;justify-content: space-between;align-items:center;">
           <div
             style="margin-bottom: 10px;width:100%;display: flex;flex-direction: row;justify-content: space-around;align-items:flex-start;">
-            <img src="@/assets/haili-logo.jpg" style="width:100px;height: 100px;">
+            <img src="@/assets/haili-logo.jpg" style="width:120px;height: 100px;">
             <div
               style="width:100%;height: 100%;display: flex;flex-direction: column;justify-content: space-around;align-items:center;">
               <div style="margin-bottom: 20px; font-size:25px;font-family:'楷体';font-weight: bold;"> 抚州市海利金属科技有限公司</div>
@@ -108,7 +108,7 @@
             <div
               style="width: 120px;height: 60px;border:1px solid black;border-right:none;border-bottom:none;display: flex;flex-direction: column;justify-content:center;align-items:center;">
               <div>净重</div>
-              <div style="font-size:15px;font-family:'Microsoft YaHei';">NET WT(Kg)</div>
+              <div style="font-size:15px;font-family:'Microsoft YaHei';">NET WT (Kg)</div>
             </div>
             <div
               style="width: 90px;height: 60px;border:1px solid black;border-right:none;border-bottom:none;text-align:center;line-height:60px;">
@@ -117,7 +117,7 @@
             <div
               style="width: 120px;height: 60px;border:1px solid black;border-right:none;border-bottom:none;display: flex;flex-direction: column;justify-content:center;align-items:center;">
               <div>毛重</div>
-              <div style="font-size:15px;font-family:'Microsoft YaHei';">GW WT(Kg)</div>
+              <div style="font-size:15px;font-family:'Microsoft YaHei';">GW WT (Kg)</div>
             </div>
             <div
               style="width: 90px;height: 60px;border:1px solid black;border-bottom:none;text-align:center;line-height:60px;">
@@ -371,11 +371,11 @@
           <span>{{ scope.row.inspector }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="条码" width="120px" align="center">
-        <template slot-scope="scope">
-          <!--          <span>{{ scope.row.barcode }}</span>-->
-        </template>
-      </el-table-column>
+      <!--      <el-table-column label="条码" width="120px" align="center">
+              <template slot-scope="scope">
+                &lt;!&ndash;          <span>{{ scope.row.barcode }}</span>&ndash;&gt;
+              </template>
+            </el-table-column>-->
       <el-table-column label="日期" width="100px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.date }}</span>
@@ -803,7 +803,7 @@
         } else {
           iframe = document.createElement('IFRAME')
           iframe.setAttribute('id', 'print-iframe')
-          iframe.setAttribute('visible', false)
+          iframe.setAttribute('display', 'none')
         }
         var el = document.getElementById('label-container')
         var doc = null

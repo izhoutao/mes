@@ -87,7 +87,7 @@ export const constantRoutes = [
     children: [{
       path: 'dashboard',
       name: 'Dashboard',
-      component: () => import('@/views/dashboard/index2.vue'),
+      component: () => import('@/views/dashboard/index0.vue'),
       meta: { title: '主页', icon: 'dashboard', affix: true  }
     }]
   }

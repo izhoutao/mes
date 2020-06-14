@@ -1,67 +1,54 @@
 <template>
-  <el-row :gutter="60" class="panel-group">
-    <el-col :xs="6" :sm="6" :lg="6" class="card-panel-col">
+  <el-row :gutter="10" class="panel-group">
+    <el-col :span="6" class="card-panel-col">
       <div class="card-panel" @click="handleSetLineChartData('newVisitis')">
         <div class="card-panel-icon-wrapper icon-people">
           <svg-icon icon-class="peoples" class-name="card-panel-icon" />
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">
-            订单总数（未完成）
+            工单数量（未完成）
           </div>
           <count-to :start-val="0" :end-val="102400" :duration="2600" class="card-panel-num" />
         </div>
       </div>
     </el-col>
-    <el-col :xs="6" :sm="6" :lg="6" class="card-panel-col">
+    <el-col :span="6" class="card-panel-col">
       <div class="card-panel" @click="handleSetLineChartData('messages')">
         <div class="card-panel-icon-wrapper icon-message">
           <svg-icon icon-class="message" class-name="card-panel-icon" />
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">
-            当月需交付订单
+            待完成重量
           </div>
           <count-to :start-val="0" :end-val="81212" :duration="3000" class="card-panel-num" />
         </div>
       </div>
     </el-col>
-    <el-col :xs="6" :sm="6" :lg="6" class="card-panel-col">
+    <el-col :span="6" class="card-panel-col">
       <div class="card-panel" @click="handleSetLineChartData('purchases')">
         <div class="card-panel-icon-wrapper icon-money">
           <svg-icon icon-class="money" class-name="card-panel-icon" />
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">
-            当月已交付订单
+            当月成品入库
           </div>
           <count-to :start-val="0" :end-val="9280" :duration="3200" class="card-panel-num" />
         </div>
       </div>
     </el-col>
-    <el-col :xs="6" :sm="6" :lg="6" class="card-panel-col">
+    <el-col :span="6" class="card-panel-col">
       <div class="card-panel" @click="handleSetLineChartData('shoppings')">
         <div class="card-panel-icon-wrapper icon-shopping">
           <svg-icon icon-class="shopping" class-name="card-panel-icon" />
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">
-            准时交付率
+            准时完成率
           </div>
           <count-to :start-val="0" :end-val="97" :duration="3600" class="card-panel-num" /><span class="card-panel-num">%</span>
-        </div>
-      </div>
-    </el-col>
-    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-      <div class="card-panel" @click="handleSetLineChartData('shoppings')">
-        <div class="card-panel-icon-wrapper icon-shopping">
-          <svg-icon icon-class="shopping" class-name="card-panel-icon" />
-        </div>
-        <div class="card-panel-description">
-          <div class="card-panel-text">
-            良率
-          </div>
-          <count-to :start-val="0" :end-val="98" :duration="3600" class="card-panel-num" /><span class="card-panel-num">%</span>
         </div>
       </div>
     </el-col>

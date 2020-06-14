@@ -37,3 +37,23 @@ export function getProductSerialNumbers(num) {
     method: 'get'
   })
 }
+export function getMonthUnpunctualWorkOrderQuantity(num) {
+  return request({
+    url: `/basic/workorder/completion/${num}`,
+    method: 'get'
+  })
+}
+
+export function getCompletionBasicInfos() {
+  return request({
+    url: `/basic/workorder/completion`,
+    method: 'get'
+  })
+}
+
+export function getWorkOrderBasicInfos() {
+  return request({
+    url: `/basic/workorder/basic`,
+    method: 'get'
+  })
+}

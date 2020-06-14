@@ -31,3 +31,12 @@ export function deleteQcDefect(id) {
   })
 }
 
+
+
+export function getTopDefects(num) {
+  return request({
+    url: `/basic/qcdefect/top/${num}`,
+    method: 'get'
+  })
+}
+

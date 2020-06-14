@@ -36,3 +36,12 @@ export function deleteOutboundOrderRawItem(id) {
     method: 'delete'
   })
 }
+
+
+export function getOperationBoardPage(data) {
+  return request({
+    url: `/basic/outboundorderrawitem/operationboard`,
+    method: 'post',
+    data
+  })
+}
