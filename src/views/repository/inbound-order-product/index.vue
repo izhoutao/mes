@@ -117,7 +117,7 @@
             <div
               style="width: 120px;height: 60px;border:1px solid black;border-right:none;border-bottom:none;display: flex;flex-direction: column;justify-content:center;align-items:center;">
               <div>毛重</div>
-              <div style="font-size:15px;font-family:'Microsoft YaHei';">GW WT (Kg)</div>
+              <div style="font-size:15px;font-family:'Microsoft YaHei';">GR WT (Kg)</div>
             </div>
             <div
               style="width: 90px;height: 60px;border:1px solid black;border-bottom:none;text-align:center;line-height:60px;">
@@ -128,7 +128,7 @@
             <div
               style="width: 120px;height: 60px;border:1px solid black;border-right:none;border-bottom:none;display: flex;flex-direction: column;justify-content:center;align-items:center;">
               <div>参考厚度mm</div>
-              <div style="font-size:15px;font-family:'Microsoft YaHei';">Refernce T</div>
+              <div style="font-size:15px;font-family:'Microsoft YaHei';">Reference T</div>
             </div>
             <div
               style="width: 140px;height: 60px;border:1px solid black;border-right:none;border-bottom:none;text-align:center;line-height:60px;">
@@ -137,7 +137,7 @@
             <div
               style="width: 120px;height: 60px;border:1px solid black;border-right:none;border-bottom:none;display: flex;flex-direction: column;justify-content:center;align-items:center;">
               <div>参考宽度mm</div>
-              <div style="font-size:15px;font-family:'Microsoft YaHei';">Refernce W</div>
+              <div style="font-size:15px;font-family:'Microsoft YaHei';">Reference W</div>
             </div>
             <div
               style="width: 90px;height: 60px;border:1px solid black;border-right:none;border-bottom:none;text-align:center;line-height:60px;">
@@ -146,7 +146,7 @@
             <div
               style="width: 120px;height: 60px;border:1px solid black;border-right:none;border-bottom:none;display: flex;flex-direction: column;justify-content:center;align-items:center;">
               <div>参考长度mm</div>
-              <div style="font-size:15px;font-family:'Microsoft YaHei';">Refernce L</div>
+              <div style="font-size:15px;font-family:'Microsoft YaHei';">Reference L</div>
             </div>
             <div
               style="width: 90px;height: 60px;border:1px solid black;border-bottom:none;text-align:center;line-height:60px;">
@@ -296,7 +296,7 @@
           <span>{{ scope.row.surfaceFinish }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="规格|mm*mm" width="80px" align="center" :render-header="renderHeader">
+      <el-table-column label="规格|mm*mm" width="100px" align="center" :render-header="renderHeader">
         <template slot-scope="scope">
           <span>{{ scope.row.specification }}</span>
         </template>
@@ -803,8 +803,8 @@
         } else {
           iframe = document.createElement('IFRAME')
           iframe.setAttribute('id', 'print-iframe')
-          iframe.setAttribute('display', 'none')
         }
+        iframe.style.display = 'none'
         var el = document.getElementById('label-container')
         var doc = null
         // iframe.setAttribute('style', 'position:absolute;width:0px;height:0px;left:-500px;top:-500px;');

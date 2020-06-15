@@ -99,7 +99,7 @@ export const constantRoutes = [
  */
 export const asyncRoutes = [
   basicRouter,
-  orderRouter,
+  // orderRouter,
   productionRouter,
   qualityRouter,
   repositoryRouter,

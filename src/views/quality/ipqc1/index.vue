@@ -708,8 +708,8 @@
                   const workOrder = res.queryResult.list[0]
                   const targetWidth = parseFloat(workOrder.targetWidth)
                   const toleranceWidth = parseFloat(workOrder.toleranceWidth)
-                  const targetThickness = parseFloat(workOrder.targetWidth)
-                  const toleranceThickness = parseFloat(workOrder.toleranceWidth)
+                  const targetThickness = parseFloat(workOrder.targetThickness)
+                  const toleranceThickness = parseFloat(workOrder.toleranceThickness)
                   this.temp.targetWidth = targetWidth
                   this.temp.toleranceWidth = toleranceWidth
                   this.temp.targetThickness = targetThickness

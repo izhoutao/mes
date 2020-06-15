@@ -19,12 +19,12 @@ const productionRouter = {
       component: () => import('@/views/production/work-order'),
       meta: { title: '工单管理', icon: 'dashboard' }
     },
-    {
-      path: 'shiporder',
-      name: 'shiporder',
-      component: () => import('@/views/production/ship-order'),
-      meta: { title: '出货单管理', icon: 'dashboard' }
-    },
+    /*    {
+          path: 'shiporder',
+          name: 'shiporder',
+          component: () => import('@/views/production/ship-order'),
+          meta: { title: '出货单管理', icon: 'dashboard' }
+        },*/
     {
       path: 'rewinditem',
       name: 'rewindItem',
@@ -66,7 +66,7 @@ const productionRouter = {
       name: 'grindShiftReport',
       component: () => import('@/views/production/grind-shift/report'),
       meta: { title: '研磨班管理', icon: 'dashboard' }
-    },
+    }
 
   ]
 }
