@@ -300,7 +300,7 @@
   import Pagination from '@/components/Pagination/index.vue' // Secondary package based on el-pagination
 
   export default {
-    name: 'production-defect',
+    name: 'productionDefect',
     components: { Pagination },
     directives: { waves },
     data() {

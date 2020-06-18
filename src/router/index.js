@@ -87,7 +87,7 @@ export const constantRoutes = [
     children: [{
       path: 'dashboard',
       name: 'Dashboard',
-      component: () => import('@/views/dashboard/index0.vue'),
+      component: () => import('@/views/dashboard/index.vue'),
       meta: { title: '主页', icon: 'dashboard', affix: true }
     }]
   }
@@ -98,13 +98,12 @@ export const constantRoutes = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
-  basicRouter,
   // orderRouter,
   productionRouter,
   qualityRouter,
   repositoryRouter,
-  // apsRouter,
   systemRouter,
+  basicRouter,
   {
     path: 'help',
     component: Layout,

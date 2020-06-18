@@ -5,7 +5,7 @@ import Layout from '@/layout'
 const qualityRouter = {
   path: '/quality',
   component: Layout,
-  redirect: '/quality/iqc',
+  redirect: '/quality/ipqc_maint',
   name: 'quality',
   alwaysShow: true, // 一直显示根路由
   meta: {

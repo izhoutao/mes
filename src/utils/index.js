@@ -12,35 +12,41 @@ export function parseTime(time, cFormat) {
   if (arguments.length === 0) {
     return null
   }
-  const format = cFormat || '{y}-{m}-{d}T{h}:{i}:{s}'
-  let date
-  if (typeof time === 'object') {
-    date = time
-  } else {
-    if ((typeof time === 'string') && (/^[0-9]+$/.test(time))) {
-      time = parseInt(time)
+  try {
+    const format = cFormat || '{y}-{m}-{d}T{h}:{i}:{s}'
+    let date
+    if (typeof time === 'object') {
+      date = time
+    } else {
+      if ((typeof time === 'string') && (/^[0-9]+$/.test(time))) {
+        time = parseInt(time)
+      }
+      if ((typeof time === 'number') && (time.toString().length === 10)) {
+        time = time * 1000
+      }
+      date = new Date(time)
     }
-    if ((typeof time === 'number') && (time.toString().length === 10)) {
-      time = time * 1000
+    const formatObj = {
+      y: date.getFullYear(),
+      m: date.getMonth() + 1,
+      d: date.getDate(),
+      h: date.getHours(),
+      i: date.getMinutes(),
+      s: date.getSeconds(),
+      a: date.getDay()
     }
-    date = new Date(time)
+    const time_str = format.replace(/{([ymdhisa])+}/g, (result, key) => {
+      const value = formatObj[key]
+      // Note: getDay() returns 0 on Sunday
+      if (key === 'a') {
+        return ['日', '一', '二', '三', '四', '五', '六'][value]
+      }
+      return value.toString().padStart(2, '0')
+    })
+    return time_str
+  } catch (e) {
+    return null
   }
-  const formatObj = {
-    y: date.getFullYear(),
-    m: date.getMonth() + 1,
-    d: date.getDate(),
-    h: date.getHours(),
-    i: date.getMinutes(),
-    s: date.getSeconds(),
-    a: date.getDay()
-  }
-  const time_str = format.replace(/{([ymdhisa])+}/g, (result, key) => {
-    const value = formatObj[key]
-    // Note: getDay() returns 0 on Sunday
-    if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value ] }
-    return value.toString().padStart(2, '0')
-  })
-  return time_str
 }
 
 /**
@@ -114,8 +120,9 @@ export function byteLength(str) {
   let s = str.length
   for (var i = str.length - 1; i >= 0; i--) {
     const code = str.charCodeAt(i)
-    if (code > 0x7f && code <= 0x7ff) s++
-    else if (code > 0x7ff && code <= 0xffff) s += 2
+    if (code > 0x7f && code <= 0x7ff) {
+      s++
+    } else if (code > 0x7ff && code <= 0xffff) s += 2
     if (code >= 0xDC00 && code <= 0xDFFF) i--
   }
   return s
@@ -160,12 +167,12 @@ export function param2Obj(url) {
   }
   return JSON.parse(
     '{"' +
-      decodeURIComponent(search)
-        .replace(/"/g, '\\"')
-        .replace(/&/g, '","')
-        .replace(/=/g, '":"')
-        .replace(/\+/g, ' ') +
-      '"}'
+    decodeURIComponent(search)
+      .replace(/"/g, '\\"')
+      .replace(/&/g, '","')
+      .replace(/=/g, '":"')
+      .replace(/\+/g, ' ') +
+    '"}'
   )
 }
 

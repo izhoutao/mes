@@ -304,7 +304,7 @@
           shiftHandover: null
         },
         tempCopy: null,
-        statuses: ['新建', '班长已审核', '主管已审核', '已呈阅审核'],
+        statuses: ['新建', '班长已审核', '科长已审核', '厂长已审核'],
         tagTypes: ['success', 'info', 'warning', 'danger'],
         loading: false,
         staff: [],
@@ -314,7 +314,8 @@
         shiftMap: null,
         shiftRoles: [],
         shiftTypes: [],
-        shiftLeaders: ['rewindShiftLeader', 'rollingMillShiftLeader', 'annealShiftLeader', 'finishingTensionLevelerShiftLeader'],
+        shiftLeaders: ['CJBZ', 'ZJBZ', 'THBZ', 'JZBZ'],
+        sectionChiefs: ['CJKZ', 'ZJKZ', 'THKZ', 'JZKZ'],
         currentReport: undefined,
         selectedReport: {
           id: null,
@@ -400,23 +401,33 @@
     created() {
       this.tempCopy = deepClone(this.temp)
       this.selectedReportCopy = deepClone(this.selectedReport)
-      const isShiftLeaderArr = [this.roles.includes('rewindShiftLeader'),
-        this.roles.includes('rollingMillShiftLeader'),
-        this.roles.includes('annealShiftLeader'),
-        this.roles.includes('finishingTensionLevelerShiftLeader')]
-      const isSupervisor = this.roles.includes('supervisor')
-      const isInspector = this.roles.includes('inspector')
-      let shiftRoles = [{ code: 'rewindShiftLeader', name: '重卷生产班班长', type: 0 },
-        { code: 'rollingMillShiftLeader', name: '轧机生产班班长', type: 1 },
-        { code: 'annealShiftLeader', name: '退火炉生产班班长', type: 2 },
-        { code: 'finishingTensionLevelerShiftLeader', name: '精整拉矫生产班班长', type: 3 },
-        { code: 'supervisor', name: '主管' },
-        { code: 'inspector', name: '呈阅' }]
-      const shiftRoleBoolArr = [...isShiftLeaderArr, isSupervisor, isInspector]
+      const isShiftLeaderArr = [
+        this.roles.includes('CJBZ'),
+        this.roles.includes('ZJBZ'),
+        this.roles.includes('THBZ'),
+        this.roles.includes('JZBZ'),
+        this.roles.includes('CJKZ'),
+        this.roles.includes('ZJKZ'),
+        this.roles.includes('THKZ'),
+        this.roles.includes('JZKZ')
+      ]
+      const isInspector = this.roles.includes('CZ')
+      let shiftRoles = [
+        { code: 'CJBZ', name: '重卷班长', type: 0 },
+        { code: 'ZJBZ', name: '轧机班长', type: 1 },
+        { code: 'THBZ', name: '退火班长', type: 2 },
+        { code: 'JZBZ', name: '精整班长', type: 3 },
+        { code: 'CJKZ', name: '重卷科长', type: 0 },
+        { code: 'ZJKZ', name: '轧机科长', type: 1 },
+        { code: 'THKZ', name: '退火科长', type: 2 },
+        { code: 'JZKZ', name: '精整科长', type: 3 },
+        { code: 'CZ', name: '呈阅' }]
+      const shiftRoleBoolArr = [...isShiftLeaderArr, isInspector]
       shiftRoles = shiftRoles.filter((item, index) => shiftRoleBoolArr[index])
       if (shiftRoles.length > 1) {
         this.shiftRoles = shiftRoles
       }
+      console.log(shiftRoles)
       this.listQuery.role = shiftRoles[0].code
       this.listQuery.type = shiftRoles[0].type
       this.listLoading = true
@@ -605,8 +616,8 @@
           date: this.selectedReport.date,
           shiftId: this.selectedReport.shiftId,
           shiftLeader: this.shiftLeaders.includes(this.listQuery.role) ? this.id : null,
-          supervisor: this.listQuery.role == 'supervisor' ? this.id : null,
-          inspector: this.listQuery.role == 'inspector' ? this.id : null,
+          supervisor: this.sectionChiefs.includes(this.listQuery.role) ? this.id : null,
+          inspector: this.listQuery.role == 'CZ' ? this.id : null,
           type: this.listQuery.type
         }
         updateJournalingProductionShiftReport(r).then((res) => {

@@ -62,7 +62,7 @@
           this.chart.setOption({
             backgroundColor: '#fff',
             title: {
-              text: '完成情况',
+              text: '工单完成情况',
               left: 'center',
               top: '10',
               textStyle: {

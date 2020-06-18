@@ -280,7 +280,7 @@
           username: '',
           roleList: [],
           name: '',
-          password: '111111',
+          password: '',
           phone: '',
           email: '',
           state: '1',
@@ -299,8 +299,8 @@
             { required: true, trigger: 'blur', message: '请填写用户名' },
             { min: 3, max: 20, message: '长度在 3 到 20个字符', trigger: 'blur' }
           ],
-          password: [
-            { required: true, trigger: 'blur', message: '请设置密码' }],
+          /*          password: [
+                      { required: true, trigger: 'blur', message: '请设置密码' }],*/
           roleList: [
             { required: true, trigger: 'blur', message: '请设置角色' }
           ],
@@ -312,6 +312,9 @@
           ],
           phone: [
             { required: false, trigger: 'blur', validator: validTelephone }
+          ],
+          hiredate: [
+            { required: true, trigger: 'blur', message: '请设置员工入职日期' }
           ],
           email: [
             { required: false, message: '请输入邮箱地址', trigger: 'blur' },
@@ -419,6 +422,13 @@
       submit() {
         this.$refs['userForm'].validate((valid) => {
           if (valid) {
+            if (!this.temp.password) {
+              this.$message({
+                message: '请设置密码',
+                type: 'warning'
+              })
+              return
+            }
             // const tempData = deepClone(this.temp)
             let roleList = this.temp.roleList.map(item => {
               return {

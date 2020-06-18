@@ -644,7 +644,7 @@
         })
       },
       handleDelete(row) {
-        this.$confirm('此操作将永久删除该轧机条目, 是否继续?', '提示', {
+        this.$confirm('此操作将永久删除该精整拉矫条目, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'

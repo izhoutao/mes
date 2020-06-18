@@ -362,9 +362,9 @@
           create: '添加'
         },
         rules: {
-          name: [
+/*          name: [
             { required: true, trigger: 'blur', message: '请填写菜单名称' }
-          ]
+          ]*/
         }
       }
     },

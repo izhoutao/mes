@@ -153,7 +153,7 @@
         </el-button>
       </div>
       <el-table :key="temp.id" :data="codeRuleList" border fit highlight-current-row>
-        <el-table-column label="参数序号" min-width="40px" type="index" align="center">
+        <el-table-column label="序" min-width="40px" type="index" align="center">
         </el-table-column>
         <el-table-column label="参数类型" min-width="80px" align="center">
           <template slot-scope="scope">

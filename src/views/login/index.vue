@@ -14,7 +14,7 @@
         <el-input
           ref="username"
           v-model="loginForm.username"
-          placeholder="Username"
+          placeholder="用户名"
           name="username"
           type="text"
           tabindex="1"
@@ -31,7 +31,7 @@
           ref="password"
           v-model="loginForm.password"
           :type="passwordType"
-          placeholder="Password"
+          placeholder="密码"
           name="password"
           tabindex="2"
           auto-complete="on"
@@ -75,8 +75,8 @@ export default {
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111'
+        username: '',
+        password: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],

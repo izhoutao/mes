@@ -313,7 +313,7 @@
         shiftMap: null,
         shiftRoles: [],
         shiftTypes: [],
-        shiftLeaders: ['grindShiftLeader'],
+        shiftLeaders: ['JZBZ'],
         currentReport: undefined,
         selectedReport: {
           id: null,
@@ -392,7 +392,7 @@
     watch: {
       'listQuery.role': {
         handler: async function(val) {
-          if ('grindShiftLeader' == val) {
+          if ('JZBZ' == val) {
             this.listQuery.createPerson = this.id
           } else {
             this.listQuery.createPerson = ''
@@ -404,12 +404,12 @@
     created() {
       this.tempCopy = deepClone(this.temp)
       this.selectedReportCopy = deepClone(this.selectedReport)
-      const isShiftLeader = this.roles.includes('grindShiftLeader')
-      const isSupervisor = this.roles.includes('supervisor')
-      const isInspector = this.roles.includes('inspector')
-      let shiftRoles = [{ code: 'grindShiftLeader', name: '磨床研磨班班长' },
-        { code: 'supervisor', name: '主管' },
-        { code: 'inspector', name: '呈阅' }]
+      const isShiftLeader = this.roles.includes('YMBZ')
+      const isSupervisor = this.roles.includes('TMKZ')
+      const isInspector = this.roles.includes('CZ')
+      let shiftRoles = [{ code: 'YMBZ', name: '磨床研磨班班长' },
+        { code: 'TMKZ', name: '研磨科长' },
+        { code: 'CZ', name: '厂长' }]
       const shiftRoleBoolArr = [isShiftLeader, isSupervisor, isInspector]
       shiftRoles = shiftRoles.filter((item, index) => shiftRoleBoolArr[index])
       if (shiftRoles.length > 1) {
@@ -593,9 +593,9 @@
           id: this.selectedReport.id,
           date: this.selectedReport.date,
           shiftId: this.selectedReport.shiftId,
-          shiftLeader: this.listQuery.role == 'grindShiftLeader' ? this.id : null,
-          supervisor: this.listQuery.role == 'supervisor' ? this.id : null,
-          inspector: this.listQuery.role == 'inspector' ? this.id : null
+          shiftLeader: this.listQuery.role == 'YMBZ' ? this.id : null,
+          supervisor: this.listQuery.role == 'YMKZ' ? this.id : null,
+          inspector: this.listQuery.role == 'CZ' ? this.id : null
         }
         updateJournalingGrindShiftReport(r).then((res) => {
           for (const v of this.list) {
