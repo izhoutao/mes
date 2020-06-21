@@ -5,8 +5,11 @@ import router, { resetRouter } from '@/router'
 const state = {
   token: getToken(),
   name: '',
+  sex: '',
   avatar: '',
   department: '',
+  phone: '',
+  email: '',
   roles: [],
   staffId: '',
   id: ''
@@ -21,6 +24,18 @@ const mutations = {
   },
   SET_NAME: (state, name) => {
     state.name = name
+  },
+  SET_USERNAME: (state, username) => {
+    state.username = username
+  },
+  SET_SEX: (state, sex) => {
+    state.sex = sex
+  },
+  SET_PHONE: (state, phone) => {
+    state.phone = phone
+  },
+  SET_EMAIL: (state, email) => {
+    state.email = email
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
@@ -63,7 +78,7 @@ const actions = {
         } else {
           reject('验证失败，请重新登录。')
         }
-        const { roles, name, avatar, department, staffId, id } = activeUser
+        const { roles, name, username, avatar, department, staffId, id, sex, email, phone } = activeUser
         // alert(JSON.stringify(activeUser))
         // const { data } = response
         //
@@ -80,8 +95,12 @@ const actions = {
 
         commit('SET_ROLES', roles)
         commit('SET_NAME', name)
+        commit('SET_USERNAME', username)
         commit('SET_AVATAR', avatar)
         commit('SET_DEPARTMENT', department)
+        commit('SET_SEX', sex)
+        commit('SET_EMAIL', email)
+        commit('SET_PHONE', phone)
         commit('SET_STAFF_ID', staffId)
         commit('SET_ID', id)
         resolve(activeUser)

@@ -198,14 +198,14 @@
                     </el-col>
                     <el-col :span="6">
                       <el-form-item label="用途：" prop="uses">
-                        <el-input :value="temp.uses"/>
+                        <el-input v-model="temp.uses"/>
                       </el-form-item>
                     </el-col>
                   </el-row>
                   <el-row>
                     <el-col :span="6">
                       <el-form-item label="客户：" prop="customerId">
-                        <el-select :value="temp.customerId" style="width:100%">
+                        <el-select v-model="temp.customerId" style="width:100%">
                           <el-option
                             v-for="item in customers"
                             :key="item.id"
@@ -384,7 +384,7 @@
 
             <el-col :span="3">
               <el-form-item label="生产要求：" prop="requirements" class="side-form-item">
-                <el-input type="textarea" :rows="17" v-model="temp.requirements"/>
+                <el-input type="textarea" :rows="17" :value="temp.requirements"/>
               </el-form-item>
             </el-col>
 

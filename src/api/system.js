@@ -23,6 +23,27 @@ export function updateUser(data) {
     data
   })
 }
+export function updateProfile(data) {
+  return request({
+    url: `/ucenter/user/updateProfile`,
+    method: 'put',
+    data
+  })
+}
+export function updateUserPass(data) {
+  return request({
+    url: `/ucenter/user/updatePass`,
+    method: 'put',
+    data
+  })
+}
+export function updateUserAvatar(data) {
+  return request({
+    url: `/ucenter/user/updateAvatar`,
+    method: 'put',
+    data
+  })
+}
 
 export function deleteUser(id) {
   return request({

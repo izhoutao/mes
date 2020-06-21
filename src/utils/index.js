@@ -352,3 +352,27 @@ export function removeClass(ele, cls) {
     ele.className = ele.className.replace(reg, ' ')
   }
 }
+
+// 替换邮箱字符
+export function regEmail(email) {
+  if (String(email).indexOf('@') > 0) {
+    const str = email.split('@')
+    let _s = ''
+    if (str[0].length > 3) {
+      for (var i = 0; i < str[0].length - 3; i++) {
+        _s += '*'
+      }
+    }
+    var new_email = str[0].substr(0, 3) + _s + '@' + str[1]
+  }
+  return new_email
+}
+
+// 替换手机字符
+export function regMobile(mobile) {
+  if (mobile.length > 7) {
+    var new_mobile = mobile.substr(0, 3) + '****' + mobile.substr(7)
+  }
+  return new_mobile
+}
+
