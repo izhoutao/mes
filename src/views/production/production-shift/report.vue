@@ -384,10 +384,11 @@
     watch: {
       'listQuery.role': {
         handler: async function(val) {
-          const index = this.shiftLeaders.indexOf(val)
-          if (index != -1) {
+          const index1 = this.shiftLeaders.indexOf(val)
+          const index2 = this.sectionChiefs.indexOf(val)
+          if (index1 != -1 || index2 != -1) {
             this.shiftTypes = []
-            this.listQuery.type = index
+            this.listQuery.type = index1 + index2 + 1
             this.listQuery.createPerson = this.id
           } else {
             this.shiftTypes = ['重卷生产班', '轧机生产班', '退火炉生产班', '精整拉矫生产班']
@@ -427,7 +428,6 @@
       if (shiftRoles.length > 1) {
         this.shiftRoles = shiftRoles
       }
-      console.log(shiftRoles)
       this.listQuery.role = shiftRoles[0].code
       this.listQuery.type = shiftRoles[0].type
       this.listLoading = true

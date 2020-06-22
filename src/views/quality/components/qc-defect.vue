@@ -27,67 +27,106 @@
       </el-table-column>
       <el-table-column label="缺陷码" min-width="35px" align="center">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.defectCode"/>
+          <el-input v-model="scope.row.defectCode"
+                    v-on:keyup.native="e => handleSwitchFocus(e, scope.$index, 0)"
+                    :ref="'defect-'+scope.$index+'-0'"
+          />
         </template>
       </el-table-column>
       <el-table-column label="上面" min-width="35px" align="center">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.up"/>
+          <el-input v-model="scope.row.up"
+                    v-on:keyup.native="e => handleSwitchFocus(e, scope.$index, 1)"
+                    :ref="'defect-'+scope.$index+'-1'"
+          />
         </template>
       </el-table-column>
       <el-table-column label="下面" min-width="35px" align="center">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.down"/>
+          <el-input v-model="scope.row.down"
+                    v-on:keyup.native="e => handleSwitchFocus(e, scope.$index, 2)"
+                    :ref="'defect-'+scope.$index+'-2'"
+          />
         </template>
       </el-table-column>
       <el-table-column label="宽度位置" min-width="40px" align="center">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.widthPosition"/>
+          <el-input v-model="scope.row.widthPosition"
+                    v-on:keyup.native="e => handleSwitchFocus(e, scope.$index, 3)"
+                    :ref="'defect-'+scope.$index+'-3'"
+          />
         </template>
       </el-table-column>
       <el-table-column label="起始位置(m)" min-width="50px" align="center">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.startPosition"/>
+          <el-input v-model="scope.row.startPosition"
+                    v-on:keyup.native="e => handleSwitchFocus(e, scope.$index, 4)"
+                    :ref="'defect-'+scope.$index+'-4'"
+          />
         </template>
       </el-table-column>
       <el-table-column label="结束位置(m)" min-width="50px" align="center">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.endPosition"/>
+          <el-input v-model="scope.row.endPosition"
+                    v-on:keyup.native="e => handleSwitchFocus(e, scope.$index, 5)"
+                    :ref="'defect-'+scope.$index+'-5'"
+          />
         </template>
       </el-table-column>
       <el-table-column label="缺陷长度(m)" min-width="50px" align="center">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.defectLength"/>
+          <el-input v-model="scope.row.defectLength"
+                    v-on:keyup.native="e => handleSwitchFocus(e, scope.$index, 6)"
+                    :ref="'defect-'+scope.$index+'-6'"
+          />
         </template>
       </el-table-column>
       <el-table-column label="程度" min-width="35px" align="center">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.degree"/>
+          <el-input v-model="scope.row.degree"
+                    v-on:keyup.native="e => handleSwitchFocus(e, scope.$index, 7)"
+                    :ref="'defect-'+scope.$index+'-7'"
+          />
         </template>
       </el-table-column>
       <el-table-column label="类别波高" min-width="40px" align="center">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.waveHeightCategory"/>
+          <el-input v-model="scope.row.waveHeightCategory"
+                    v-on:keyup.native="e => handleSwitchFocus(e, scope.$index, 8)"
+                    :ref="'defect-'+scope.$index+'-8'"
+          />
         </template>
       </el-table-column>
       <el-table-column label="周期(mm)" min-width="50px" align="center">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.period"/>
+          <el-input v-model="scope.row.period"
+                    v-on:keyup.native="e => handleSwitchFocus(e, scope.$index, 9)"
+                    :ref="'defect-'+scope.$index+'-9'"
+          />
         </template>
       </el-table-column>
       <el-table-column label="频率" min-width="35px" align="center">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.frequency"/>
+          <el-input v-model="scope.row.frequency"
+                    v-on:keyup.native="e => handleSwitchFocus(e, scope.$index, 10)"
+                    :ref="'defect-'+scope.$index+'-10'"
+          />
         </template>
       </el-table-column>
       <el-table-column label="直径(mm)" min-width="50px" align="center">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.diameter"/>
+          <el-input v-model="scope.row.diameter"
+                    v-on:keyup.native="e => handleSwitchFocus(e, scope.$index, 11)"
+                    :ref="'defect-'+scope.$index+'-11'"
+          />
         </template>
       </el-table-column>
       <el-table-column label="距边(mm)" min-width="50px" align="center">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.margin"/>
+          <el-input v-model="scope.row.margin"
+                    v-on:keyup.native="e => handleSwitchFocus(e, scope.$index, 12)"
+                    :ref="'defect-'+scope.$index+'-12'"
+          />
         </template>
       </el-table-column>
       <!--      <el-table-column label="操作" align="center" min-width="80" fixed="right">
@@ -126,8 +165,8 @@
         list: [],
         selectedDefects: [],
         temp: {
-/*          id: '',
-          ipqcId: '',*/
+          /*          id: '',
+                    ipqcId: '',*/
           defectCode: '',
           up: '',
           down: '',
@@ -168,14 +207,53 @@
       handleSelectionChange(val) {
         this.selectedDefects = val
       },
-      handleAdd() {
-
+      handleSwitchFocus(event, row, column) {
+        let direction
+        switch (event.key) {
+          case 'ArrowUp':
+            direction = 1
+            break
+          case 'ArrowRight':
+          case 'Enter':
+            direction = 2
+            break
+          case 'ArrowDown':
+            direction = 3
+            break
+          case 'ArrowLeft':
+            direction = 4
+            break
+        }
+        const inputRef = this.getNeighbour(row, column, direction)
+        this.$refs[inputRef].focus()
       },
-      handleCopy() {
+      getNeighbour(row, column, direction) {
+        switch (direction) {
+          case 1:
+            row = row == 0 ? row : row - 1
+            break
+          case 2:
+            if (column == 12 && row != this.list.length - 1) {
+              row++
+              column = 0
+            } else {
+              column = column == 12 ? column : column + 1
+            }
+            break
+          case 3:
+            row = row == this.list.length - 1 ? row : row + 1
+            break
+          case 4:
+            if (column == 0 && row > 0) {
+              row--
+              column = 12
+            } else {
+              column = column == 0 ? column : column - 1
+            }
+            break
 
-      },
-      handlePaste() {
-
+        }
+        return 'defect-' + row + '-' + column
       }
     }
   }

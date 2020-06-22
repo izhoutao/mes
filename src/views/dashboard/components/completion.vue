@@ -6,6 +6,7 @@
   import echarts from 'echarts'
   // import resize from './mixins/resize'
   import { getMonthUnpunctualWorkOrderQuantity } from '@/api/workorder'
+  import { mapGetters } from 'vuex'
 
   export default {
     // mixins: [resize],
@@ -29,13 +30,14 @@
     },
     data() {
       return {
-        chart: null
+        chart: null,
+        timer: null
       }
     },
     mounted() {
       this.initChart()
       this.refresh()
-      setInterval(this.refresh, 3000)
+      this.timer = setInterval(this.refresh, 3000)
     },
     beforeDestroy() {
       if (!this.chart) {
@@ -43,6 +45,9 @@
       }
       this.chart.dispose()
       this.chart = null
+    },
+    destroyed() {
+      clearInterval(this.timer)
     },
     methods: {
       initChart() {
@@ -154,7 +159,7 @@
                 },
                 splitArea: {
                   show: false
-                },
+                }
                 // max: 100,
                 // interval: 10,
               }],
@@ -174,7 +179,7 @@
                         color: '#fff'
                       },
                       position: 'insideTop',
-                      formatter: '{c}',
+                      formatter: '{c}'
                     }
                   }
                 },
@@ -192,7 +197,7 @@
                     label: {
                       show: true,
                       position: 'top',
-                      formatter: '{c}',
+                      formatter: '{c}'
                     }
                   }
                 },
@@ -212,7 +217,7 @@
                     label: {
                       show: true,
                       position: 'top',
-                      formatter: '{c}%',
+                      formatter: '{c}%'
                     }
                   }
                 },
@@ -221,7 +226,6 @@
             ]
           })
         }).catch(console.log)
-
       }
 
     }

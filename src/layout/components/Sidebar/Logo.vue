@@ -2,12 +2,12 @@
   <div class="sidebar-logo-container" :class="{'collapse':collapse}">
     <transition name="sidebarLogoFade">
       <router-link v-if="collapse" key="collapse" class="sidebar-logo-link" to="/">
-        <img v-if="logo" :src="logo" class="sidebar-logo">
+        <img src="@/assets/mes-logo.jpg" class="sidebar-logo">
         <!--   <h1 v-else class="sidebar-title">{{ title }} </h1>-->
 
       </router-link>
       <router-link v-else key="expand" class="sidebar-logo-link" to="/">
-        <img v-if="logo" :src="logo" class="sidebar-logo">
+        <img src="@/assets/mes-logo.jpg" class="sidebar-logo">
         <h1 class="sidebar-title">{{ title }} </h1>
       </router-link>
     </transition>
@@ -26,7 +26,6 @@ export default {
   data() {
     return {
       title: 'Haili Cloud MES',
-      logo: 'https://gss1.bdstatic.com/-vo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=476cb535ca95d143da76e3254bcbe53f/d1a20cf431adcbef73c22730aeaf2edda3cc9f15.jpg'
     }
   }
 }

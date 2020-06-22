@@ -88,37 +88,52 @@
   import PieChart from './components/PieChart'
   import WorkOrderCount from './components/WorkOrderCount'
   import OperationBoard from './components/OperationBoard'
+  import { mapGetters } from 'vuex'
 
   import { getCompletionBasicInfos } from '@/api/workorder'
 
   export default {
     components: {
-      CountTo, Completion, PieChart,WorkOrderCount,OperationBoard
+      CountTo, Completion, PieChart, WorkOrderCount, OperationBoard
     },
-    created() {
+    mounted(){
       this.getInfos()
     },
-
+    destroyed(){
+      clearInterval(this.timer)
+    },
+    computed: {
+      ...mapGetters([
+        'token'
+      ])
+    },
     data() {
       return {
         incompleteWorkOrderQuantity: 0,
         incompleteWeight: 0,
         currentMonthInboundFinishedProductWeight: 0,
-        onTimeCompletionRate: 0
+        onTimeCompletionRate: 0,
+        timer: null
       }
     },
     methods: {
       getInfos() {
         this.getCompletionBasicInfos()
-        setInterval(this.getCompletionBasicInfos, 3000)
+        this.timer = setInterval(this.getCompletionBasicInfos, 3000)
+
       },
       getCompletionBasicInfos() {
+        if(!this.token){
+          clearInterval(this.timer)
+          return
+        }
         getCompletionBasicInfos().then(res => {
           this.incompleteWorkOrderQuantity = res.model.incompleteWorkOrderQuantity
           this.incompleteWeight = res.model.incompleteWeight
           this.currentMonthInboundFinishedProductWeight = res.model.currentMonthInboundFinishedProductWeight
           this.onTimeCompletionRate = res.model.onTimeCompletionRate * 100
         })
+
       }
     }
 

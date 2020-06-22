@@ -8,27 +8,47 @@
       </el-table-column>
       <el-table-column label="厚" min-width="40px" align="center">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.thickness"/>
+          <el-input
+            v-model="scope.row.thickness"
+            v-on:keyup.native="e => handleSwitchFocus(e, scope.$index, 0)"
+            :ref="'measurement-'+scope.$index+'-0'"
+          />
         </template>
       </el-table-column>
       <el-table-column label="宽" min-width="40px" align="center">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.width"/>
+          <el-input
+            v-model="scope.row.width"
+            v-on:keyup.native="e => handleSwitchFocus(e,scope.$index,1)"
+            :ref="'measurement-'+scope.$index+'-1'"
+          />
         </template>
       </el-table-column>
       <el-table-column label="长" min-width="40px" align="center">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.length"/>
+          <el-input
+            v-model="scope.row.length"
+            v-on:keyup.native="e => handleSwitchFocus(e,scope.$index,2)"
+            :ref="'measurement-'+scope.$index+'-2'"
+          />
         </template>
       </el-table-column>
       <el-table-column label="T-S48" min-width="40px" align="center">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.ts48"/>
+          <el-input
+            v-model="scope.row.ts48"
+            v-on:keyup.native="e => handleSwitchFocus(e,scope.$index,3)"
+            :ref="'measurement-'+scope.$index+'-3'"
+          />
         </template>
       </el-table-column>
       <el-table-column label="B-S48" min-width="40px" align="center">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.bs48"/>
+          <el-input
+            v-model="scope.row.bs48"
+            v-on:keyup.native="e => handleSwitchFocus(e,scope.$index,4)"
+            :ref="'measurement-'+scope.$index+'-4'"
+          />
         </template>
       </el-table-column>
     </el-table>
@@ -146,8 +166,55 @@
         } else {
           return index + 1
         }
-      }
+      },
+      handleSwitchFocus(event, row, column) {
+        let direction
+        switch (event.key) {
+          case 'ArrowUp':
+            direction = 1
+            break
+          case 'ArrowRight':
+          case 'Enter':
+            direction = 2
+            break
+          case 'ArrowDown':
+            direction = 3
+            break
+          case 'ArrowLeft':
+            direction = 4
+            break
+        }
+        const inputRef = this.getNeighbour(row, column, direction)
+        this.$refs[inputRef].focus()
+      },
+      getNeighbour(row, column, direction) {
+        switch (direction) {
+          case 1:
+            row = row == 0 ? row : row - 1
+            break
+          case 2:
+            if (column == 4 && row != this.list.length - 1) {
+              row++
+              column = 0
+            } else {
+              column = column == 4 ? column : column + 1
+            }
+            break
+          case 3:
+            row = row == this.list.length - 1 ? row : row + 1
+            break
+          case 4:
+            if (column == 0 && row > 0) {
+              row--
+              column = 4
+            } else {
+              column = column == 0 ? column : column - 1
+            }
+            break
 
+        }
+        return 'measurement-' + row + '-' + column
+      }
     }
   }
 </script>

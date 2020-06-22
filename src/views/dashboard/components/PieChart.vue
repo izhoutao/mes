@@ -25,15 +25,14 @@
     },
     data() {
       return {
-        chart: null
+        chart: null,
+        timer: null
       }
     },
     mounted() {
-      this.$nextTick(() => {
-        this.initChart()
-        this.refreshSeries()
-        setInterval(this.refreshSeries, 3000)
-      })
+      this.initChart()
+      this.refreshSeries()
+      this.timer = setInterval(this.refreshSeries, 3000)
     },
     beforeDestroy() {
       if (!this.chart) {
@@ -42,6 +41,10 @@
       this.chart.dispose()
       this.chart = null
     },
+    destroyed() {
+      clearInterval(this.timer)
+    },
+
     methods: {
       initChart() {
         this.chart = echarts.init(this.$el, 'macarons')

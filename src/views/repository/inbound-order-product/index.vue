@@ -271,57 +271,57 @@
     <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%">
       <el-table-column label="序" width="40px" type="index" align="center" fixed>
       </el-table-column>
-      <el-table-column label="工单号" width="150px" align="center">
+      <el-table-column label="工单号" min-width="150px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.workOrderNumber }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="原料编号" width="150px" align="center">
+      <el-table-column label="原料编号" min-width="150px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.materialNumber }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="钢卷编号" width="150px" align="center">
+      <el-table-column label="钢卷编号" min-width="150px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.productNumber }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="钢种" width="100px" align="center">
+      <el-table-column label="钢种" min-width="100px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.steelGrade }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="表面品级" width="80px" align="center">
+      <el-table-column label="表面品级" min-width="80px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.surfaceFinish }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="规格|mm*mm" width="100px" align="center" :render-header="renderHeader">
+      <el-table-column label="规格|mm*mm" min-width="100px" align="center" :render-header="renderHeader">
         <template slot-scope="scope">
           <span>{{ scope.row.specification }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="净重|(kg)" width="80px" align="center" :render-header="renderHeader">
+      <el-table-column label="净重|(kg)" min-width="80px" align="center" :render-header="renderHeader">
         <template slot-scope="scope">
           <span>{{ scope.row.netWeight }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="毛重|(kg)" width="80px" align="center" :render-header="renderHeader">
+      <el-table-column label="毛重|(kg)" min-width="80px" align="center" :render-header="renderHeader">
         <template slot-scope="scope">
           <span>{{ scope.row.grossWeight }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="参考厚度|(mm)" width="80px" align="center" :render-header="renderHeader">
+      <el-table-column label="参考厚度|(mm)" min-width="80px" align="center" :render-header="renderHeader">
         <template slot-scope="scope">
           <span>{{ scope.row.referenceThickness }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="参考宽度|(mm)" width="80px" align="center" :render-header="renderHeader">
+      <el-table-column label="参考宽度|(mm)" min-width="80px" align="center" :render-header="renderHeader">
         <template slot-scope="scope">
           <span>{{ scope.row.referenceWidth }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="参考长度|(mm)" width="80px" align="center" :render-header="renderHeader">
+      <el-table-column label="参考长度|(mm)" min-width="80px" align="center" :render-header="renderHeader">
         <template slot-scope="scope">
           <span>{{ scope.row.referenceLength }}</span>
         </template>
@@ -356,17 +356,17 @@
               <span>{{ scope.row.grossWeight }}</span>
             </template>
           </el-table-column>-->
-      <el-table-column label="边部" width="80px" align="center">
+      <el-table-column label="边部" min-width="80px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.edge }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="等级" width="80px" align="center">
+      <el-table-column label="等级" min-width="80px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.grade }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="检验员" width="100px" align="center">
+      <el-table-column label="检验员" min-width="100px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.inspector }}</span>
         </template>
@@ -376,12 +376,12 @@
                 &lt;!&ndash;          <span>{{ scope.row.barcode }}</span>&ndash;&gt;
               </template>
             </el-table-column>-->
-      <el-table-column label="日期" width="100px" align="center">
+      <el-table-column label="日期" min-width="100px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.date }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="120" fixed="right">
+      <el-table-column label="操作" align="center" min-width="120" fixed="right">
         <template slot-scope="scope">
           <!--          <el-button type="primary" icon="el-icon-edit" size="mini"
                                @click="handleUpdate(scope.row)">编辑

@@ -79,9 +79,12 @@
         future7daysWorkOrderOnlineWeight: 0
       }
     },
-    created() {
+    mounted() {
       this.refreshData()
-      setInterval(this.refreshData, 3000)
+      this.timer = setInterval(this.refreshData, 3000)
+    },
+    destroyed(){
+      clearInterval(this.timer)
     },
     methods: {
       refreshData() {

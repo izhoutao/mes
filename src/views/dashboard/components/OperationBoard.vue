@@ -50,6 +50,7 @@
 
 <script>
   import { getOperationBoardPage } from '@/api/outboundorderrawitem'
+  import { mapGetters } from 'vuex'
 
   export default {
     name: 'OperationBoard',
@@ -61,12 +62,16 @@
         listQuery: {
           current: 1,
           size: 5
-        }
+        },
+        timer: null
       }
     },
-    created() {
+    mounted(){
       this.refreshData()
-      setInterval(this.refreshData, 3000)
+      this.timer = setInterval(this.refreshData, 3000)
+    },
+    destroyed(){
+      clearInterval(this.timer)
     },
     methods: {
       getProgress(jsonTextWorkflow, nextOperationLabel) {
