@@ -80,12 +80,12 @@ export const constantRoutes = [
   {
     path: '/profile',
     component: Layout,
-    redirect: '/profile/center',
+    redirect: '/profile/index',
     hidden: true,
     children: [
       {
         path: '/profile/center',
-        component: () => import('@/views/profile/center'),
+        component: () => import('@/views/profile/index'),
         name: 'Profile',
         meta: { title: '个人中心', icon: 'user', noCache: true }
       }

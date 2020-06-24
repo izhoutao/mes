@@ -28,7 +28,7 @@
       <el-table-column label="缺陷码" min-width="35px" align="center">
         <template slot-scope="scope">
           <el-input v-model="scope.row.defectCode"
-                    v-on:keyup.native="e => handleSwitchFocus(e, scope.$index, 0)"
+                    v-on:keydown.native="e => handleSwitchFocus(e, scope.$index, 0)"
                     :ref="'defect-'+scope.$index+'-0'"
           />
         </template>
@@ -36,7 +36,7 @@
       <el-table-column label="上面" min-width="35px" align="center">
         <template slot-scope="scope">
           <el-input v-model="scope.row.up"
-                    v-on:keyup.native="e => handleSwitchFocus(e, scope.$index, 1)"
+                    v-on:keydown.native="e => handleSwitchFocus(e, scope.$index, 1)"
                     :ref="'defect-'+scope.$index+'-1'"
           />
         </template>
@@ -44,7 +44,7 @@
       <el-table-column label="下面" min-width="35px" align="center">
         <template slot-scope="scope">
           <el-input v-model="scope.row.down"
-                    v-on:keyup.native="e => handleSwitchFocus(e, scope.$index, 2)"
+                    v-on:keydown.native="e => handleSwitchFocus(e, scope.$index, 2)"
                     :ref="'defect-'+scope.$index+'-2'"
           />
         </template>
@@ -52,7 +52,7 @@
       <el-table-column label="宽度位置" min-width="40px" align="center">
         <template slot-scope="scope">
           <el-input v-model="scope.row.widthPosition"
-                    v-on:keyup.native="e => handleSwitchFocus(e, scope.$index, 3)"
+                    v-on:keydown.native="e => handleSwitchFocus(e, scope.$index, 3)"
                     :ref="'defect-'+scope.$index+'-3'"
           />
         </template>
@@ -60,7 +60,7 @@
       <el-table-column label="起始位置(m)" min-width="50px" align="center">
         <template slot-scope="scope">
           <el-input v-model="scope.row.startPosition"
-                    v-on:keyup.native="e => handleSwitchFocus(e, scope.$index, 4)"
+                    v-on:keydown.native="e => handleSwitchFocus(e, scope.$index, 4)"
                     :ref="'defect-'+scope.$index+'-4'"
           />
         </template>
@@ -68,7 +68,7 @@
       <el-table-column label="结束位置(m)" min-width="50px" align="center">
         <template slot-scope="scope">
           <el-input v-model="scope.row.endPosition"
-                    v-on:keyup.native="e => handleSwitchFocus(e, scope.$index, 5)"
+                    v-on:keydown.native="e => handleSwitchFocus(e, scope.$index, 5)"
                     :ref="'defect-'+scope.$index+'-5'"
           />
         </template>
@@ -76,7 +76,7 @@
       <el-table-column label="缺陷长度(m)" min-width="50px" align="center">
         <template slot-scope="scope">
           <el-input v-model="scope.row.defectLength"
-                    v-on:keyup.native="e => handleSwitchFocus(e, scope.$index, 6)"
+                    v-on:keydown.native="e => handleSwitchFocus(e, scope.$index, 6)"
                     :ref="'defect-'+scope.$index+'-6'"
           />
         </template>
@@ -84,7 +84,7 @@
       <el-table-column label="程度" min-width="35px" align="center">
         <template slot-scope="scope">
           <el-input v-model="scope.row.degree"
-                    v-on:keyup.native="e => handleSwitchFocus(e, scope.$index, 7)"
+                    v-on:keydown.native="e => handleSwitchFocus(e, scope.$index, 7)"
                     :ref="'defect-'+scope.$index+'-7'"
           />
         </template>
@@ -92,7 +92,7 @@
       <el-table-column label="类别波高" min-width="40px" align="center">
         <template slot-scope="scope">
           <el-input v-model="scope.row.waveHeightCategory"
-                    v-on:keyup.native="e => handleSwitchFocus(e, scope.$index, 8)"
+                    v-on:keydown.native="e => handleSwitchFocus(e, scope.$index, 8)"
                     :ref="'defect-'+scope.$index+'-8'"
           />
         </template>
@@ -100,7 +100,7 @@
       <el-table-column label="周期(mm)" min-width="50px" align="center">
         <template slot-scope="scope">
           <el-input v-model="scope.row.period"
-                    v-on:keyup.native="e => handleSwitchFocus(e, scope.$index, 9)"
+                    v-on:keydown.native="e => handleSwitchFocus(e, scope.$index, 9)"
                     :ref="'defect-'+scope.$index+'-9'"
           />
         </template>
@@ -108,7 +108,7 @@
       <el-table-column label="频率" min-width="35px" align="center">
         <template slot-scope="scope">
           <el-input v-model="scope.row.frequency"
-                    v-on:keyup.native="e => handleSwitchFocus(e, scope.$index, 10)"
+                    v-on:keydown.native="e => handleSwitchFocus(e, scope.$index, 10)"
                     :ref="'defect-'+scope.$index+'-10'"
           />
         </template>
@@ -116,7 +116,7 @@
       <el-table-column label="直径(mm)" min-width="50px" align="center">
         <template slot-scope="scope">
           <el-input v-model="scope.row.diameter"
-                    v-on:keyup.native="e => handleSwitchFocus(e, scope.$index, 11)"
+                    v-on:keydown.native="e => handleSwitchFocus(e, scope.$index, 11)"
                     :ref="'defect-'+scope.$index+'-11'"
           />
         </template>
@@ -124,7 +124,7 @@
       <el-table-column label="距边(mm)" min-width="50px" align="center">
         <template slot-scope="scope">
           <el-input v-model="scope.row.margin"
-                    v-on:keyup.native="e => handleSwitchFocus(e, scope.$index, 12)"
+                    v-on:keydown.native="e => handleSwitchFocus(e, scope.$index, 12)"
                     :ref="'defect-'+scope.$index+'-12'"
           />
         </template>

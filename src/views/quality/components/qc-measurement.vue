@@ -10,7 +10,7 @@
         <template slot-scope="scope">
           <el-input
             v-model="scope.row.thickness"
-            v-on:keyup.native="e => handleSwitchFocus(e, scope.$index, 0)"
+            v-on:keydown.native="e => handleSwitchFocus(e, scope.$index, 0)"
             :ref="'measurement-'+scope.$index+'-0'"
           />
         </template>
@@ -19,7 +19,7 @@
         <template slot-scope="scope">
           <el-input
             v-model="scope.row.width"
-            v-on:keyup.native="e => handleSwitchFocus(e,scope.$index,1)"
+            v-on:keydown.native="e => handleSwitchFocus(e,scope.$index,1)"
             :ref="'measurement-'+scope.$index+'-1'"
           />
         </template>
@@ -28,7 +28,7 @@
         <template slot-scope="scope">
           <el-input
             v-model="scope.row.length"
-            v-on:keyup.native="e => handleSwitchFocus(e,scope.$index,2)"
+            v-on:keydown.native="e => handleSwitchFocus(e,scope.$index,2)"
             :ref="'measurement-'+scope.$index+'-2'"
           />
         </template>
@@ -37,7 +37,7 @@
         <template slot-scope="scope">
           <el-input
             v-model="scope.row.ts48"
-            v-on:keyup.native="e => handleSwitchFocus(e,scope.$index,3)"
+            v-on:keydown.native="e => handleSwitchFocus(e,scope.$index,3)"
             :ref="'measurement-'+scope.$index+'-3'"
           />
         </template>
@@ -46,7 +46,7 @@
         <template slot-scope="scope">
           <el-input
             v-model="scope.row.bs48"
-            v-on:keyup.native="e => handleSwitchFocus(e,scope.$index,4)"
+            v-on:keydown.native="e => handleSwitchFocus(e,scope.$index,4)"
             :ref="'measurement-'+scope.$index+'-4'"
           />
         </template>

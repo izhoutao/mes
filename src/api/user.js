@@ -25,5 +25,10 @@ export function logout() {
   })
 }
 
-
+export function refreshToken(data) {
+  return request({
+    url: `/auth/refreshtoken`,
+    method: 'get'
+  })
+}
 
