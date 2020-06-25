@@ -422,7 +422,7 @@
         { code: 'ZJKZ', name: '轧机科长', type: 1 },
         { code: 'THKZ', name: '退火科长', type: 2 },
         { code: 'JZKZ', name: '精整科长', type: 3 },
-        { code: 'CZ', name: '呈阅' }]
+        { code: 'CZ', name: '厂长' }]
       const shiftRoleBoolArr = [...isShiftLeaderArr, isInspector]
       shiftRoles = shiftRoles.filter((item, index) => shiftRoleBoolArr[index])
       if (shiftRoles.length > 1) {

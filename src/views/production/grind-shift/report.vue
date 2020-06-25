@@ -303,7 +303,7 @@
           shiftHandover: null
         },
         tempCopy: null,
-        statuses: ['新建', '班长已审核', '主管已审核', '已呈阅审核'],
+        statuses: ['新建', '班长已审核', '科长已审核', '厂长已审核'],
         tagTypes: ['success', 'info', 'warning', 'danger'],
         loading: false,
         staff: [],

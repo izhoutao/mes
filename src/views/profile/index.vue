@@ -104,7 +104,7 @@
                               </template>
                             </el-table-column>
                             <el-table-column
-                              align="right"
+                              align="right"呈阅
                             >
                               <template slot="header">
                                 <div style="display:inline-block;float: right;cursor: pointer" @click="init">创建日期<i

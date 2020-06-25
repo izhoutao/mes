@@ -419,7 +419,8 @@
   import { getOutboundOrderRawItems } from '@/api/outboundorderrawitem'
   import { getInboundOrderRaws } from '@/api/inboundorderraw'
   import { login } from '@/api/user'
-  import { getWorkOrders } from '@/api/workorder' // Secondary package based on el-pagination
+  import { getWorkOrders } from '@/api/workorder'
+  import { numAdd, numSub } from '@/utils/decimal' // Secondary package based on el-pagination
 
   export default {
     name: 'ipqc_maint',
@@ -481,19 +482,19 @@
     },
     computed: {
       minWidth() {
-        let minWidth = this.temp.targetWidth - this.temp.toleranceWidth
+        let minWidth = numSub(this.temp.targetWidth, this.temp.toleranceWidth)
         return minWidth.toString() == 'NaN' ? '' : minWidth
       },
       maxWidth() {
-        let maxWidth = this.temp.targetWidth + this.temp.toleranceWidth
+        let maxWidth = numAdd(this.temp.targetWidth, this.temp.toleranceWidth)
         return maxWidth.toString() == 'NaN' ? '' : maxWidth
       },
       minThickness() {
-        let minThickness = this.temp.targetThickness - this.temp.toleranceThickness
+        let minThickness = numSub(this.temp.targetThickness, this.temp.toleranceThickness)
         return minThickness.toString() == 'NaN' ? '' : minThickness
       },
       maxThickness() {
-        let maxThickness = this.temp.targetThickness + this.temp.toleranceThickness
+        let maxThickness = numAdd(this.temp.targetThickness, this.temp.toleranceThickness)
         return maxThickness.toString() == 'NaN' ? '' : maxThickness
       }
 
@@ -706,10 +707,10 @@
               }).then(res => {
                 if (res.queryResult.total) {
                   const workOrder = res.queryResult.list[0]
-                  const targetWidth = parseFloat(workOrder.targetWidth)
-                  const toleranceWidth = parseFloat(workOrder.toleranceWidth)
-                  const targetThickness = parseFloat(workOrder.targetThickness)
-                  const toleranceThickness = parseFloat(workOrder.toleranceThickness)
+                  const targetWidth = workOrder.targetWidth
+                  const toleranceWidth = workOrder.toleranceWidth
+                  const targetThickness = workOrder.targetThickness
+                  const toleranceThickness = workOrder.toleranceThickness
                   this.temp.targetWidth = targetWidth
                   this.temp.toleranceWidth = toleranceWidth
                   this.temp.targetThickness = targetThickness
