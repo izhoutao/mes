@@ -1,7 +1,6 @@
 <template>
   <div class="app-container">
     <div v-show="!dialogFormVisible">
-
       <div class="filter-container">
         <el-form ref="filterForm" :model="listQuery" :inline="true">
           <el-form-item label="" prop="workOrderNumber">
@@ -59,9 +58,9 @@
             <span>{{ scope.row.workOrderNumber }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="产品名称" min-width="80px" align="center">
+        <el-table-column label="钢种" min-width="80px" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.materialName }}</span>
+            <span>{{ scope.row.steelGrade }}</span>
           </template>
         </el-table-column>
         <el-table-column label="需求重量(kg)" min-width="80px" align="center">
@@ -121,8 +120,8 @@
       >
         <el-row>
           <el-col :span="6">
-            <el-form-item label="产品名称：" prop="materialName">
-              <el-input v-model="temp.materialName" @click.native="handleSelectMaterial"/>
+            <el-form-item label="钢种：" prop="steelGrade">
+              <el-input v-model="temp.steelGrade" @click.native="handleSelectMaterial"/>
             </el-form-item>
           </el-col>
           <el-col :span="6">
@@ -194,6 +193,29 @@
           </el-col>
         </el-row>
         <el-row>
+          <el-col :span="8">
+            <el-form-item label="客户：" prop="customerId">
+              <el-select
+                v-model="temp.customerId"
+                style="width:100%"
+              >
+                <el-option
+                  v-for="item in customers"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="16">
+            <el-form-item label="用途：" prop="uses">
+              <el-input v-model="temp.uses"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="6">
             <el-form-item label="目标宽度：" prop="targetWidth">
               <el-input v-model="temp.targetWidth"/>
@@ -226,7 +248,7 @@
           <el-col :span="6">
             <el-form-item label="创建时间：" prop="updateTime">
               <el-input
-                :value="temp.updateTime"
+                :value="temp.createTime"
                 :disabled="true">
               </el-input>
             </el-form-item>
@@ -257,14 +279,6 @@
           </el-col>
         </el-row>
       </el-form>
-
-      <!--      <el-card class="box-card" v-if="temp.id">
-              <div slot="header" class="clearfix">
-                <div style="font-size: 20px;">物料清单</div>
-              </div>
-              <work-order-material :workOrderId="temp.id" :key="temp.id"/>
-            </el-card>-->
-
     </div>
 
     <el-dialog
@@ -273,93 +287,19 @@
       :visible.sync="materialDialogFormVisible"
       width="800px"
     >
-      <material :selectedMaterial.sync="selectedMaterial"/>
+<!--      <material :selectedMaterial.sync="selectedMaterial"/>-->
+      <material ref="material"/>
       <div slot="footer" class="dialog-footer">
         <el-button type="danger" size="small" @click="materialDialogFormVisible = false">取消</el-button>
         <el-button type="primary" size="small" @click="confirmMaterial()">确认</el-button>
       </div>
     </el-dialog>
-
-    <!--<el-dialog
-      :close-on-click-modal="false"
-      title="工单SN展开"
-      :visible.sync="workOrderSNdialogFormVisible"
-      width="600px">
-      <div class="dialog-title">
-        <el-button type="primary" size="small" @click="expandSN(selectedWorkOrder.num)">模拟展开</el-button>
-        <el-button type="primary" size="small" @click="confirmworkOrderSN()">确认</el-button>
-      </div>
-      &lt;!&ndash;      <el-form
-              ref="workOrderSNForm"
-              :rules="rules"
-              :model="selectedWorkOrder"
-              label-position="right"
-              label-width="150px"
-            >&ndash;&gt;
-      <el-form
-        ref="workOrderSNForm"
-        label-position="left"
-        label-width="120px"
-      >
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="工单号：" prop="materialName">
-              {{selectedWorkOrder.workOrderNumber}}
-              &lt;!&ndash;            <el-input v-model="temp.materialName" @click.native="handleSelectMaterial"/>&ndash;&gt;
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="料号：" prop="materialName">
-              {{selectedWorkOrder.materialName}}
-              &lt;!&ndash;            <el-input v-model="temp.materialName" @click.native="handleSelectMaterial"/>&ndash;&gt;
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="需求数量：" prop="num">
-              {{selectedWorkOrder.num}}
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="已展开数量：" prop="num">
-              {{selectedWorkOrder.expandedNum}}
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="本次展开数量：" prop="num">
-              <el-input v-model.number="selectedWorkOrder.num" :disabled="true"/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-
-
-      <el-table :key="tableKey" :data="psnlist" border fit highlight-current-row>
-        <el-table-column label="序" min-width="20px" type="index" align="center">
-        </el-table-column>
-        <el-table-column label="SN" min-width="70px" align="center">
-          <template slot-scope="scope">
-            <span>{{ scope.row.sn }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="料号" min-width="70px" align="center">
-          <template slot-scope="scope">
-            <span>{{ scope.row.materialName }}</span>
-          </template>
-        </el-table-column>
-
-      </el-table>
-
-
-    </el-dialog>-->
-    <work-order-detail v-if="currentWorkOrder&&!dialogFormVisible" :detail="currentWorkOrder" :workflows="workflows"
+    <work-order-detail v-if="currentWorkOrder&&!dialogFormVisible"
+                       :detail="currentWorkOrder"
+                       :workflows="workflows"
                        :lines="lines"
+                       :users="users"
                        :key="currentWorkOrder.id"/>
-
   </div>
 </template>
 
@@ -377,18 +317,29 @@
 
   import waves from '@/directive/waves' // Waves directive
   import Pagination from '@/components/Pagination/index.vue'
-  // import WorkOrderMaterial from './work-order-material.vue'
   import WorkOrderDetail from './work-order-detail.vue'
-  import Material from './material.vue'
+  import Material from '@/components/Material'
   import { getWorkflows } from '@/api/workflow'
   import { getLines } from '@/api/line'
+  import { getUsers } from '@/api/system'
 
   export default {
     name: 'workorder',
     // components: { Pagination, WorkOrderMaterial, Material },
     components: { Pagination, Material, WorkOrderDetail },
     directives: { waves },
-
+    watch: {
+      'temp.customerId': {
+        handler: function(val) {
+          if (val) {
+            this.temp.customerName = this.customerMap[val].name
+          } else {
+            this.temp.customerName = ''
+          }
+        }
+        // deep: true
+      }
+    },
     data() {
       return {
         tableKey: 0,
@@ -404,8 +355,9 @@
         },
         temp: {
           id: undefined,
-          materialId: undefined,
-          materialName: '',
+          workOrderNumber: undefined,
+          steelGrade: '',
+          density: undefined,
           num: undefined,
           outputNum: undefined,
           onLineNum: undefined,
@@ -414,19 +366,21 @@
 
           workflowId: undefined,
           lineId: undefined,
-          // status: undefined,
-          minWidth: undefined,
-          maxWidth: undefined,
-          minThickness: undefined,
-          maxThickness: undefined,
+          customerId: undefined,
+          customerName: undefined,
+          targetWidth: undefined,
+          toleranceWidth: undefined,
+          targetThickness: undefined,
+          toleranceThickness: undefined,
+          uses: undefined,
           requirements: '',
           createPerson: undefined,
-          updateTime: undefined,
+          createTime: undefined,
           updatePerson: undefined,
           updateTime: undefined
         },
         tempCopy: null,
-        statuses: ['新建', '已上线', '进行中', '已关闭'],
+        statuses: ['新建', '已上线', '已完成', '已关闭'],
         tagTypes: ['success', 'info', 'warning', 'danger'],
         currentWorkOrder: undefined,
         selectedMaterial: undefined,
@@ -434,8 +388,8 @@
           id: undefined,
           workOrderNumber: undefined,
           materialId: undefined,
-          materialName: undefined,
-          materialCode: undefined,
+          steelGrade: undefined,
+          density: undefined,
           num: undefined,
           expandedNum: undefined,
           schStartTime: undefined,
@@ -447,9 +401,10 @@
         productSerialNumbers: [],
         psnlist: [],
         workflows: [],
-        workflowMap: null,
         lines: [],
-        lineMap: null,
+        customers: [],
+        customerMap: undefined,
+        users:[],
         product: {
           id: undefined,
           productNumber: undefined,
@@ -497,23 +452,14 @@
       this.$nextTick(async() => {
         await Promise.all([
           this.getLines({}),
-          this.getWorkflows({})
+          this.getUsers({}),
+          this.getWorkflows({}),
+          this.getCustomers({})
         ])
         this.getList()
       })
     },
     methods: {
-      /*      expandSN(num) {
-              getProductSerialNumbers(num).then(res => {
-                this.productSerialNumbers = res.model
-                this.psnlist = this.productSerialNumbers.map(item => {
-                  return {
-                    sn: item,
-                    materialName: this.selectedWorkOrder.materialName
-                  }
-                })
-              })
-            },*/
       handleSelect(selection, row) {
         //clearSelection：用于多选表格，清空用户的选择
         //此时所有的checkbox处于未勾选，当用户第一次点击的时候，selection为一个数组，里面存放的为当前这一行的数据
@@ -537,22 +483,28 @@
       },
       confirmMaterial() {
         this.materialDialogFormVisible = false
-        this.temp.materialId = this.selectedMaterial && this.selectedMaterial.id
-        this.temp.materialName = this.selectedMaterial && this.selectedMaterial.name
+        this.temp.materialId = this.$refs['material'].selectedMaterial && this.$refs['material'].selectedMaterial.id
+        this.temp.steelGrade = this.$refs['material'].selectedMaterial && this.$refs['material'].selectedMaterial.steelGrade
+        this.temp.density = this.$refs['material'].selectedMaterial && this.$refs['material'].selectedMaterial.density
       },
       async getLines(query) {
         const res = await getLines(query)
         this.lines = res.queryResult.list
-        this.lineMap = _.fromPairs(this.lines.map(line => {
-          return [line.id, line]
-        }))
+      },
+      async getUsers(query) {
+        const res = await getUsers(query)
+        this.users = res.queryResult.list
       },
       async getWorkflows(query) {
         const res = await getWorkflows(query)
         this.workflows = res.queryResult.list
-        this.workflowMap = _.fromPairs(this.workflows.map(workflow => {
-          return [workflow.id, workflow]
-        }))
+      },
+      async getCustomers() {
+        const res = await getCustomers({})
+        this.customers = res.queryResult.list
+        this.customerMap = _.fromPairs(this.customers.map(customer => {
+          return [customer.id, customer]
+      }))
       },
       getList() {
         this.listLoading = true
@@ -652,51 +604,6 @@
           })
         })
       },
-      // submitOnline() {
-      //   // this.$refs['workOrderSNForm'].validate((valid) => {
-      //   //   if (valid) {
-      //   //     // const tempData = deepClone(this.temp)
-      //   //     let workOrder = deepClone(this.temp)
-      //   //     addWorkOrder(workOrder).then((res) => {
-      //   //       this.list.unshift(res.model)
-      //   //       this.total++
-      //   //       this.handleUpdate(res.model)
-      //   //       // this.dialogFormVisible = false
-      //   //       this.$notify({
-      //   //         title: '成功',
-      //   //         message: '创建成功',
-      //   //         type: 'success',
-      //   //         duration: 2000
-      //   //       })
-      //   //     })
-      //   //   }
-      //   // })
-      //
-      //   let product = {
-      //     id: undefined,
-      //     productNumber: undefined,
-      //     steelGrade: undefined,
-      //     workOrderId: undefined,
-      //     workOrderNumber: undefined
-      //   }
-      //
-      //   // let product = deepClone(this.product)
-      //
-      //   addWorkOrder(product).then((res) => {
-      //     let product = this.list.unshift(res.model)
-      //     this.total++
-      //     this.handleUpdate(res.model)
-      //     // this.dialogFormVisible = false
-      //     this.$notify({
-      //       title: '成功',
-      //       message: '保存成功',
-      //       type: 'success',
-      //       duration: 2000
-      //     })
-      //   })
-      //
-      //   this.workOrderSNdialogFormVisible = false
-      // },
       handleUpdate(row) {
         if (row.status != 0) {
           this.$message({

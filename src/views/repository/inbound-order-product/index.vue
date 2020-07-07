@@ -748,6 +748,7 @@
         if (item) {
           this.temp[type] = item[type]
           this.temp.steelGrade = item.steelGrade
+          this.temp.density = item.density
         } else {
           this.temp[type] = ''
         }

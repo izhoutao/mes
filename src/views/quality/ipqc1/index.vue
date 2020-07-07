@@ -417,8 +417,6 @@
     getInboundOrderRawItemByOutboundRawItemProductNumber
   } from '@/api/inboundorderrawitem'
   import { getOutboundOrderRawItems } from '@/api/outboundorderrawitem'
-  import { getInboundOrderRaws } from '@/api/inboundorderraw'
-  import { login } from '@/api/user'
   import { getWorkOrders } from '@/api/workorder'
   import { numAdd, numSub } from '@/utils/decimal' // Secondary package based on el-pagination
 
@@ -682,6 +680,7 @@
           getInboundOrderRawItemByOutboundRawItemProductNumber(this.temp.productNumber).then(res => {
             const inboundOrderRawItem = res.model
             this.temp.steelGrade = inboundOrderRawItem.steelGrade
+            this.temp.density = inboundOrderRawItem.density
             this.temp.surfaceFinish = inboundOrderRawItem.surfaceFinish
             getInboundOrderRaws({
               inboundOrderRawId: inboundOrderRawItem.inboundOrderRawId

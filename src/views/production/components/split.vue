@@ -97,7 +97,7 @@
           </el-table-column>
           <el-table-column label="标签净重|(kg)" width="100px" align="center" :render-header="renderHeader">
             <template slot-scope="scope">
-              <span>{{ scope.row.labelNetWeight }}</span>
+              <span>{{ scope.row.packageWeight }}</span>
             </template>
           </el-table-column>
           <el-table-column label="标签毛重|(kg)" width="100px" align="center" :render-header="renderHeader">
@@ -208,14 +208,14 @@
           id: undefined,
           materialNumber: undefined,
           productNumber: '',
-          steelGrade: this.materialName,
+          steelGrade: this.steelGrade,
           surfaceFinish: undefined,
           width: undefined,
           thickness: undefined,
           length: undefined,
           labelSpecification: undefined,
           specification: undefined,
-          labelNetWeight: undefined,
+          packageWeight: undefined,
           labelGrossWeight: undefined,
           netWeight: undefined,
           grossWeight: undefined,
@@ -271,7 +271,7 @@
           specification: [
             { required: true, trigger: 'blur', message: '请填写实际规格' }
           ],
-          labelNetWeight: [
+          packageWeight: [
             { required: true, trigger: 'blur', message: '请填写标签净重' }
           ],
           labelGrossWeight: [

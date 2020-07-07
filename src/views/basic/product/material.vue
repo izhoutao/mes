@@ -37,17 +37,18 @@
       <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row>
         <el-table-column label="序" min-width="40px" type="index" align="center">
         </el-table-column>
-        <el-table-column label="料号" min-width="80px" align="center">
+
+        <el-table-column label="钢种" min-width="80px" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.code }}</span>
+            <span>{{ scope.row.steelGrade }}</span>
+          </template>s
+        </el-table-column>
+        <el-table-column label="密度" min-width="80px" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.density  }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="物料名称" min-width="80px" align="center">
-          <template slot-scope="scope">
-            <span>{{ scope.row.name }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="物料类型" min-width="80px" align="center">
+        <el-table-column label="类型" min-width="80px" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.typeName }}</span>
           </template>
@@ -89,13 +90,13 @@
         label-position="right"
         label-width="150px"
       >
-        <el-form-item label="料号：" prop="code">
-          <el-input v-model="temp.code"/>
+        <el-form-item label="钢种：" prop="name">
+          <el-input v-model="temp.steelGrade"/>
         </el-form-item>
-        <el-form-item label="物料名称：" prop="name">
-          <el-input v-model="temp.name"/>
+        <el-form-item label="密度：" prop="density">
+          <el-input v-model="temp.density"/>
         </el-form-item>
-        <el-form-item label="物料类型：" prop="typeId">
+        <el-form-item label="类型：" prop="typeId">
           <el-select v-model="temp.typeId" filterable placeholder="请选择" style="width:100%">
             <el-option
               v-for="item in materialTypes"
@@ -144,8 +145,8 @@
         },
         temp: {
           id: undefined,
-          name: '',
-          code: '',
+          steelGrade: '',
+          density: '',
           typeId:'',
           description: ''
         },
@@ -159,11 +160,11 @@
           create: '添加'
         },
         rules: {
-          name: [
-            { required: true, trigger: 'blur', message: '请填写工艺名称' }
+          steelGrade: [
+            { required: true, trigger: 'blur', message: '请填写钢种' }
           ],
-          code: [
-            { required: true, trigger: 'blur', message: '请填写工艺编码' }
+          density: [
+            { required: true, trigger: 'blur', message: '请填写密度' }
           ]
         }
       }

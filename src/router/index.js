@@ -11,7 +11,7 @@ import basicRouter from './modules/basic'
 import repositoryRouter from './modules/repository'
 import systemRouter from './modules/system'
 import qualityRouter from '@/router/modules/quality'
-import orderRouter from '@/router/modules/order'
+// import orderRouter from '@/router/modules/order'
 import productionRouter from '@/router/modules/production'
 // import apsRouter from '@/router/modules/aps'
 

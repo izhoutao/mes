@@ -7,10 +7,11 @@ export function getOutboundOrderRawItems(data) {
     data
   })
 }
-export function getStoredRawItems() {
+export function getStoredRawItems(data) {
   return request({
     url: `/basic/outboundorderrawitem/stored`,
-    method: 'get'
+    method: 'post',
+    data
   })
 }
 

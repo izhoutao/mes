@@ -297,7 +297,7 @@
         rules: {
           username: [
             { required: true, trigger: 'blur', message: '请填写用户名' },
-            { min: 3, max: 20, message: '长度在 3 到 20个字符', trigger: 'blur' }
+            { min: 2, max: 20, message: '长度在 2 到 20个字符', trigger: 'blur' }
           ],
           /*          password: [
                       { required: true, trigger: 'blur', message: '请设置密码' }],*/

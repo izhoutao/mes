@@ -5,7 +5,7 @@
         <el-form-item label="" prop="name">
           <el-input
             v-model="listQuery.name"
-            placeholder="请输入物料名称"
+            placeholder="请输入钢种"
             prefix-icon="el-icon-search"
             style="width: 200px;"
             class="filter-item"
@@ -36,17 +36,17 @@
         type="selection"
         width="55px">
       </el-table-column>
-      <el-table-column label="料号" min-width="80px" align="center">
+      <el-table-column label="钢种" min-width="80px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.code }}</span>
+          <span>{{ scope.row.steelGrade }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="物料名称" min-width="80px" align="center">
+      <el-table-column label="密度" min-width="80px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.name }}</span>
+          <span>{{ scope.row.density  }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="物料类型" min-width="80px" align="center">
+      <el-table-column label="类型" min-width="80px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.typeName }}</span>
         </template>
@@ -72,8 +72,8 @@
   export default {
     name: 'Material',
     components: { Pagination },
+    props: ['steelGrade'],
     directives: { waves },
-    props: ['selectedMaterial'],
     data() {
       return {
         tableKey: 0,
@@ -83,39 +83,25 @@
         listQuery: {
           current: 1,
           size: 10,
-          name: undefined
+          name: undefined,
+          steelGrade: undefined
           /*orders: ['code desc']*/
         },
-        temp: {
+        selectedMaterial: {
           id: undefined,
-          name: '',
-          code: '',
+          steelGrade: '',
+          density: '',
           typeId: '',
           description: ''
         },
-        tempCopy: null,
         materialTypes: [],
-        materialTypeMap: null,
-        dialogFormVisible: false,
-        dialogStatus: '',
-        textMap: {
-          update: '编辑',
-          create: '添加'
-        },
-        rules: {
-          name: [
-            { required: true, trigger: 'blur', message: '请填写工艺名称' }
-          ],
-          code: [
-            { required: true, trigger: 'blur', message: '请填写工艺编码' }
-          ]
-        }
+        materialTypeMap: null
       }
     },
     created() {
-      this.tempCopy = deepClone(this.temp)
+      this.listQuery.steelGrade = this.steelGrade
       this.listLoading = true
-      this.$nextTick(async () => {
+      this.$nextTick(async() => {
         await this.getMaterialTypes()
         this.getList()
       })
@@ -133,7 +119,8 @@
         //这这里将这行的状态又变为了勾选
         this.$refs.selectMaterialTable.toggleRowSelection(row, true)
         //用于多选表格，切换某一行的选中状态，如果使用了第二个参数，则是设置这一行选中与否（selected 为 true 则选中）
-        this.$emit('update:selectedMaterial', row)
+        // this.$emit('update:selectedMaterial', row)
+        this.selectedMaterial = deepClone(row)
       },
       handleSelectAll(selection) {
         this.$refs.selectMaterialTable.clearSelection()

@@ -4,8 +4,8 @@
       <el-form label-width="125px">
         <el-row>
           <el-col :span="7">
-            <el-form-item label="产品名称：" prop="materialName">
-              <span>{{detail.materialName}} </span>
+            <el-form-item label="钢种：" prop="steelGrade">
+              <span>{{detail.steelGrade}} </span>
             </el-form-item>
           </el-col>
           <el-col :span="7">
@@ -74,6 +74,18 @@
           </el-col>
         </el-row>
         <el-row>
+          <el-col :span="7">
+            <el-form-item label="客户：" prop="customerName">
+              <span>{{detail.customerName}} </span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="17">
+            <el-form-item label="用途：" prop="uses">
+              <span>{{detail.uses}} </span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
           <el-col>
             <el-form-item label="生产要求：" prop="schStartTime">
               <span>{{detail.requirements}} </span>
@@ -93,12 +105,12 @@
           </el-col>
           <el-col :span="5">
             <el-form-item label="创建人：" prop="createPerson">
-              <span>{{detail.createPerson}} </span>
+              <span>{{detail.createPerson | showName(users)}} </span>
             </el-form-item>
           </el-col>
           <el-col :span="5">
             <el-form-item label="最后更新人：" prop="updatePerson">
-              <span>{{detail.updatePerson}} </span>
+              <span>{{detail.updatePerson | showName(users)}} </span>
             </el-form-item>
           </el-col>
         </el-row>
@@ -115,7 +127,7 @@
 
   export default {
     components: { workOrderRawMaterial },
-    props: ['detail', 'workflows', 'lines'],
+    props: ['detail', 'workflows', 'lines','users'],
     data() {
       return {
         name: 'WorkOrderDetail',
